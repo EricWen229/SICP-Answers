@@ -144,3 +144,27 @@ Code after improvement:
 After improvement, function calls mentioned above return
  1e-4 and 1e75 respectively.
 
+###1.8
+
+        (define (cbrtIter guess lastGuess x)
+          (if (goodEnough guess lastGuess)
+            guess
+            (cbrtIter
+			  (improve guess x)
+			  guess x)))
+        (define (improve guess x)
+		  (/
+		    (+
+			  (/
+			    x
+				(* guess guess))
+			  (* guess 2))
+			3))
+		(define (goodEnough guess lastGuess)
+          (<
+		    (/
+			  (abs (- guess lastGuess))
+			  lastGuess)
+			0.001))
+		(define (cbrt x) (cbrtIter 1.0 x x))
+
