@@ -90,7 +90,7 @@ In normal-order evaluation, a function's parameters are
  `test` returns 0 before `(p)` gets the chance to be
  evaluated.
 
-###1.6
+##1.6
 
 The program will run infinitely until it runs out of memory.
 
@@ -105,7 +105,7 @@ The program will run infinitely until it runs out of memory.
  and the alternative expression, causing the function to recursively
  call itself infinitely.
 
-###1.7
+##1.7
 
 For very small numbers, the threshold value 0.001 is too large to tell
  if current estimation is close enough to real value.
@@ -144,7 +144,7 @@ Code after improvement:
 After improvement, function calls mentioned above return
  1e-4 and 1e75 respectively.
 
-###1.8
+##1.8
 
         (define (cbrtIter guess lastGuess x)
           (if (goodEnough guess lastGuess)
