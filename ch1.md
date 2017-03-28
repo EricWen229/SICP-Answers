@@ -119,3 +119,28 @@ For very large numbers, the precision is lost during calculation,
 `(sqrt 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)`
  fails to return within a reasonable time.
 
+Code after improvement:
+
+        (define (sqrtIter guess lastGuess x)
+          (if (goodEnough guess lastGuess)
+            guess
+            (sqrtIter
+			  (improve guess x)
+			  guess x)))
+        (define (improve guess x)
+          (average
+		    guess
+			(/ x guess)))
+        (define (average x y)
+          (/ (+ x y) 2))
+		(define (goodEnough guess lastGuess)
+          (<
+		    (/
+			  (abs (- guess lastGuess))
+			  lastGuess)
+			0.001))
+		(define (sqrt x) (sqrtIter 1.0 x x))
+
+After improvement, function calls mentioned above return
+ 1e-4 and 1e75 respectively.
+
