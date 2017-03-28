@@ -69,9 +69,9 @@ If b is positive then return `(- a b)` (i.e.
 		(test 0 (p))
 		......
 
-In applicative-order evaluation, a function will not be
+In applicative-order evaluation, a function is not
  applied until all its parameters are evaluated. Thus the
- parameter `(p)` will constantly be expanded into itself
+ parameter `(p)` is constantly be expanded into itself
  over and over again while the function `test` can never
  get the chance to be applied. 
 
@@ -85,8 +85,37 @@ In normal-order evaluation, a function's parameters are
  not evaluated until it's needed, which means the function
  is always applied before its parameters are evaluated.
  Due to the special evaluation rule of `if` where the
- alternative expression will not be evaluated if the
+ alternative expression is not evaluated if the
  predicate expression is evaluated to be true, the function
  `test` returns 0 before `(p)` gets the chance to be
  evaluated.
+
+###1.6
+
+The program will run infinitely until it runs out of memory.
+
+`if` has a special evaluation rule where either the consequent or
+ the alternative expression is evaluated depending on the value
+ of the predicate expression. In the implementation of Newton's
+ Method, the function should immediately return current value when
+ the value is good enough, and here's where `if` comes in: if the
+ requirement is met, the recursive call is not made.
+ 
+ But the program using `new-if` always evaluates both the consequent
+ and the alternative expression, causing the function to recursively
+ call itself infinitely.
+
+###1.7
+
+For very small numbers, the threshold value 0.001 is too large to tell
+ if current estimation is close enough to real value.
+
+`(sqrt 0.00000001)` returns 0.03125, while 0.0001 is the real value.
+
+For very large numbers, the precision is lost during calculation,
+ hence the estimation can never get close enough ('close' defined by
+ the threshold value 0.001) to real value.
+
+`(sqrt 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)`
+ fails to return within a reasonable time.
 
