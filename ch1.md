@@ -19,40 +19,40 @@
 ##1.2
 
         (/
-		  (+
-		    5
-			4
-			(-
-			  2
-			  (-
-			    3
-				(+
-				  6
-				  (/ 4 3)))))
-		  (\*
-		    3
-			(- 6 2) (- 2 7)))
+          (+
+            5
+            4
+            (-
+              2
+              (-
+                3
+                (+
+                  6
+                  (/ 4 3)))))
+          (\*
+            3
+            (- 6 2) (- 2 7)))
 
 ##1.3
 
         (define (min2 a b)
-		  (if
-			(< a b)
-		    a
-			b))
+          (if
+            (< a b)
+            a
+            b))
         (define (min3 a b c)
-		  (min2
-			a
-		    (min2 b c)))
+          (min2
+            a
+            (min2 b c)))
         (define (square x) (\* x x))
         (define (f a b c)
-		  (-
-		    (+
-			  (square a)
-			  (square b)
-			  (square c))
-			(square
-		      (min3 a b c))))
+          (-
+            (+
+              (square a)
+              (square b)
+              (square c))
+            (square
+              (min3 a b c))))
 
 ##1.4
 
@@ -64,10 +64,10 @@ If b is positive then return `(- a b)` (i.e.
 ###Applicative-order Evaluation
 
         (test 0 (p))
-		(test 0 (p))
-		(test 0 (p))
-		(test 0 (p))
-		......
+        (test 0 (p))
+        (test 0 (p))
+        (test 0 (p))
+        ......
 
 In applicative-order evaluation, a function is not
  applied until all its parameters are evaluated. Thus the
@@ -78,8 +78,8 @@ In applicative-order evaluation, a function is not
 ###Normal-order Evaluation
 
         (test 0 (p))
-		(if (= 0 0) 0 (p))
-		0
+        (if (= 0 0) 0 (p))
+        0
 
 In normal-order evaluation, a function's parameters are
  not evaluated until it's needed, which means the function
@@ -125,21 +125,21 @@ Code after improvement:
           (if (goodEnough guess lastGuess)
             guess
             (sqrtIter
-			  (improve guess x)
-			  guess x)))
+              (improve guess x)
+              guess x)))
         (define (improve guess x)
           (average
-		    guess
-			(/ x guess)))
+            guess
+            (/ x guess)))
         (define (average x y)
           (/ (+ x y) 2))
-		(define (goodEnough guess lastGuess)
+        (define (goodEnough guess lastGuess)
           (<
-		    (/
-			  (abs (- guess lastGuess))
-			  lastGuess)
-			0.001))
-		(define (sqrt x) (sqrtIter 1.0 x x))
+            (/
+              (abs (- guess lastGuess))
+              lastGuess)
+            0.001))
+        (define (sqrt x) (sqrtIter 1.0 x x))
 
 After improvement, function calls mentioned above return
  1e-4 and 1e75 respectively.
@@ -150,21 +150,21 @@ After improvement, function calls mentioned above return
           (if (goodEnough guess lastGuess)
             guess
             (cbrtIter
-			  (improve guess x)
-			  guess x)))
+              (improve guess x)
+              guess x)))
         (define (improve guess x)
-		  (/
-		    (+
-			  (/
-			    x
-				(* guess guess))
-			  (* guess 2))
-			3))
-		(define (goodEnough guess lastGuess)
+          (/
+            (+
+              (/
+                x
+                (* guess guess))
+              (* guess 2))
+            3))
+        (define (goodEnough guess lastGuess)
           (<
-		    (/
-			  (abs (- guess lastGuess))
-			  lastGuess)
-			0.001))
-		(define (cbrt x) (cbrtIter 1.0 x x))
+            (/
+              (abs (- guess lastGuess))
+              lastGuess)
+            0.001))
+        (define (cbrt x) (cbrtIter 1.0 x x))
 
