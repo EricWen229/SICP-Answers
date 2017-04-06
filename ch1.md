@@ -252,3 +252,25 @@ The process is iterative.
  In the basic case `(A 2 1)` returns 2. Informally, `(h n)` computes 2^(2^(2^...^(2^(2^2))...)) where the
  number of 2 is n. The concise definition can be given recursively as follow:
  `(h 1)` returns 2 for n=1, and returns `(expt 2 (h (- n 1)))` for n larger than 1.
+
+##1.11
+
+Recursive version:
+
+        (define (f n)
+          (if (< n 3)
+            n
+            (+ (f (- n 1))
+              (* 2 (f (- n 2)))
+              (* 3 (f (- n 3))))))
+
+Iterative version:
+
+        (define (f n)
+          (define (fIter n curr a b c)
+            (if (= curr n)
+              a
+              (fIter n (+ 1 curr) (+ a (* 2 b) (* 3 c)) a b)))
+          (if (< n 3)
+            n
+            (fIter n 2 2 1 0)))
