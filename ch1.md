@@ -10,7 +10,7 @@
 * a (with value 3)
 * b (with value 4)
 * 19
-* #f
+* #f (true)
 * 4
 * 16
 * 6
@@ -116,8 +116,7 @@ For very large numbers, the precision is lost during calculation,
  hence the estimation can never get close enough ('close' defined by
  the threshold value 0.001) to real value.
 
-`(sqrt 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)`
- fails to return within a reasonable time.
+`(sqrt (expt 10 150))` fails to return within a reasonable time.
 
 Code after improvement:
 
@@ -168,3 +167,86 @@ After improvement, function calls mentioned above return
             0.001))
         (define (cbrt x) (cbrtIter 1.0 x x))
 
+##1.9
+
+        (+ 4 5)
+        (inc (+ 3 5))
+        (inc (inc (+ 2 5)))
+        (inc (inc (inc (+ 1 5))))
+        (inc (inc (inc (inc (+ 0 5)))))
+        (inc (inc (inc (inc 5))))
+        (inc (inc (inc 6)))
+        (inc (inc 7))
+        (inc 8)
+        9
+
+The process is recursive.
+
+        (+ 4 5)
+        (+ 3 6)
+        (+ 2 7)
+        (+ 1 8)
+        (+ 0 9)
+        9
+
+The process is iterative.
+
+##1.10
+
+        (A 1 10)
+        (A 0 (A 1 9))
+        (A 0 (A 0 (A 1 8)))
+        ...
+        (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 1))))))))))
+        (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 2)))))))))
+        (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (* 2 2)))))))))
+        (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 4))))))))
+        (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (* 2 4))))))))
+        (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 8)))))))
+        ...
+        (A 0 512)
+        (* 2 512)
+        1024
+
+        (A 2 4)
+        (A 1 (A 2 3))
+        (A 1 (A 1 (A 2 2)))
+        (A 1 (A 1 (A 1 (A 2 1))))
+        (A 1 (A 1 (A 1 2)))
+        (A 1 (A 1 (A 0 (A 1 1))))
+        (A 1 (A 1 (A 0 2)))
+        (A 1 (A 1 (* 2 2)))
+        (A 1 (A 1 4))
+        (A 1 (A 0 (A 1 3)))
+        (A 1 (A 0 (A 0 (A 1 2))))
+        (A 1 (A 0 (A 0 (A 0 (A 1 1)))))
+        (A 1 (A 0 (A 0 (A 0 2))))
+        (A 1 (A 0 (A 0 (* 2 2))))
+        (A 1 (A 0 (A 0 4)))
+        (A 1 (A 0 (* 2 4)))
+        (A 1 (A 0 8))
+        (A 1 (* 2 8))
+        (A 1 16)
+        ...
+        65536
+
+        (A 3 3)
+        (A 2 (A 3 2))
+        (A 2 (A 2 (A 3 1)))
+        (A 2 (A 2 2))
+        (A 2 (A 1 (A 2 1)))
+        (A 2 (A 1 2))
+        (A 2 (A 0 (A 1 1)))
+        (A 2 (A 0 2))
+        (A 2 (* 2 2))
+        (A 2 4)
+        ...
+        65536
+
+* `(f n)` equals `(A 0 n)` equals `(* 2 n)` which computes 2n for positive n.
+* `(g n)` equals `(A 1 n)` equals `(A 0 (A 1 (- n 1)))` equals `(* 2 (A 1 (- n 1)))`.
+ In the basic case `(A 1 1)` is 2, thus `(g n)` computes 2^n for positive n.
+* `(h n)` equals `(A 2 n)` equals `(A 1 (A 2 (- n 1)))` equals `(expt 2 (A 2 (- n 1)))`.
+ In the basic case `(A 2 1)` is 2. Informally, `(h n)` computes 2^(2^(2^...^(2^(2^2))...)) where the
+ number of 2 is n. The concise definition can be given recursively as follow:
+ `(h 1)` computes 2 for n=1, and `(expt 2 (h (- n 1)))` for n larger than 1.
