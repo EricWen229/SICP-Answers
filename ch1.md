@@ -18,41 +18,32 @@
 
 ##1.2
 
-        (/
-          (+
-            5
-            4
-            (-
-              2
-              (-
-                3
-                (+
-                  6
-                  (/ 4 3)))))
-          (\*
-            3
-            (- 6 2) (- 2 7)))
+        (/ (+ 5
+              4
+              (- 2
+                 (- 3
+                    (+ 6
+                       (/ 4 3)))))
+           (\* 3
+               (- 6 2)
+               (- 2 7)))
 
 ##1.3
 
         (define (min2 a b)
-          (if
-            (< a b)
-            a
-            b))
+                (if (< a b)
+                    a
+                    b))
         (define (min3 a b c)
-          (min2
-            a
-            (min2 b c)))
-        (define (square x) (\* x x))
+                (min2 a
+                      (min2 b c)))
+        (define (square x)
+                (\* x x))
         (define (f a b c)
-          (-
-            (+
-              (square a)
-              (square b)
-              (square c))
-            (square
-              (min3 a b c))))
+                (- (+ (square a)
+                      (square b)
+                      (square c))
+                   (square (min3 a b c))))
 
 ##1.4
 
@@ -121,24 +112,23 @@ For very large numbers, the precision is lost during calculation,
 Code after improvement:
 
         (define (sqrtIter guess lastGuess x)
-          (if (goodEnough guess lastGuess)
-            guess
-            (sqrtIter
-              (improve guess x)
-              guess x)))
+                (if (goodEnough guess lastGuess)
+                    guess
+                    (sqrtIter (improve guess x)
+                              guess
+                              x)))
         (define (improve guess x)
-          (average
-            guess
-            (/ x guess)))
+                (average guess
+                         (/ x guess)))
         (define (average x y)
-          (/ (+ x y) 2))
+                (/ (+ x y)
+                   2))
         (define (goodEnough guess lastGuess)
-          (<
-            (/
-              (abs (- guess lastGuess))
-              lastGuess)
-            0.001))
-        (define (sqrt x) (sqrtIter 1.0 x x))
+                (< (/ (abs (- guess lastGuess))
+                      lastGuess)
+                   0.001))
+        (define (sqrt x)
+                (sqrtIter 1.0 x x))
 
 After improvement, function calls mentioned above return
  1e-4 and 1e75 respectively.
@@ -146,26 +136,22 @@ After improvement, function calls mentioned above return
 ##1.8
 
         (define (cbrtIter guess lastGuess x)
-          (if (goodEnough guess lastGuess)
-            guess
-            (cbrtIter
-              (improve guess x)
-              guess x)))
+                (if (goodEnough guess lastGuess)
+                    guess
+                    (cbrtIter (improve guess x)
+                              guess
+                              x)))
         (define (improve guess x)
-          (/
-            (+
-              (/
-                x
-                (* guess guess))
-              (* guess 2))
-            3))
+                (/ (+ (/ x
+                         (* guess guess))
+                      (* guess 2))
+                   3))
         (define (goodEnough guess lastGuess)
-          (<
-            (/
-              (abs (- guess lastGuess))
-              lastGuess)
-            0.001))
-        (define (cbrt x) (cbrtIter 1.0 x x))
+                (< (/ (abs (- guess lastGuess))
+                      lastGuess)
+                   0.001))
+        (define (cbrt x)
+                (cbrtIter 1.0 x x))
 
 ##1.9
 
@@ -258,19 +244,28 @@ The process is iterative.
 Recursive version:
 
         (define (f n)
-          (if (< n 3)
-            n
-            (+ (f (- n 1))
-              (* 2 (f (- n 2)))
-              (* 3 (f (- n 3))))))
+                (if (< n 3)
+                    n
+                    (+ (f (- n 1))
+                       (* 2 (f (- n 2)))
+                       (* 3 (f (- n 3))))))
 
 Iterative version:
 
         (define (f n)
-          (define (fIter n curr a b c)
-            (if (= curr n)
-              a
-              (fIter n (+ 1 curr) (+ a (* 2 b) (* 3 c)) a b)))
-          (if (< n 3)
-            n
-            (fIter n 2 2 1 0)))
+                (define (fIter n curr a b c)
+                        (if (= curr n)
+                            a
+                            (fIter n (+ 1 curr) (+ a (* 2 b) (* 3 c)) a b)))
+                (if (< n 3)
+                    n
+                    (fIter n 2 2 1 0)))
+
+##1.12
+
+        (define (pascal line row)
+                (if (or (= row 1)
+                        (= row line))
+                    1
+                    (+ (pascal (- line 1) (- row 1))
+                       (pascal (- line 1) row))))
