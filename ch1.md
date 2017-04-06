@@ -244,9 +244,11 @@ The process is iterative.
         65536
 
 * `(f n)` equals `(A 0 n)` equals `(* 2 n)` which computes 2n for positive n.
-* `(g n)` equals `(A 1 n)` equals `(A 0 (A 1 (- n 1)))` equals `(* 2 (A 1 (- n 1)))`.
- In the basic case `(A 1 1)` is 2, thus `(g n)` computes 2^n for positive n.
-* `(h n)` equals `(A 2 n)` equals `(A 1 (A 2 (- n 1)))` equals `(expt 2 (A 2 (- n 1)))`.
- In the basic case `(A 2 1)` is 2. Informally, `(h n)` computes 2^(2^(2^...^(2^(2^2))...)) where the
+* `(g n)` equals `(A 1 n)` equals `(A 0 (A 1 (- n 1)))` equals `(* 2 (A 1 (- n 1)))`
+ (which, though, is not the way it's evaluated).
+ In the basic case `(A 1 1)` returns 2, thus `(g n)` computes 2^n for positive n.
+* `(h n)` equals `(A 2 n)` equals `(A 1 (A 2 (- n 1)))` equals `(expt 2 (A 2 (- n 1)))`
+ (which, though, is not the way it's evaluated).
+ In the basic case `(A 2 1)` returns 2. Informally, `(h n)` computes 2^(2^(2^...^(2^(2^2))...)) where the
  number of 2 is n. The concise definition can be given recursively as follow:
- `(h 1)` computes 2 for n=1, and `(expt 2 (h (- n 1)))` for n larger than 1.
+ `(h 1)` returns 2 for n=1, and returns `(expt 2 (h (- n 1)))` for n larger than 1.
