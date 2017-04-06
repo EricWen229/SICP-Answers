@@ -269,3 +269,33 @@ Iterative version:
                     1
                     (+ (pascal (- line 1) (- row 1))
                        (pascal (- line 1) row))))
+
+##1.13
+
+Let a=(1+5^(1/2)/2, b=(1-5^(1/2)/2.
+
+Let f(n)=(a^n-b^n)/(5^(1/2)). Then there are f(0)=0, f(1)=1.
+
+For any n larger than 1, consider f(n-1) and f(n-2):
+
+        f(n-1)+f(n-2) = (a^(n-1)+a^(n-2)-(b^(n-1)+b^(n-2)))/(5^(1/2))
+                      = ((1+a)*(a^(n-2))-(1+b)*(b^(n-2)))/(5^(1/2))
+                      = ((a^2)*(a^(n-2))-(b^2)*(b^(n-2)))/(5^(1/2))
+                      = (a^n-b^n)/(5^(1/2))
+                      = f(n)
+
+In basic cases f(0)=Fib(0) and f(1)=Fib(1). Given f(n-2)=Fib(n-2) and
+ f(n-1)=Fib(n-1) there is
+ f(n)=f(n-1)+f(n-2)=Fib(n-1)+Fib(n-2)=Fib(n). Therefore, Fib(n)=f(n)
+ stands for all non-negative integer n.
+
+Besides, there is |(b^n)/(5^(1/2))|<(1/2):
+
+        (b^n/(5^(1/2)))^2 =  (((1-5^(1/2))/2)^2n)/5
+                          =  (((3-5^(1/2))/2)^n)/5
+                          <= ((1/2)^n)/5
+                          <= 1/5
+                          <  1/4
+
+Since Fib(n)=(a^n)/(5^(1/2))+(b^n)/(5^(1/2)), Fib(n) is the closest
+ integer to (a^n)/(5^(1/2)).
