@@ -10,7 +10,7 @@
 * a (with value 3)
 * b (with value 4)
 * 19
-* #f (true)
+* \#f (true)
 * 4
 * 16
 * 6
@@ -48,7 +48,7 @@
 ##1.4
 
 If b is positive then return `(- a b)` (i.e.
- a - b), elsewise return `(+ a b)` (i.e. a + b).
+ $a - b$), elsewise return `(+ a b)` (i.e. $a + b$).
 
 ##1.5
 
@@ -131,7 +131,7 @@ Code after improvement:
                 (sqrtIter 1.0 x x))
 
 After improvement, function calls mentioned above return
- 1e-4 and 1e75 respectively.
+ $1e-4$ and $1e75$ respectively.
 
 ##1.8
 
@@ -229,15 +229,15 @@ The process is iterative.
         ...
         65536
 
-* `(f n)` equals `(A 0 n)` equals `(* 2 n)` which computes 2n for positive n.
+* `(f n)` equals `(A 0 n)` equals `(* 2 n)` which computes $2n$ for positive n.
 * `(g n)` equals `(A 1 n)` equals `(A 0 (A 1 (- n 1)))` equals `(* 2 (A 1 (- n 1)))`
  (which, though, is not the way it's evaluated).
- In the basic case `(A 1 1)` returns 2, thus `(g n)` computes 2^n for positive n.
+ In the basic case `(A 1 1)` returns 2, thus `(g n)` computes $2^n$ for positive n.
 * `(h n)` equals `(A 2 n)` equals `(A 1 (A 2 (- n 1)))` equals `(expt 2 (A 2 (- n 1)))`
  (which, though, is not the way it's evaluated).
- In the basic case `(A 2 1)` returns 2. Informally, `(h n)` computes 2^(2^(2^...^(2^(2^2))...)) where the
+ In the basic case `(A 2 1)` returns 2. Informally, `(h n)` computes $2^{2^{2^{...}}}$ where the
  number of 2 is n. The concise definition can be given recursively as follow:
- `(h 1)` returns 2 for n=1, and returns `(expt 2 (h (- n 1)))` for n larger than 1.
+ `(h 1)` returns 2 for 1, and returns `(expt 2 (h (- n 1)))` for n larger than 1.
 
 ##1.11
 
@@ -272,17 +272,21 @@ Iterative version:
 
 ##1.13
 
-Let a=(1+5^(1/2)/2, b=(1-5^(1/2)/2.
+Let $\phi = \frac{1 + \sqrt{5}}{2}$, $\psi = \frac{1 - \sqrt{5}}{2}$.
 
-Let f(n)=(a^n-b^n)/(5^(1/2)). Then there are f(0)=0, f(1)=1.
+Let $f(n) = \frac{\phi ^ n - \psi ^ n}{\sqrt{5}}$. Then there are $f(0) = 0$, $f(1) = 1$.
 
-For any n larger than 1, consider f(n-1) and f(n-2):
+For any n larger than 1, consider $f(n - 1)$ and $f(n - 2)$:
 
-        f(n-1)+f(n-2) = (a^(n-1)+a^(n-2)-(b^(n-1)+b^(n-2)))/(5^(1/2))
-                      = ((1+a)*(a^(n-2))-(1+b)*(b^(n-2)))/(5^(1/2))
-                      = ((a^2)*(a^(n-2))-(b^2)*(b^(n-2)))/(5^(1/2))
-                      = (a^n-b^n)/(5^(1/2))
-                      = f(n)
+$$
+\begin{align}
+        f(n-1) + f(n-2) &= \frac{\phi^{n-1} + \phi^{n-2}-(\psi^{n-1}+\psi^{n-2})}{\sqrt{5}} \\
+                      &= \frac{(1+\phi)\phi^{n-2}-(1+\psi)\psi^{n-2}}{\sqrt{5}} \\
+                      &= ((a^2)*(a^(n-2))-(b^2)*(b^(n-2)))/(5^(1/2)) \\
+                      &= (a^n-b^n)/(5^(1/2)) \\
+                      &= f(n)
+\end{align}
+$$
 
 In basic cases f(0)=Fib(0) and f(1)=Fib(1). Given f(n-2)=Fib(n-2) and
  f(n-1)=Fib(n-1) there is

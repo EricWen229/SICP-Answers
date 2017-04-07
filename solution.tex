@@ -1,0 +1,223 @@
+\documentclass[a4paper]{report}
+
+\usepackage{listings}
+\usepackage{courier}
+\usepackage{titlesec}
+\usepackage{multicol}
+
+\titlespacing{\section}{0pt}{32pt}{8pt}
+\titlelabel{Exercise \thesection}
+
+\lstset{basicstyle=\ttfamily, breaklines=true, frame=single, language=Lisp}
+
+\begin{document}
+
+\title{Solution \\
+\large Structure and Interpretation of Computer Programs}
+\author{Eric Wen}
+\date{Last Modified: April 2017}
+\maketitle
+
+\begin{multicols}{2}
+	\tableofcontents
+\end{multicols}
+
+%
+% chapter 1
+%
+
+\chapter{Building Abstractions with Procedures}
+
+% exercise 1.1
+
+\section{}
+
+\begin{multicols}{2}
+	\begin{itemize}
+		\item 10
+		\item 12
+		\item 8
+		\item 3
+		\item 6
+		\item a (with value 3)
+		\item b (with value 4)
+		\item 19
+		\item \#f (true)
+		\item 4
+		\item 16
+		\item 6
+		\item 16
+	\end{itemize}
+\end{multicols}
+
+% exercise 1.2
+
+\section{}
+
+\begin{lstlisting}
+(/ (+ 5
+      4
+      (- 2
+         (- 3
+            (+ 6
+               (/ 4 3)))))
+   (* 3
+      (- 6 2)
+      (- 2 7)))
+\end{lstlisting}
+
+% exercise 1.3
+
+\section{}
+
+\begin{lstlisting}
+(define (min2 a b)
+        (if (< a b)
+            a
+            b))
+(define (min3 a b c)
+        (min2 a
+              (min2 b c)))
+(define (square x)
+        (* x x))
+(define (f a b c)
+        (- (+ (square a)
+              (square b)
+              (square c))
+           (square (min3 a b c))))
+\end{lstlisting}
+
+% exercise 1.4
+
+\section{}
+
+If b is positive, evaluate \lstinline{(- a b)} (i.e. a - b), otherwise evaluate \lstinline{(+ a b)} (i.e. a + b).
+
+% exercise 1.5
+
+\section{}
+
+\subsection*{Applicative-order Evaluation}
+
+\begin{lstlisting}
+(test 0 (p)) ->
+(test 0 (p)) ->
+(test 0 (p)) ->
+(test 0 (p)) ->
+......
+\end{lstlisting}
+
+In applicative-order evaluation, a procedure is not reduced until all its parameters are evaluated. Thus the expression \lstinline{(p)} is constantly being expanded into itself over and over again while the procedure \lstinline{test} can never get the chance to be reduced.
+
+\subsection*{Normal-order Evaluation}
+
+\begin{lstlisting}
+(test 0 (p)) ->
+(if (= 0 0) 0 (p)) ->
+0
+\end{lstlisting}
+
+In normal-order evaluation, a procedure's parameters are not evaluated until they're needed, which means the procedure is always reduced until it only involves primitive operators before its parameters are evaluated. Due to the special evaluation rule of \lstinline{if} where the alternative expression is not evaluated if the predicate expression is evaluated to be true, the function \lstinline{test} returns 0 before \lstinline{(p)} gets the chance to be evaluated.
+
+% exercise 1.6
+
+\section{}
+
+The program will run infinitely until it runs out of memory.
+
+\lstinline{if} has a special evaluation rule where either the consequent or the alternative expression is evaluated depending on the value of the predicate expression. In the implementation of Newton's Method, the procedure should immediately return current value when the value is good enough, and here's where \lstinline{if} comes in: if the requirement is met, the recursive call is not made.
+ 
+But the program using \lstinline{new-if} always evaluates both the consequent and the alternative expression, causing the procedure to recursively call itself infinitely.
+
+% exercise 1.7
+
+\section{}
+
+For very small numbers, the threshold value 0.001 is too large to tell if current estimation is close enough to real value.
+
+\lstinline{(sqrt 0.00000001)} returns 0.03125, while 0.0001 is the real value.
+
+For very large numbers, the precision is lost during calculation, hence the estimation can never get close enough ('close' defined by the threshold value 0.001) to real value.
+
+\lstinline{(sqrt (expt 10 150))} fails to return within a reasonable time.
+
+Code after improvement:
+
+\begin{lstlisting}
+(define (sqrtIter guess lastGuess x)
+        (if (goodEnough guess lastGuess)
+            guess
+            (sqrtIter (improve guess x)
+                      guess
+                      x)))
+(define (improve guess x)
+        (average guess
+                 (/ x guess)))
+(define (average x y)
+        (/ (+ x y)
+           2))
+(define (goodEnough guess lastGuess)
+        (< (/ (abs (- guess lastGuess))
+              lastGuess)
+           0.001))
+(define (sqrt x)
+        (sqrtIter 1.0 x x))
+\end{lstlisting}
+
+After improvement, function calls mentioned above return 1e-4 and 1e75 respectively.
+
+% exercise 1.8
+
+\section{}
+
+\begin{lstlisting}
+(define (cbrtIter guess lastGuess x)
+        (if (goodEnough guess lastGuess)
+            guess
+            (cbrtIter (improve guess x)
+                      guess
+                      x)))
+(define (improve guess x)
+        (/ (+ (/ x
+                 (* guess guess))
+              (* guess 2))
+           3))
+(define (goodEnough guess lastGuess)
+        (< (/ (abs (- guess lastGuess))
+              lastGuess)
+           0.001))
+(define (cbrt x)
+        (cbrtIter 1.0 x x))
+\end{lstlisting}
+
+% exercise 1.9
+
+\section{}
+
+\begin{lstlisting}
+(+ 4 5)
+(inc (+ 3 5))
+(inc (inc (+ 2 5)))
+(inc (inc (inc (+ 1 5))))
+(inc (inc (inc (inc (+ 0 5)))))
+(inc (inc (inc (inc 5))))
+(inc (inc (inc 6)))
+(inc (inc 7))
+(inc 8)
+9
+\end{lstlisting}
+
+The process is recursive.
+
+\begin{lstlisting}
+(+ 4 5)
+(+ 3 6)
+(+ 2 7)
+(+ 1 8)
+(+ 0 9)
+9
+\end{lstlisting}
+
+The process is iterative.
+
+\end{document}
