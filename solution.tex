@@ -4,6 +4,7 @@
 \usepackage{courier}
 \usepackage{titlesec}
 \usepackage{multicol}
+\usepackage{amsmath}
 
 \titlespacing{\section}{0pt}{32pt}{8pt}
 \titlelabel{Exercise \thesection}
@@ -220,4 +221,151 @@ The process is recursive.
 
 The process is iterative.
 
+% exercise 1.10
+
+\section{}
+
+\begin{lstlisting}
+(A 1 10)
+(A 0 (A 1 9))
+(A 0 (A 0 (A 1 8)))
+...
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 1))))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 2)))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (* 2 2)))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 4))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (* 2 4))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 8)))))))
+...
+(A 0 512)
+(* 2 512)
+(1024
+\end{lstlisting}
+
+\begin{lstlisting}
+(A 2 4)
+(A 1 (A 2 3))
+(A 1 (A 1 (A 2 2)))
+(A 1 (A 1 (A 1 (A 2 1))))
+(A 1 (A 1 (A 1 2)))
+(A 1 (A 1 (A 0 (A 1 1))))
+(A 1 (A 1 (A 0 2)))
+(A 1 (A 1 (* 2 2)))
+(A 1 (A 1 4))
+(A 1 (A 0 (A 1 3)))
+(A 1 (A 0 (A 0 (A 1 2))))
+(A 1 (A 0 (A 0 (A 0 (A 1 1)))))
+(A 1 (A 0 (A 0 (A 0 2))))
+(A 1 (A 0 (A 0 (* 2 2))))
+(A 1 (A 0 (A 0 4)))
+(A 1 (A 0 (* 2 4)))
+(A 1 (A 0 8))
+(A 1 (* 2 8))
+(A 1 16)
+...
+65536
+\end{lstlisting}
+
+\begin{lstlisting}
+(A 3 3)
+(A 2 (A 3 2))
+(A 2 (A 2 (A 3 1)))
+(A 2 (A 2 2))
+(A 2 (A 1 (A 2 1)))
+(A 2 (A 1 2))
+(A 2 (A 0 (A 1 1)))
+(A 2 (A 0 2))
+(A 2 (* 2 2))
+(A 2 4)
+...
+65536
+\end{lstlisting}
+
+\begin{itemize}
+\item \lstinline{(f n)} equals \lstinline{(A 0 n)} equals \lstinline{(* 2 n)} which computes 2n for positive n.
+\item \lstinline{(g n)} equals \lstinline{(A 1 n)} equals \lstinline{(A 0 (A 1 (- n 1)))} equals \lstinline{(* 2 (A 1 (- n 1)))} (which, though, is not the way it's evaluated). In the basic case \lstinline{(A 1 1)} returns 2, thus \lstinline{(g n)} computes $2^n$ for positive n.
+\item \lstinline{(h n)} equals \lstinline{(A 2 n)} equals \lstinline{(A 1 (A 2 (- n 1)))} equals \lstinline{(expt 2 (A 2 (- n 1)))} (which, though, is not the way it's evaluated). In the basic case \lstinline{(A 2 1)} returns 2. Informally, \lstinline{(h n)} computes $2^{2^{2^{...}}}$ where the number of 2 is n. The concise definition can be given recursively as follows: \lstinline{(h 1)} returns 2 for 1, and returns \lstinline{(expt 2 (h (- n 1)))} for n larger than 1.
+\end{itemize}
+
+% exercise 1.11
+
+\section{}
+
+Recursive version:
+
+\begin{lstlisting}
+(define (f n)
+        (if (< n 3)
+            n
+            (+ (f (- n 1))
+               (* 2 (f (- n 2)))
+               (* 3 (f (- n 3))))))
+\end{lstlisting}
+
+Iterative version
+
+\begin{lstlisting}
+(define (f n)
+        (define (fIter n curr a b c)
+                (if (= curr n)
+                    a
+                    (fIter n (+ 1 curr) (+ a (* 2 b) (* 3 c)) a b)))
+        (if (< n 3)
+            n
+            (fIter n 2 2 1 0)))
+\end{lstlisting}
+
+% exercise 1.12
+
+\section{}
+
+\begin{lstlisting}
+(define (pascal line row)
+        (if (or (= row 1)
+                (= row line))
+            1
+            (+ (pascal (- line 1) (- row 1))
+               (pascal (- line 1) row))))
+\end{lstlisting}
+
+% exercise 1.13
+
+\section{}
+
+Let $\phi = \frac{1 + \sqrt{5}}{2}$, $\psi = \frac{1 - \sqrt{5}}{2}$.
+
+Let $f(n) = \frac{\phi ^ n - \psi ^ n}{\sqrt{5}}$. Then there are $f(0) = 0$, $f(1) = 1$.
+
+For any n larger than 1, consider $f(n - 1)$ and $f(n - 2)$:
+
+\begin{align*}
+f(n-1) + f(n-2) &= \frac{\phi^{n-1} + \phi^{n-2}-(\psi^{n-1}+\psi^{n-2})}{\sqrt{5}} \\
+                &= \frac{(1+\phi)\phi^{n-2}-(1+\psi)\psi^{n-2}}{\sqrt{5}} \\
+                &= \frac{\phi^2\phi^{n-2}-\psi^2\psi^{n-2}}{\sqrt{5}} \\
+                &= \frac{\phi^n-\psi^n}{\sqrt{5}} \\
+                &= f(n)
+\end{align*}
+
+In basic cases $f(0)=Fib(0) and f(1)=Fib(1)$. Given $f(n-2)=Fib(n-2)$ and
+ $f(n-1)=Fib(n-1)$ there is
+ $f(n)=f(n-1)+f(n-2)=Fib(n-1)+Fib(n-2)=Fib(n)$. Therefore, Fib(n)=f(n)
+ stands for all non-negative integer n.
+
+Besides, there is $|\frac{\psi^n}{\sqrt{5}}|<\frac{1}{2}$:
+
+\begin{align*}
+({\frac{\psi^n}{\sqrt{5}}})^2 &=    \frac{({\frac{1-\sqrt{5}}{2}})^{2n}}{5} \\
+                              &=    \frac{({\frac{3-\sqrt{5}}{2}})^{n}}{5} \\
+                              &\leq \frac{(\frac{1}{2})^n}{5} \\
+                              &\leq \frac{1}{5} \\
+                              &<    \frac{1}{4}
+\end{align*}
+
+Since $Fib(n)=\frac{\phi^n}{\sqrt{5}}+\frac{\psi^n}{\sqrt{5}}$, $Fib(n)$ is the closest
+ integer to $\frac{\phi^n}{\sqrt{5}}$.
+
 \end{document}
+
+
+
+
