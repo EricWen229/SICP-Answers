@@ -5,11 +5,12 @@
 \usepackage{titlesec}
 \usepackage{multicol}
 \usepackage{amsmath}
+\usepackage{tikz}
 
-\titlespacing{\section}{0pt}{32pt}{8pt}
+\titlespacing{\section}{0pt}{32pt}{16pt}
 \titlelabel{Exercise \thesection}
 
-\lstset{basicstyle=\ttfamily, breaklines=true, frame=single, language=Lisp}
+\lstset{basicstyle=\footnotesize\ttfamily, breaklines=true, frame=single, language=Lisp}
 
 \begin{document}
 
@@ -108,7 +109,7 @@ If b is positive, evaluate \lstinline{(- a b)} (i.e. a - b), otherwise evaluate 
 ......
 \end{lstlisting}
 
-In applicative-order evaluation, a procedure is not reduced until all its parameters are evaluated. Thus the expression \lstinline{(p)} is constantly being expanded into itself over and over again while the procedure \lstinline{test} can never get the chance to be reduced.
+In applicative-order evaluation, a procedure is not reduced until all its arguments are evaluated. Thus the expression \lstinline{(p)} is constantly being expanded into itself over and over again while the procedure \lstinline{test} can never get the chance to be reduced.
 
 \subsection*{Normal-order Evaluation}
 
@@ -118,7 +119,7 @@ In applicative-order evaluation, a procedure is not reduced until all its parame
 0
 \end{lstlisting}
 
-In normal-order evaluation, a procedure's parameters are not evaluated until they're needed, which means the procedure is always reduced until it only involves primitive operators before its parameters are evaluated. Due to the special evaluation rule of \lstinline{if} where the alternative expression is not evaluated if the predicate expression is evaluated to be true, the function \lstinline{test} returns 0 before \lstinline{(p)} gets the chance to be evaluated.
+In normal-order evaluation, a procedure's arguments are not evaluated until they're needed, which means the procedure is always reduced until it only involves primitive operators before its arguments are evaluated. Due to the special evaluation rule of \lstinline{if} where the alternative expression is not evaluated if the predicate expression is evaluated to be true, the function \lstinline{test} returns 0 before \lstinline{(p)} gets the chance to be evaluated.
 
 % exercise 1.6
 
@@ -302,7 +303,7 @@ Recursive version:
                (* 3 (f (- n 3))))))
 \end{lstlisting}
 
-Iterative version
+Iterative version:
 
 \begin{lstlisting}
 (define (f n)
@@ -363,6 +364,75 @@ Besides, there is $|\frac{\psi^n}{\sqrt{5}}|<\frac{1}{2}$:
 
 Since $Fib(n)=\frac{\phi^n}{\sqrt{5}}+\frac{\psi^n}{\sqrt{5}}$, $Fib(n)$ is the closest
  integer to $\frac{\phi^n}{\sqrt{5}}$.
+
+% exercise 1.14
+
+\section{}
+
+Since the tree is really large, here only the process of \lstinline{(count-change 4)} is illustrated.
+
+\vspace{5mm}
+\begin{tikzpicture}[sibling distance=64pt, level distance=24pt]
+
+\node{\lstinline{count-change 4}}
+	child{node{\lstinline{cc 4 5}}
+		child{node{\lstinline{cc 4 4}}
+			child{node{\lstinline{cc 4 3}}
+				child{node{\lstinline{cc 4 2}}
+					child{node{\lstinline{cc 4 1}}
+						child{node{\lstinline{cc 4 0}}
+							child{node{\lstinline{0}}}
+						}
+						child{node{\lstinline{cc 3 1}}
+							child{node{\lstinline{cc 3 0}}
+								child{node{\lstinline{0}}}
+							}
+							child{node{\lstinline{cc 2 1}}
+								child{node{\lstinline{cc 2 0}}
+									child{node{\lstinline{0}}}
+								}
+								child{node{\lstinline{cc 1 1}}
+									child{node{\lstinline{cc 1 0}}
+										child{node{\lstinline{0}}}
+									}
+									child{node{\lstinline{cc 0 1}}
+										child{node{\lstinline{1}}}
+									}
+								}
+							}
+						}
+					}
+					child{node{\lstinline{cc -1 2}}
+						child{node{\lstinline{0}}}
+					}
+				}
+				child{node{\lstinline{cc -6 3}}
+					child{node{\lstinline{0}}}
+				}
+			}
+			child{node{\lstinline{cc -21 4}}
+				child{node{\lstinline{0}}}
+			}
+		}
+		child{node{\lstinline{cc -46 5}}
+			child{node{\lstinline{0}}}
+		}
+	};
+
+\end{tikzpicture}
+\vspace{5mm}
+
+The number of steps is $\Theta(5^n)$ and the space is $\Theta(n)$.
+
+% exercise 1.15
+
+\section{}
+
+\paragraph{a.}
+Five times.
+
+\paragraph{b.}
+The number of steps as well as the space is $\Theta(log(a))$.
 
 \end{document}
 
