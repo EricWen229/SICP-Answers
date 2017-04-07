@@ -1,2 +1,3 @@
 # SICP-Answers
-Answers to exercises in SICP
+Solutions to exercises in SICP
+
