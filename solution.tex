@@ -141,7 +141,7 @@ For very small numbers, the threshold value 0.001 is too large to tell if curren
 
 For very large numbers, the precision is lost during calculation, hence the estimation can never get close enough ('close' defined by the threshold value 0.001) to real value.
 
-\lstinline{(sqrt (expt 10 150))} fails to return within a reasonable time.
+\lstinline{(sqrt (expt 10 150))} fails to return within a reasonable amount of time.
 
 Code after improvement:
 
@@ -433,6 +433,181 @@ Five times.
 
 \paragraph{b.}
 The number of steps as well as the space is $\Theta(log(a))$.
+
+% exercise 1.16
+
+\section{}
+
+\begin{lstlisting}
+(define (fast-exp b n)
+        (fast-exp-iter b n 1))
+(define (fast-exp-iter b n product)
+        (cond ((= n 0) product)
+              ((even n) (fast-exp-iter (* b b) (/ n 2) product))
+              (else (fast-exp-iter b (- n 1) (* product b)))))
+(define (even n)
+        (= (remainder n 2) 0))
+\end{lstlisting}
+
+% exercise 1.17
+
+\section{}
+
+\begin{lstlisting}
+(define (fast-mul a b)
+        (if (> a b)
+        	(fast-mul-recur b a)
+	        (fast-mul-recur a b)))
+(define (fast-mul-recur a b)
+        (cond ((= a 0) 0)
+              ((= a 1) b)
+              ((even a) (fast-mul-recur (halve a) (double b)))
+              (else (+ b (fast-mul-recur (- a 1) b)))))
+(define (even n)
+        (= (remainder n 2) 0))
+(define (double n)
+        (* n 2))
+(define (halve n)
+        (/ n 2))
+\end{lstlisting}
+
+% exercise 1.18
+
+\section{}
+
+\begin{lstlisting}
+(define (fast-mul a b)
+        (if (> a b)
+        	(fast-mul-iter b a 0)
+	        (fast-mul-iter a b 0)))
+(define (fast-mul-iter a b sum)
+        (cond ((= a 0) sum)
+              ((even a) (fast-mul-iter (halve a) (double b) sum))
+              (else (fast-mul-iter (- a 1) b (+ b sum)))))
+(define (even n)
+        (= (remainder n 2) 0))
+(define (double n)
+        (* n 2))
+(define (halve n)
+        (/ n 2))
+\end{lstlisting}
+
+% exercise 1.19
+
+\section{}
+
+\begin{lstlisting}
+(define (fib n)        (fib-iter 1 0 0 1 n))(define (fib-iter a b p q count)        (cond ((= count 0) b)              ((even count) (fib-iter a
+                                      b
+                                      (+ (* p p) (* q q))
+                                      (+ (* q q) (* 2 (* p q)))                                      (/ count 2)))              (else (fib-iter (+ (* b q) (* a q) (* a p))                              (+ (* b p) (* a q))                              p                              q                              (- count 1)))))
+(define (even n)
+        (= (remainder n 2) 0))
+\end{lstlisting}
+
+% exercise 1.20
+
+\section{}
+
+\subsection*{Normal-order Evaluation}
+
+\begin{lstlisting}
+(gcd 206 40) ->
+
+(if (= 40 0) 206 (gcd 40 (remainder 206 40))) ->
+
+(gcd 40 (remainder 206 40)) ->
+
+(if (= (remainder 206 40) 0) 40 (gcd (remainder 206 40) (remainder 40 (remainder 206 40)))) ->
+
+(gcd (remainder 206 40) (remainder 40 (remainder 206 40))) ->
+
+(if (= (remainder 40 (remainder 206 40)) 0) (remainder 206 40) (gcd (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40))))) ->
+
+(gcd (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))) ->
+
+......
+\end{lstlisting}
+
+18 \lstinline{remainder} operations are actually performed.
+
+\subsection*{Applicative-order Evaluation}
+
+\begin{lstlisting}
+(gcd 206 40) ->
+(if (= 40 0) 206 (gcd 40 (remainder 206 40))) ->
+(gcd 40 6) ->
+(if (= 6 0) 40 (gcd 6 (remainder 40 6))) ->
+(gcd 6 4) ->
+(if (= 4 0) 6 (gcd 4 (remainder 6 4))) ->
+(gcd 4 2) ->
+(if (= 2 0) 4 (gcd 2 (remainder 4 2))) ->
+(gcd 2 0) ->
+(if (= 0 0) 2 (gcd 0 (remainder 2 0))) ->
+2
+\end{lstlisting}
+
+4 \lstinline{remainder} operations are actually performed.
+
+% exercise 1.21
+
+\section{}
+
+The smallest divisor of 199 is 199.
+
+The smallest divisor of 1999 is 1999.
+
+The smallest divisor of 19999 is 7.
+
+% exercise 1.22
+
+\section{}
+
+\begin{lstlisting}
+(define (search-for-primes n count)
+		(if (> count 0)
+		    (if (timed-prime-test n)
+		        (search-for-primes (+ n 2) (- count 1))
+		        (search-for-primes (+ n 2) count))))
+(define (timed-prime-test n)        (start-prime-test n (runtime)))(define (start-prime-test n start-time)
+        (if (prime? n)            (report-prime n (- (runtime) start-time)))
+        (prime? n))(define (report-prime n elapsed-time)
+        (newline)
+        (display n)        (display " *** ")        (display elapsed-time))
+(define (prime? n)        (= n (smallest-divisor n)))
+(define (smallest-divisor n)        (find-divisor n 2))(define (find-divisor n test-divisor)        (cond ((> (square test-divisor) n) n)              ((divides? test-divisor n) test-divisor)              (else (find-divisor n (+ test-divisor 1)))))(define (divides? a b)        (= (remainder b a) 0))
+\end{lstlisting}
+
+Since computers have become much faster than before so that
+ times required to test the primality of such small numbers
+ can hardly be distinguished from each other. To get observable
+ results, bigger numbers such as 1e10 are needed.
+
+The code used for testing:
+
+\begin{lstlisting}
+(search-for-primes (+ 1 1e10) 3)
+(search-for-primes (+ 1 1e11) 3)
+(search-for-primes (+ 1 1e12) 3)
+\end{lstlisting}
+
+Output:
+
+\begin{lstlisting}
+10000000019. *** .21999999999999975
+10000000033. *** .20999999999999996
+10000000061. *** .20999999999999996
+100000000003. *** .6999999999999993
+100000000019. *** .6800000000000015
+100000000057. *** .6799999999999997
+1000000000039. *** 2.120000000000001
+1000000000061. *** 2.1700000000000017
+1000000000063. *** 2.169999999999998
+\end{lstlisting}
+
+As the number get multiplied by 10, the primality
+ test takes roughly 3 times as before, which is
+ quite close to $\sqrt{10}$
 
 \end{document}
 
