@@ -735,7 +735,49 @@ $$
 T(n) = 2T(\frac{n}{2}) + C
 $$
 
- making it a $\Theta(n)$ process.
+making it a $\Theta(n)$ process.
+
+% exercise 1.27
+
+\section{}
+
+Complete version of code:
+
+\begin{lstlisting}
+(define (even? exp)
+        (= (remainder exp 2) 0))
+(define (expmod base exp m)        (cond ((= exp 0) 1)              ((even? exp)               (remainder (square (expmod base (/ exp 2) m)) 
+                          m))              (else               (remainder (* base (expmod base (- exp 1) m))                          m))))
+(define (carmichael-test n)        (carmichael-test-iter 2 n))
+(define (carmichael-test-iter a n)        (cond ((= a n) true)
+              ((= (expmod a n n) a) (carmichael-test-iter (+ a 1) n))
+              (else false)))
+\end{lstlisting}
+
+Code used for testing:
+
+\begin{lstlisting}
+(carmichael-test 561)
+(carmichael-test 1105)
+(carmichael-test 1729)
+(carmichael-test 2465)
+(carmichael-test 2821)
+(carmichael-test 6601)
+\end{lstlisting}
+
+A Carmichael number should pass every Fermat test, while
+ itself is actually not a prime. All procedure calls above
+ return true, while none of the numbers are prime, shown
+ as follows:
+
+\begin{align*}
+561 &= 3 \times 11 \times 17 \\
+1105 &= 5 \times 13 \times 17 \\
+1729 &= 7 \times 13 \times 19 \\
+2465 &= 5 \times 17 \times 29 \\
+2821 &= 7 \times 13 \times 31 \\
+6601 &= 7 \times 23 \times 41
+\end{align*}
 
 \end{document}
 
