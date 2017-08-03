@@ -920,6 +920,50 @@ Code:
   (iter a 0))
 \end{lstlisting}
 
+% exercise 1.31
+
+\section{}
+
+\subsection*{a.}
+
+Code:
+
+\begin{lstlisting}
+(define (product term next a b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (* result (term a)))))
+  (iter a 1))
+(define (factorial n)
+  (define (self n) n)
+  (define (inc n) (+ 1 n))
+  (product self inc 1 n))
+(define (pi n)
+  (define (square n) (* n n))
+  (define (double-inc n) (+ 2 n))
+  (* 4 (* (+ n 1.0)
+          (/ (product square double-inc 2 (* 2 n))
+             (product square double-inc 3 (+ 1 (* 2 n)))))))
+\end{lstlisting}
+
+Notice that \lstinline{n} shouldn't be
+ too large, or overflow may happen in
+ \lstinline{product} procedure.
+
+\subsection*{b.}
+
+Recursive version of \lstinline{product}:
+
+\begin{lstlisting}
+(define (product term next a b)
+  (define (iter a)
+    (if (> a b)
+        1
+        (* (term a) (iter (next a)))))
+  (iter a))
+\end{lstlisting}
+
 \end{document}
 
 
