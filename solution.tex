@@ -608,7 +608,7 @@ Since computers have become much faster than before so that
  can hardly be distinguished from each other. To get observable
  results, bigger numbers such as 1e10 are needed.
 
-The code used for testing:
+Code used for testing:
 
 \begin{lstlisting}
 (search-for-primes (+ 1 1e10) 3)
@@ -679,7 +679,7 @@ It's roughly 1.75 times as faster. The number of test steps
 
 \section{}
 
-The Code used for testing (given that \lstinline{n=100} in \lstinline{fast-prime?}):
+Code used for testing (given that \lstinline{n=100} in \lstinline{fast-prime?}):
 
 \begin{lstlisting}
 (search-for-primes 10000000001 3)
@@ -742,7 +742,7 @@ making it a $\Theta(n)$ process.
 
 \section{}
 
-Complete version of code:
+Code:
 
 \begin{lstlisting}
 (define (even? exp)
@@ -792,7 +792,7 @@ A Carmichael number should pass every Fermat test, while
 
 \section{}
 
-Complete version of code:
+Code:
 
 \begin{lstlisting}
 (define (even? exp)
@@ -853,6 +853,71 @@ Code used for testing:
 (prime? 2465)
 (prime? 2821)
 (prime? 6601)
+\end{lstlisting}
+
+% exercise 1.29
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+(define (sum term next a b result i)
+  (if (> a b)
+      result
+      (sum term next (next a) b (+ result (term a i)) (+ i 1))))
+(define (simpson f a b n)
+  (let ((h (/ (- b a) n)))
+    (define (term a i)
+      (define (even? i)
+        (= (remainder i 2) 0))
+      (if (even? i)
+          (* (f a) (/ (* 2.0 h) 3))
+          (* (f a) (/ (* 4.0 h) 3))))
+    (define (next a)
+      (+ a h))
+    (- (sum term next a b 0 0)
+       (* (/ h 3) (+ (f a) (f b))))))
+(define (cube x) (* x x x))
+\end{lstlisting}
+
+Code used for testing:
+
+\begin{lstlisting}
+(simpson cube 0 1 10)
+(simpson cube 0 1 100)
+(simpson cube 0 1 1000)
+(simpson cube 0 1 10000)
+(simpson cube 0 1 100000)
+\end{lstlisting}
+
+Output:
+
+\begin{lstlisting}
+.25
+.25
+.2499999999999998
+.25000000000000017
+.24999999999999864
+\end{lstlisting}
+
+The results are far more precise than
+ those of the \lstinline{integral}
+ procedure.
+
+% exercise 1.30
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+(define (sum term next a b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (+ result (term a)))))
+  (iter a 0))
 \end{lstlisting}
 
 \end{document}
