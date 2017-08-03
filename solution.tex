@@ -1002,6 +1002,30 @@ Recursive version of \lstinline{accumulate}:
 
 \section{}
 
+Code:
+
+\begin{lstlisting}
+(define (filtered-accumulate filter combiner null-value term next a b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (let ((t (term a)))
+          (if (filter t)
+              (iter (next a) (combiner result t))
+              (iter (next a) result)))))
+  (iter a null-value))
+(define (self x)
+  x)
+(define (inc x)
+  (+ 1 x))
+(define (prime-sum a b)
+  (filtered-accumulate prime? + 0 self inc a b))
+(define (relative-prime-sum n)
+  (define (relative-prime? x)
+    (= (gcd x n) 1))
+  (filtered-accumulate relative-prime? + 0 self inc 1 (- n 1)))
+\end{lstlisting}
+
 \end{document}
 
 
