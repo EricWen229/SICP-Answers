@@ -964,6 +964,44 @@ Recursive version of \lstinline{product}:
   (iter a))
 \end{lstlisting}
 
+% exercise 1.32
+
+\section{}
+
+\subseciton*{a.}
+
+Code:
+
+\begin{lstlisting}
+(define (accumulate combiner null-value term next a b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (combiner result (term a)))))
+  (iter a null-value))
+(define (sum term next a b)
+  (accumulate + 0 term next a b))
+(define (product term next a b)
+  (accumulate * 1 term next a b))
+\end{lstlisting}
+
+\subsection*{b.}
+
+Recursive version of \lstinline{accumulate}:
+
+\begin{lstlisting}
+(define (accumulate combiner null-value term next a b)
+  (define (iter a)
+    (if (> a b)
+        null-value
+        (combiner (term a) (iter (next a)))))
+  (iter a))
+\end{lstlisting}
+
+% exercise 1.33
+
+\section{}
+
 \end{document}
 
 
