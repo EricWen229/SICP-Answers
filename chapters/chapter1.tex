@@ -324,14 +324,14 @@ In basic cases $f(0)=Fib(0) and f(1)=Fib(1)$. Given $f(n-2)=Fib(n-2)$ and
  $f(n)=f(n-1)+f(n-2)=Fib(n-1)+Fib(n-2)=Fib(n)$. Therefore, Fib(n)=f(n)
  stands for all non-negative integer n.
 
-Besides, there is $|\frac{\psi^n}{\sqrt{5}}|<\frac{1}{2}$:
+Besides, there is $\left|\frac{\psi^n}{\sqrt{5}}\right|<\frac{1}{2}$:
 
 \begin{align*}
-({\frac{\psi^n}{\sqrt{5}}})^2 &=    \frac{({\frac{1-\sqrt{5}}{2}})^{2n}}{5} \\
-                              &=    \frac{({\frac{3-\sqrt{5}}{2}})^{n}}{5} \\
-                              &\leq \frac{(\frac{1}{2})^n}{5} \\
-                              &\leq \frac{1}{5} \\
-                              &<    \frac{1}{4}
+\left({\frac{\psi^n}{\sqrt{5}}}\right)^2 &= \frac{\left({\frac{1-\sqrt{5}}{2}}\right)^{2n}}{5} \\
+&= \frac{\left({\frac{3-\sqrt{5}}{2}}\right)^{n}}{5} \\
+&\leq \frac{\left(\frac{1}{2}\right)^n}{5} \\
+&\leq \frac{1}{5} \\
+&< \frac{1}{4}
 \end{align*}
 
 Since $Fib(n)=\frac{\phi^n}{\sqrt{5}}+\frac{\psi^n}{\sqrt{5}}$, $Fib(n)$ is the closest
@@ -695,7 +695,7 @@ In current implementation of \lstinline{expmod}, each time the procedure gets ca
  problem roughly get halved. Let $T(n)$ be the time required to compute $a^n \mod m$. Then we have
 
 $$
-T(n) = T(\frac{n}{2}) + C
+T(n) = T\left(\frac{n}{2}\right) + C
 $$
 
 where $C$ is a constant amount of time. Therefore it's a $\Theta(\log n)$ process.
@@ -705,7 +705,7 @@ In Louis's code, each time the procedure gets called, the scale of the problem r
  This can be shown with
 
 $$
-T(n) = 2T(\frac{n}{2}) + C
+T(n) = 2T\left(\frac{n}{2}\right) + C
 $$
 
 making it a $\Theta(n)$ process.
@@ -1006,6 +1006,8 @@ Code:
 
 % exercise 1.34
 
+\section{}
+
 Evaluation procedure:
 
 \begin{lstlisting}
@@ -1022,5 +1024,48 @@ However since \lstinline{2} is not a
 \begin{lstlisting}
 The object 2 is not applicable.
 \end{lstlisting}
+
+% exercise 1.35
+
+\section{}
+
+Let $f(x)=1+\frac{1}{x}$, and $x_0$ be an arbitrary
+ positive real number. Let $x_n=f(x_{n-1})$.
+
+First, notice that whatever $x_0$ is, there is
+ $1<x_n<2$ when $n$ is big enough. This can be
+ proved as follows:
+
+\begin{itemize}
+\item We have $x_0 > 0$, and from $x_{n+1}=1+\frac{1}{x_n}$ we
+ know that if $x_n > 0$ then there is $x_{n+1} > 0$, so there is
+ $x_n > 0$ for any non-negative integer $n$.
+\item Since there is $x_n > 0$ for any non-negative integer $n$,
+ and $x_{n+1}=1+\frac{1}{x_n}$, we have $x_{n+1} > 1$ for any
+ positive integer n, i.e., $x_n > 1$ for $n > 0$.
+\item Since there is $x_n > 1$ for any positive integer $n$,
+ and $x_{n+1}=1+\frac{1}{x_n} < 1+\frac{1}{1} = 2$, we have
+ $x_{n+1} < 2$ for any positive integer $n$, i.e., $x_n < 2$ for
+ $n > 1$.
+\item In summary, we have $1 < x_n < 2$ for $n > 1$.
+\end{itemize}
+
+Now assume that $x_n$ converges to $a$ as $n$ approaches infinity.
+ Take limit on both side of $x_{n+1}=1+\frac{1}{x_n}$, and we have
+ $a=1+\frac{1}{a}$. By solving this equation we have
+ $a=\frac{1+\sqrt{5}}{2}$. To prove $x_n$ converges to $a$ indeed,
+ we have:
+
+\begin{align*}
+|x_{n+1}-a| &= \left|x_{n+1}-\frac{1+\sqrt{5}}{2}\right| \\
+&= \left|\frac{1-\sqrt{5}}{2}+\frac{1}{x_n}\right| \\
+&= \left|\frac{2}{(1+\sqrt{5})x_n}\right|\cdot\left|x_n - \frac{1+\sqrt{5}}{2}\right| \\
+&< \frac{2}{1+\sqrt{5}}\cdot|x_n - a| \\
+&< \left(\frac{2}{1+\sqrt{5}}\right)^2\cdot|x_{n-1} - a| \\
+&\cdots \\
+&< \left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - a|
+\end{align*}
+
+Given that $0<|x_{n+1}-a|<\left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - a|$ and $\lim_{n\to\infty}\left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - a|=0$, by using squeeze rule we have $\lim_{n\to\infty}|x_{n+1}-a|=0$, i.e., $\lim_{n\to\infty}x_n=a=\frac{1+\sqrt{5}}{2}$.
 
 \end{document}
