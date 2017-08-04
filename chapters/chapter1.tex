@@ -787,7 +787,10 @@ Code:
   (define (try-it a)
     (= (expmod a (- n 1) n) 1))
   (try-it (+ 1 (random (- n 1)))))
-(define (fast-prime? n times)  (cond ((= times 0) true)        ((miller-rabin-test n) (fast-prime? n (- times 1)))        (else false)))
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((miller-rabin-test n) (fast-prime? n (- times 1)))
+        (else false)))
 (define (prime? n)
   (fast-prime? n 100))
 \end{lstlisting}
@@ -999,6 +1002,25 @@ Code:
   (define (relative-prime? x)
     (= (gcd x n) 1))
   (filtered-accumulate relative-prime? + 0 self inc 1 (- n 1)))
+\end{lstlisting}
+
+% exercise 1.34
+
+Evaluation procedure:
+
+\begin{lstlisting}
+(f f) ->
+(f 2) ->
+(2 2)
+\end{lstlisting}
+
+However since \lstinline{2} is not a
+ procedure that can be called (it's an
+ integer constant), an error would be
+ raised saying that:
+
+\begin{lstlisting}
+The object 2 is not applicable.
 \end{lstlisting}
 
 \end{document}
