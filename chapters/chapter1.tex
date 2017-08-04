@@ -1030,7 +1030,11 @@ The object 2 is not applicable.
 \section{}
 
 Let $f(x)=1+\frac{1}{x}$, and $x_0$ be an arbitrary
- positive real number. Let $x_n=f(x_{n-1})$.
+ positive real number. Let $x_n=f(x_{n-1})$, then
+
+$$
+\phi\text{ is a fixed point of }f(x)\iff\lim_{n\to\infty}x_n=\phi
+$$
 
 First, notice that whatever $x_0$ is, there is
  $1<x_n<2$ when $n$ is big enough. This can be
@@ -1053,19 +1057,31 @@ First, notice that whatever $x_0$ is, there is
 Now assume that $x_n$ converges to $a$ as $n$ approaches infinity.
  Take limit on both side of $x_{n+1}=1+\frac{1}{x_n}$, and we have
  $a=1+\frac{1}{a}$. By solving this equation we have
- $a=\frac{1+\sqrt{5}}{2}$. To prove $x_n$ converges to $a$ indeed,
+ $a=\frac{1+\sqrt{5}}{2}=\phi$. To prove $x_n$ converges to $\phi$ indeed,
  we have:
 
 \begin{align*}
-|x_{n+1}-a| &= \left|x_{n+1}-\frac{1+\sqrt{5}}{2}\right| \\
+|x_{n+1}-\phi| &= \left|x_{n+1}-\frac{1+\sqrt{5}}{2}\right| \\
 &= \left|\frac{1-\sqrt{5}}{2}+\frac{1}{x_n}\right| \\
 &= \left|\frac{2}{(1+\sqrt{5})x_n}\right|\cdot\left|x_n - \frac{1+\sqrt{5}}{2}\right| \\
-&< \frac{2}{1+\sqrt{5}}\cdot|x_n - a| \\
-&< \left(\frac{2}{1+\sqrt{5}}\right)^2\cdot|x_{n-1} - a| \\
+&< \frac{2}{1+\sqrt{5}}\cdot|x_n - \phi| \\
+&< \left(\frac{2}{1+\sqrt{5}}\right)^2\cdot|x_{n-1} - \phi| \\
 &\cdots \\
-&< \left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - a|
+&< \left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - \phi|
 \end{align*}
 
-Given that $0<|x_{n+1}-a|<\left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - a|$ and $\lim_{n\to\infty}\left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - a|=0$, by using squeeze rule we have $\lim_{n\to\infty}|x_{n+1}-a|=0$, i.e., $\lim_{n\to\infty}x_n=a=\frac{1+\sqrt{5}}{2}$.
+Given that $0<|x_{n+1}-\phi|<\left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - \phi|$ and $\lim_{n\to\infty}\left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - \phi|=0$, by using squeeze rule we have $\lim_{n\to\infty}|x_{n+1}-\phi|=0$, i.e., $\lim_{n\to\infty}x_n=\phi$.
+
+Code used for testing:
+
+\begin{lstlisting}
+(fixed-point (lambda (x) (+ 1 (/ 1.0 x))) 1.0)
+\end{lstlisting}
+
+Output:
+
+\begin{lstlisting}
+1.6180327868852458
+\end{lstlisting}
 
 \end{document}
