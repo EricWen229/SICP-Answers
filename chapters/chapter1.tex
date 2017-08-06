@@ -1115,4 +1115,59 @@ Code used for testing:
 Given the same initial guess, the procedure takes 34 steps without
  average damping while it takes 9 steps with average damping.
 
+% exercise 1.37
+
+\section{}
+
+\subsection*{a.}
+
+Code:
+
+\begin{lstlisting}
+(define (cont-frac n d k)
+  (define (cont-frac-recur i)
+    (if (= i k)
+        (/ (n k) (d k))
+        (/ (n i) (+ (d i) (cont-frac-recur (+ 1 i))))))
+  (cont-frac-recur 1))
+\end{lstlisting}
+
+Code used for testing:
+
+\begin{lstlisting}
+(cont-frac (lambda (i) 1.0)
+           (lambda (i) 1.0)
+           8)
+(cont-frac (lambda (i) 1.0)
+           (lambda (i) 1.0)
+           10)
+(cont-frac (lambda (i) 1.0)
+           (lambda (i) 1.0)
+           12)
+\end{lstlisting}
+
+Output:
+
+\begin{lstlisting}
+.6176470588235294
+.6179775280898876
+.6180257510729613
+\end{lstlisting}
+
+As can be easily seen, 12 is enough for accuracy to 4 decimal places.
+
+\subsection*{b.}
+
+Iterative version of \lstinline{cont-frac}:
+
+\begin{lstlisting}
+(define (cont-frac n d k)
+  (define (cont-frac-iter curr result)
+    (let ((value (/ (n curr) (+ (d curr) result))))
+      (if (> curr 1)
+          (cont-frac-iter (- curr 1) value)
+          value)))
+  (cont-frac-iter (- k 1) (/ (n k) (d k))))
+\end{lstlisting}
+
 \end{document}
