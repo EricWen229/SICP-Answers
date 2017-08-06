@@ -1177,7 +1177,7 @@ Iterative version of \lstinline{cont-frac}:
 Code:
 
 \begin{lstlisting}
-(define (e k)
+(define (e-cf k)
   (define n (lambda (i) 1.0))
   (define (d i)
     (if (= (remainder i 3) 2)
@@ -1186,7 +1186,34 @@ Code:
   (+ 2 (cont-frac n d k)))
 \end{lstlisting}
 
-\lstinline{(e 100)} returns \lstinline{2.7182818284590455} which is
+\lstinline{(e-cf 100)} returns \lstinline{2.7182818284590455} which is
  accurate to 15 decimal places.
+
+% exercise 1.39
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+(define (cont-frac-nega n d k)
+  (define (cont-frac-iter curr result)
+    (let ((value (/ (n curr) (- (d curr) result))))
+      (if (> curr 1)
+          (cont-frac-iter (- curr 1) value)
+          value)))
+  (cont-frac-iter (- k 1) (/ (n k) (d k))))
+(define (tan-cf x k)
+  (define (n i)
+    (if (= i 1)
+        x
+        (* x x)))
+  (define (d i)
+    (- (* 2 i) 1))
+  (cont-frac-nega n d k))
+\end{lstlisting}
+
+\lstinline{(tan-cf 0.7853981634 1000)} (roughly $\tan(\frac{\pi}{2})$)
+ returns \lstinline{1.0000000000051033}.
 
 \end{document}
