@@ -118,24 +118,24 @@ For very large numbers, the precision is lost during calculation, hence the esti
 Code after improvement:
 
 \begin{lstlisting}
-(define (sqrtIter guess lastGuess x)
-  (if (goodEnough guess lastGuess)
+(define (sqrt-iter guess last x)
+  (if (enough? guess last)
       guess
-      (sqrtIter (improve guess x)
-                guess
-                x)))
+      (sqrt-iter (improve guess x)
+                 guess
+                 x)))
 (define (improve guess x)
   (average guess
            (/ x guess)))
 (define (average x y)
   (/ (+ x y)
      2))
-(define (goodEnough guess lastGuess)
-  (< (/ (abs (- guess lastGuess))
-        lastGuess)
+(define (enough? guess last)
+  (< (/ (abs (- guess last))
+        last)
      0.001))
 (define (sqrt x)
-  (sqrtIter 1.0 x x))
+  (sqrt-iter 1.0 x x))
 \end{lstlisting}
 
 After improvement, function calls mentioned above return 1e-4 and 1e75 respectively.
@@ -145,10 +145,10 @@ After improvement, function calls mentioned above return 1e-4 and 1e75 respectiv
 \section{}
 
 \begin{lstlisting}
-(define (cbrtIter guess lastGuess x)
-  (if (goodEnough guess lastGuess)
+(define (cbrt-iter guess last x)
+  (if (enough? guess last)
       guess
-      (cbrtIter (improve guess x)
+      (cbrt-iter (improve guess x)
                 guess
                 x)))
 (define (improve guess x)
@@ -156,12 +156,12 @@ After improvement, function calls mentioned above return 1e-4 and 1e75 respectiv
            (* guess guess))
         (* guess 2))
      3))
-(define (goodEnough guess lastGuess)
-  (< (/ (abs (- guess lastGuess))
-        lastGuess)
+(define (enough? guess last)
+  (< (/ (abs (- guess last))
+        last)
      0.001))
 (define (cbrt x)
-  (cbrtIter 1.0 x x))
+  (cbrt-iter 1.0 x x))
 \end{lstlisting}
 
 % exercise 1.9
@@ -279,13 +279,13 @@ Iterative version:
 
 \begin{lstlisting}
 (define (f n)
-  (define (fIter n curr a b c)
+  (define (f-iter n curr a b c)
     (if (= curr n)
         a
-        (fIter n (+ 1 curr) (+ a (* 2 b) (* 3 c)) a b)))
+        (f-iter n (+ 1 curr) (+ a (* 2 b) (* 3 c)) a b)))
   (if (< n 3)
       n
-      (fIter n 2 2 1 0)))
+      (f-iter n 2 2 1 0)))
 \end{lstlisting}
 
 % exercise 1.12
@@ -1264,5 +1264,43 @@ Code:
   (lambda (x)
     (f (g x))))
 \end{lstlisting}
+
+% exercise 1.43
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+(define (repeated f n)
+  (define (even? n)
+    (= (remainder n 2) 0))
+  (define (self-compose f)
+    (compose f f))
+  (cond ((= 1 n) f)
+        ((even? n) (self-compose (repeated f (/ n 2))))
+        (else (compose f (repeated f (- n 1))))))
+\end{lstlisting}
+
+% exercise 1.44
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+(define (smooth f)
+  (define dx 0.00001)
+  (define (average a b c)
+    (/ (+ a b c) 3.0))
+  (lambda (x)
+    (average (f (- x dx)) (f x) (f (+ x dx)))))
+(define (repeated-smooth f n)
+  ((repeated smooth n) f))
+\end{lstlisting}
+
+% exercise 1.45
+
+\section{}
 
 \end{document}
