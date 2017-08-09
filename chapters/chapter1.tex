@@ -1216,4 +1216,53 @@ Code:
 \lstinline{(tan-cf 0.7853981634 1000)} (roughly $\tan(\frac{\pi}{2})$)
  returns \lstinline{1.0000000000051033}.
 
+% exercise 1.40
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+(define (cubic a b c)
+  (lambda (x)
+    (+ (* x x x) (* x x a) (* x b) c)))
+\end{lstlisting}
+
+% exercise 1.41
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+(define (double f)
+  (lambda (x)
+    (f (f x))))
+\end{lstlisting}
+
+The result is 21. The innermost \lstinline{double}
+ is applied for $2^2$ times, each of which applies
+ \lstinline{inc} twice. Thus \lstinline{inc} is applied
+ for $2^{2^2}$ times in total. Notice how it's
+ different from
+
+\begin{lstlisting}
+((double (double (double inc))) 5)
+\end{lstlisting}
+
+that returns 13, where the innermost \lstinline{inc} is
+ applied for $2^3$ times.
+
+% exercise 1.42
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+(define (compose f g)
+  (lambda (x)
+    (f (g x))))
+\end{lstlisting}
+
 \end{document}
