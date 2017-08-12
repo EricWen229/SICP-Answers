@@ -1091,8 +1091,8 @@ Output:
 Code:
 
 \begin{lstlisting}
-(define tolerance 0.00001)
 (define (fixed-point f first-guess)
+  (define tolerance 0.00001)
   (define (close-enough? v1 v2)
     (< (abs (- v1 v2)) tolerance))
   (define (try guess)
@@ -1302,5 +1302,59 @@ Code:
 % exercise 1.45
 
 \section{}
+
+Code:
+
+\begin{lstlisting}
+(define (average x y)
+  (/ (+ x y) 2.0))
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+(define (compose f g)
+  (lambda (x)
+    (f (g x))))
+(define (repeated f n)
+  (define (even? n)
+    (= (remainder n 2) 0))
+  (define (self-compose f)
+    (compose f f))
+  (cond ((= 1 n) f)
+        ((even? n) (self-compose (repeated f (/ n 2))))
+        (else (compose f (repeated f (- n 1))))))
+(define (fixed-point f first-guess)
+  (define tolerance 0.00001)
+  (define round 1000)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (try guess round)
+    (if (= round 0)
+        #f
+        (let ((next (f guess)))
+          (if (close-enough? guess next)
+              #t
+              (try next (- round 1))))))
+  (try first-guess round))
+(define (apply-range f a b)
+  (f a)
+  (if (< a b)
+      (apply-range f (+ 1 a) b)))
+(define (apply-till-true f a)
+  (define (print a)
+    (display a)
+    (newline))
+  (if (not (f a))
+      (apply-till-true f (+ 1 a))
+      (print a)))
+(define (count-average-damp-needed-range a b)
+  (define (count-average-damp-needed n)
+    (define (f y) (/ 2 (expt y (- n 1))))
+    (define (try-if-converge average-damp-count)
+      (fixed-point ((repeated average-damp average-damp-count) f) 1.1))
+    (display "n: ")
+    (display n)
+    (display ", average damping needed: ")
+    (apply-till-true try-if-converge 1))
+  (apply-range count-average-damp-needed a b))
+\end{lstlisting}
 
 \end{document}
