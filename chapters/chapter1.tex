@@ -1,5 +1,7 @@
 \documentclass[../main.tex]{subfiles}
 
+\usepackage{amsfonts}
+
 \begin{document}
 
 % exercise 1.1
@@ -1321,7 +1323,7 @@ Code:
   (cond ((= 1 n) f)
         ((even? n) (self-compose (repeated f (/ n 2))))
         (else (compose f (repeated f (- n 1))))))
-(define (fixed-point f first-guess)
+(define (try-fixed-point f first-guess)
   (define tolerance 0.00001)
   (define round 1000)
   (define (close-enough? v1 v2)
@@ -1347,7 +1349,7 @@ Code:
       (print a)))
 (define (count-average-damp-needed-range a b)
   (define (count-average-damp-needed n)
-    (define (f y) (/ 2 (expt y (- n 1))))
+    (define (f y) (/ 3 (expt y (- n 1))))
     (define (try-if-converge average-damp-count)
       (fixed-point ((repeated average-damp average-damp-count) f) 1.1))
     (display "n: ")
@@ -1355,6 +1357,83 @@ Code:
     (display ", average damping needed: ")
     (apply-till-true try-if-converge 1))
   (apply-range count-average-damp-needed a b))
+\end{lstlisting}
+
+Code used for testing:
+
+\begin{lstlisting}
+(count-average-damp-needed-range 2 128)
+\end{lstlisting}
+
+Output:
+
+\begin{lstlisting}
+n: 2, average damping needed: 1
+n: 3, average damping needed: 1
+n: 4, average damping needed: 2
+n: 5, average damping needed: 2
+n: 6, average damping needed: 2
+n: 7, average damping needed: 2
+n: 8, average damping needed: 3
+n: 9, average damping needed: 3
+...
+n: 14, average damping needed: 3
+n: 15, average damping needed: 3
+n: 16, average damping needed: 4
+n: 17, average damping needed: 4
+...
+n: 30, average damping needed: 4
+n: 31, average damping needed: 4
+n: 32, average damping needed: 5
+n: 33, average damping needed: 5
+...
+n: 62, average damping needed: 5
+n: 63, average damping needed: 5
+n: 64, average damping needed: 6
+n: 65, average damping needed: 6
+...
+n: 126, average damping needed: 6
+n: 127, average damping needed: 6
+n: 128, average damping needed: 7
+\end{lstlisting}
+
+Let the number of average damping needed to
+ compute the $n$th roots be
+ $\{x_n\}(n\in\mathbb{Z},n\geq2)$, then we have:
+
+\begin{enumerate}
+\item $x_{n+1}\geq x_n$
+\item $x_{n+1}-x_n=1$ if $x_{n+1}>x_n$
+\item $x_2 = 1$
+\item $\sum_{n=2}^\infty\mathbb{I}(x_n=\phi)=2^\phi(\phi\in\mathbb{Z},\phi\geq1)$
+\end{enumerate}
+
+From which we can obtain the general formula of $x_n$:
+
+$$
+x_n = \lfloor\log(n)\rfloor
+$$
+
+This is not 100\% correct actually, since there are
+ exceptions. For example, only 5 average damping are
+ needed to compute the 118th root of 3, while
+ $\lfloor\log(118)\rfloor=6$. However, the formula
+ of $x_n$ does provide a promising upper bound of
+ the real value, which is also the precise value for
+ the vast majority of $n$s.
+
+Using this formula, we can implement a procedure for computing
+ $n$th roots as follows:
+
+\begin{lstlisting}
+(define (root n x)
+  (define (f y) (/ x (expt y (- n 1))))
+  (define (damp-count n)
+    (define log2
+      (lambda (x)
+        (/ (log x) (log 2))))
+    (floor (log2 n)))
+  (fixed-point ((repeated average-damp (damp-count n)) f) 1.1))
 \end{lstlisting}
 
 \end{document}
