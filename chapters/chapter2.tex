@@ -16,4 +16,75 @@ Code:
         (cons (/ n g) (/ d g)))))
 \end{lstlisting}
 
+% exercise 2.2
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+;; point definition
+(define (make-point x y)
+  (cons x y))
+(define (x-point point)
+  (car point))
+(define (y-point point)
+  (cdr point))
+
+;; segment definition
+(define (make-segment start end)
+  (cons start end))
+(define (start-segment segment)
+  (car segment))
+(define (end-segment segment)
+  (cdr segment))
+(define (midpoint-segment segment)
+  (define (average x y)
+    (/ (+ x y) 2.0))
+  (let ((start (start-segment segment))
+        (end (end-segment segment)))
+    (make-point (average (x-point start)
+                         (x-point end))
+                (average (y-point start)
+                         (y-point end)))))
+\end{lstlisting}
+
+% exercise 2.3
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+;; one version of rectangle
+(define (make-rect top-left bottom-right)
+  (cons top-left bottom-right))
+(define (top-left rect)
+  (car rect))
+(define (bottom-right rect)
+  (cdr rect))
+(define (width rect)
+  (- (x-point (bottom-right rect))
+     (x-point (top-left rect))))
+(define (height rect)
+  (- (y-point (bottom-right rect))
+     (y-point (top-left rect))))
+
+;; another version of rectangle
+(define (make-rect top-left width height)
+  (cons top-left (cons width height)))
+(define (top-left rect)
+  (car rect))
+(define (width rect)
+  (car (cdr rect)))
+(define (height rect)
+  (cdr (cdr rect)))
+
+;; rect procedures
+(define (perimeter rect)
+  (* 2 (+ (width rect) (height rect))))
+(define (area rect)
+  (* (width rect) (height rect)))
+\end{lstlisting}
+
 \end{document}
