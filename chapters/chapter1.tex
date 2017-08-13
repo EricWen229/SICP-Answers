@@ -1436,4 +1436,33 @@ Using this formula, we can implement a procedure for computing
   (fixed-point ((repeated average-damp (damp-count n)) f) 1.1))
 \end{lstlisting}
 
+% exercise 1.46
+
+\section{}
+
+Code:
+
+\begin{lstlisting}
+(define (iterative-improve enough? improve)
+  (define (try guess)
+    (if (enough? guess)
+        guess
+        (try (improve guess))))
+  try)
+(define (sqrt x)
+  (define (enough? guess)
+    (define dx 0.0001)
+    (< (abs (- x (* guess guess))) dx))
+  (define (improve guess)
+    (/ (+ guess (/ x guess)) 2.0))
+  ((iterative-improve enough? improve) 1.1))
+(define (fixed-point f first-guess)
+  (define (enough? guess)
+    (define dx 0.0001)
+    (< (abs (- guess (f guess))) dx))
+  (define (improve guess)
+    (f guess))
+  ((iterative-improve enough? improve) first-guess))
+\end{lstlisting}
+
 \end{document}
