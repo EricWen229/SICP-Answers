@@ -2,9 +2,7 @@
 
 \begin{document}
 
-% exercise 1.1
-
-\section{}
+\section{Exercise 1.1}
 
 \begin{multicols}{2}
   \begin{itemize}
@@ -24,9 +22,7 @@
   \end{itemize}
 \end{multicols}
 
-% exercise 1.2
-
-\section{}
+\section{Exercise 1.2}
 
 \begin{lstlisting}
 (/ (+ 5
@@ -40,9 +36,7 @@
       (- 2 7)))
 \end{lstlisting}
 
-% exercise 1.3
-
-\section{}
+\section{Exercise 1.3}
 
 \begin{lstlisting}
 (define (min2 a b)
@@ -61,15 +55,11 @@
      (square (min3 a b c))))
 \end{lstlisting}
 
-% exercise 1.4
-
-\section{}
+\section{Exercise 1.4}
 
 If b is positive, evaluate \lstinline{(- a b)} (i.e. a - b), otherwise evaluate \lstinline{(+ a b)} (i.e. a + b).
 
-% exercise 1.5
-
-\section{}
+\section{Exercise 1.5}
 
 \subsection*{Applicative-order Evaluation}
 
@@ -93,9 +83,7 @@ In applicative-order evaluation, a procedure is not reduced until all its argume
 
 In normal-order evaluation, a procedure's arguments are not evaluated until they're needed, which means the procedure is always reduced until it only involves primitive operators before its arguments are evaluated. Due to the special evaluation rule of \lstinline{if} where the alternative expression is not evaluated if the predicate expression is evaluated to be true, the function \lstinline{test} returns 0 before \lstinline{(p)} gets the chance to be evaluated.
 
-% exercise 1.6
-
-\section{}
+\section{Exercise 1.6}
 
 The program will run infinitely until it runs out of memory.
 
@@ -103,9 +91,7 @@ The program will run infinitely until it runs out of memory.
  
 But the program using \lstinline{new-if} always evaluates both the consequent and the alternative expression, causing the procedure to recursively call itself infinitely.
 
-% exercise 1.7
-
-\section{}
+\section{Exercise 1.7}
 
 For very small numbers, the threshold value 0.001 is too large to tell if current estimation is close enough to real value.
 
@@ -140,9 +126,7 @@ Code after improvement:
 
 After improvement, function calls mentioned above return 1e-4 and 1e75 respectively.
 
-% exercise 1.8
-
-\section{}
+\section{Exercise 1.8}
 
 \begin{lstlisting}
 (define (cbrt-iter guess last x)
@@ -164,9 +148,7 @@ After improvement, function calls mentioned above return 1e-4 and 1e75 respectiv
   (cbrt-iter 1.0 x x))
 \end{lstlisting}
 
-% exercise 1.9
-
-\section{}
+\section{Exercise 1.9}
 
 \begin{lstlisting}
 (+ 4 5)
@@ -194,9 +176,7 @@ The process is recursive.
 
 The process is iterative.
 
-% exercise 1.10
-
-\section{}
+\section{Exercise 1.10}
 
 \begin{lstlisting}
 (A 1 10)
@@ -260,9 +240,7 @@ The process is iterative.
 \item \lstinline{(h n)} equals \lstinline{(A 2 n)} equals \lstinline{(A 1 (A 2 (- n 1)))} equals \lstinline{(expt 2 (A 2 (- n 1)))} (which, though, is not the way it's evaluated). In the basic case \lstinline{(A 2 1)} returns 2. Informally, \lstinline{(h n)} computes $2^{2^{2^{...}}}$ where the number of 2 is n. The concise definition can be given recursively as follows: \lstinline{(h 1)} returns 2 for 1, and returns \lstinline{(expt 2 (h (- n 1)))} for n larger than 1.
 \end{itemize}
 
-% exercise 1.11
-
-\section{}
+\section{Exercise 1.11}
 
 Recursive version:
 
@@ -288,9 +266,7 @@ Iterative version:
       (f-iter n 2 2 1 0)))
 \end{lstlisting}
 
-% exercise 1.12
-
-\section{}
+\section{Exercise 1.12}
 
 \begin{lstlisting}
 (define (pascal line row)
@@ -301,9 +277,7 @@ Iterative version:
          (pascal (- line 1) row))))
 \end{lstlisting}
 
-% exercise 1.13
-
-\section{}
+\section{Exercise 1.13}
 
 Let $\phi = \frac{1 + \sqrt{5}}{2}$, $\psi = \frac{1 - \sqrt{5}}{2}$.
 
@@ -337,9 +311,7 @@ Besides, there is $\left|\frac{\psi^n}{\sqrt{5}}\right|<\frac{1}{2}$:
 Since $Fib(n)=\frac{\phi^n}{\sqrt{5}}+\frac{\psi^n}{\sqrt{5}}$, $Fib(n)$ is the closest
  integer to $\frac{\phi^n}{\sqrt{5}}$.
 
-% exercise 1.14
-
-\section{}
+\section{Exercise 1.14}
 
 Since the tree is really large, here only the process of \lstinline{(count-change 4)} is illustrated.
 
@@ -396,9 +368,7 @@ Since the tree is really large, here only the process of \lstinline{(count-chang
 
 The number of steps is $\Theta(5^n)$ and the space is $\Theta(n)$.
 
-% exercise 1.15
-
-\section{}
+\section{Exercise 1.15}
 
 \paragraph{a.}
 Five times.
@@ -406,9 +376,7 @@ Five times.
 \paragraph{b.}
 The number of steps as well as the space is $\Theta(log(a))$.
 
-% exercise 1.16
-
-\section{}
+\section{Exercise 1.16}
 
 \begin{lstlisting}
 (define (fast-exp b n)
@@ -421,9 +389,7 @@ The number of steps as well as the space is $\Theta(log(a))$.
   (= (remainder n 2) 0))
 \end{lstlisting}
 
-% exercise 1.17
-
-\section{}
+\section{Exercise 1.17}
 
 \begin{lstlisting}
 (define (fast-mul a b)
@@ -443,9 +409,7 @@ The number of steps as well as the space is $\Theta(log(a))$.
   (/ n 2))
 \end{lstlisting}
 
-% exercise 1.18
-
-\section{}
+\section{Exercise 1.18}
 
 \begin{lstlisting}
 (define (fast-mul a b)
@@ -464,9 +428,7 @@ The number of steps as well as the space is $\Theta(log(a))$.
   (/ n 2))
 \end{lstlisting}
 
-% exercise 1.19
-
-\section{}
+\section{Exercise 1.19}
 
 \begin{lstlisting}
 (define (fib n)
@@ -487,9 +449,7 @@ The number of steps as well as the space is $\Theta(log(a))$.
   (= (remainder n 2) 0))
 \end{lstlisting}
 
-% exercise 1.20
-
-\section{}
+\section{Exercise 1.20}
 
 \subsection*{Normal-order Evaluation}
 
@@ -531,9 +491,7 @@ The number of steps as well as the space is $\Theta(log(a))$.
 
 4 \lstinline{remainder} operations are actually performed.
 
-% exercise 1.21
-
-\section{}
+\section{Exercise 1.21}
 
 The smallest divisor of 199 is 199.
 
@@ -541,9 +499,7 @@ The smallest divisor of 1999 is 1999.
 
 The smallest divisor of 19999 is 7.
 
-% exercise 1.22
-
-\section{}
+\section{Exercise 1.22}
 
 \begin{lstlisting}
 (define (search-for-primes n count)
@@ -606,9 +562,7 @@ As the number scales up by 10, the primality
  test takes roughly 3 times as before, which is
  quite close to $\sqrt{10}$
 
-% exercise 1.23
-
-\section{}
+\section{Exercise 1.23}
 
 Code after modification:
 
@@ -647,9 +601,7 @@ It's roughly 1.75 times as faster. The number of test steps
  did halve but the extra test in \lstinline{next} procedure
  takes a small amount of time.
 
-% exercise 1.24
-
-\section{}
+\section{Exercise 1.24}
 
 Code used for testing (given that \lstinline{n=100} in \lstinline{fast-prime?}):
 
@@ -676,9 +628,7 @@ Output:
 As the number scales up by 10000, the time required
  goes up roughly by a constant.
 
-% exercise 1.25
-
-\section{}
+\section{Exercise 1.25}
 
 She's not correct.
 
@@ -687,9 +637,7 @@ For very large numbers, overflow may happen in \lstinline{fast-exp}, leading to 
  large are broken into smaller ones, and replaced by their remainders which is much smaller, preventing
  overflow from happening.
 
-% exercise 1.26
-
-\section{}
+\section{Exercise 1.26}
 
 In current implementation of \lstinline{expmod}, each time the procedure gets called, the scale of the
  problem roughly get halved. Let $T(n)$ be the time required to compute $a^n \mod m$. Then we have
@@ -710,9 +658,7 @@ $$
 
 making it a $\Theta(n)$ process.
 
-% exercise 1.27
-
-\section{}
+\section{Exercise 1.27}
 
 Code:
 
@@ -760,9 +706,7 @@ A Carmichael number should pass every Fermat test, while
 6601 &= 7 \times 23 \times 41
 \end{align*}
 
-% exercise 1.28
-
-\section{}
+\section{Exercise 1.28}
 
 Code:
 
@@ -830,9 +774,7 @@ Code used for testing:
 (prime? 6601)
 \end{lstlisting}
 
-% exercise 1.29
-
-\section{}
+\section{Exercise 1.29}
 
 Code:
 
@@ -880,9 +822,7 @@ The results are far more precise than
  those of the \lstinline{integral}
  procedure.
 
-% exercise 1.30
-
-\section{}
+\section{Exercise 1.30}
 
 Code:
 
@@ -895,9 +835,7 @@ Code:
   (iter a 0))
 \end{lstlisting}
 
-% exercise 1.31
-
-\section{}
+\section{Exercise 1.31}
 
 \subsection*{a.}
 
@@ -942,9 +880,7 @@ Recursive version of \lstinline{product}:
   (iter a))
 \end{lstlisting}
 
-% exercise 1.32
-
-\section{}
+\section{Exercise 1.32}
 
 \subsection*{a.}
 
@@ -976,9 +912,7 @@ Recursive version of \lstinline{accumulate}:
   (iter a))
 \end{lstlisting}
 
-% exercise 1.33
-
-\section{}
+\section{Exercise 1.33}
 
 Code:
 
@@ -1004,9 +938,7 @@ Code:
   (filtered-accumulate relative-prime? + 0 self inc 1 (- n 1)))
 \end{lstlisting}
 
-% exercise 1.34
-
-\section{}
+\section{Exercise 1.34}
 
 Evaluation procedure:
 
@@ -1025,9 +957,7 @@ However since \lstinline{2} is not a
 The object 2 is not applicable.
 \end{lstlisting}
 
-% exercise 1.35
-
-\section{}
+\section{Exercise 1.35}
 
 Let $f(x)=1+\frac{1}{x}$, and $x_0$ be an arbitrary
  positive real number. Let $x_n=f(x_{n-1})$, then
@@ -1084,9 +1014,7 @@ Output:
 1.6180327868852458
 \end{lstlisting}
 
-% exercise 1.36
-
-\section{}
+\section{Exercise 1.36}
 
 Code:
 
@@ -1115,9 +1043,7 @@ Code used for testing:
 Given the same initial guess, the procedure takes 34 steps without
  average damping while it takes 9 steps with average damping.
 
-% exercise 1.37
-
-\section{}
+\section{Exercise 1.37}
 
 \subsection*{a.}
 
@@ -1170,9 +1096,7 @@ Iterative version of \lstinline{cont-frac}:
   (cont-frac-iter (- k 1) (/ (n k) (d k))))
 \end{lstlisting}
 
-% exercise 1.38
-
-\section{}
+\section{Exercise 1.38}
 
 Code:
 
@@ -1189,9 +1113,7 @@ Code:
 \lstinline{(e-cf 100)} returns \lstinline{2.7182818284590455} which is
  accurate to 15 decimal places.
 
-% exercise 1.39
-
-\section{}
+\section{Exercise 1.39}
 
 Code:
 
@@ -1216,9 +1138,7 @@ Code:
 \lstinline{(tan-cf 0.7853981634 1000)} (roughly $\tan(\frac{\pi}{2})$)
  returns \lstinline{1.0000000000051033}.
 
-% exercise 1.40
-
-\section{}
+\section{Exercise 1.40}
 
 Code:
 
@@ -1228,9 +1148,7 @@ Code:
     (+ (* x x x) (* x x a) (* x b) c)))
 \end{lstlisting}
 
-% exercise 1.41
-
-\section{}
+\section{Exercise 1.41}
 
 Code:
 
@@ -1253,9 +1171,7 @@ The result is 21. The innermost \lstinline{double}
 that returns 13, where the innermost \lstinline{inc} is
  applied for $2^3$ times.
 
-% exercise 1.42
-
-\section{}
+\section{Exercise 1.42}
 
 Code:
 
@@ -1265,9 +1181,7 @@ Code:
     (f (g x))))
 \end{lstlisting}
 
-% exercise 1.43
-
-\section{}
+\section{Exercise 1.43}
 
 Code:
 
@@ -1282,9 +1196,7 @@ Code:
         (else (compose f (repeated f (- n 1))))))
 \end{lstlisting}
 
-% exercise 1.44
-
-\section{}
+\section{Exercise 1.44}
 
 Code:
 
@@ -1299,9 +1211,7 @@ Code:
   ((repeated smooth n) f))
 \end{lstlisting}
 
-% exercise 1.45
-
-\section{}
+\section{Exercise 1.45}
 
 Code:
 
@@ -1434,9 +1344,7 @@ Using this formula, we can implement a procedure for computing
   (fixed-point ((repeated average-damp (damp-count n)) f) 1.1))
 \end{lstlisting}
 
-% exercise 1.46
-
-\section{}
+\section{Exercise 1.46}
 
 Code:
 
