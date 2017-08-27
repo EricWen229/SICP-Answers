@@ -147,6 +147,66 @@ Code:
   (lambda (f) (lambda (x) ((a f) ((b f) x)))))
 \end{lstlisting}
 
+\section{Exercise 2.7}
+
+Code:
+
+\begin{lstlisting}
+(define (upper-bound interval)
+  (car interval))
+(define (lower-bound interval)
+  (cdr interval))
+\end{lstlisting}
+
+\section{Exercise 2.8}
+
+The difference of two intervals is the
+ sum of the first and the opposite interval
+ of the second.
+
+Code:
+
+\begin{lstlisting}
+(define (sub-interval x y)
+  (define (neg-interval x)
+    (make-interval (- 0 (upper-bound x)) (- 0 (lower-bound x))))
+  (add-interval x (sub-interval y)))
+\end{lstlisting}
+
+\section{Exercise 2.9}
+
+Let $(a, b)$ denote an interval with
+ lower bound $a$ and upper bound $b$.
+
+For any two intervals $p=(p_l, p_u)$
+ and $q=(q_l, q_u)$ with widths $W_p = \frac{p_u - p_l}{2}$
+ and $W_q = \frac{q_u - q_l}{2}$
+ respectively, the sum of $p$ and $q$ is
+ $(p_l + q_l, p_u + q_u)$, whose width is
+ $\frac{(p_u + q_u) - (p_l + q_l)}{2} =
+ \frac{(p_u - p_l) + (q_u - q_l)}{2} = W_p + W_q$.
+
+Similarly, the difference of $p$ and $q$ is
+ $(p_l - q_u, p_u - q_l)$, whose width is
+ $\frac{(p_u - q_l) - (p_l - q_u)}{2} = 
+ \frac{(p_u - p_l) + (q_u - p_l)}{2} = W_p + W_q$.
+
+Therefore, the width of the sum (or difference) of two
+ intervals is a function only of the widths of the intervals
+ being added (or subtracted).
+
+Two examples illustrating that this is not true for
+ multiplication or division are as follows:
+
+\begin{itemize}
+\item The width of $(0, 1) * (1, 2) = (1, 2)$ is $\frac{1}{2}$,
+ while the width of $(1, 2) * (1, 2) = (1, 4)$ is $\frac{3}{2}$.
+\item The width of $\frac{(0, 1)}{(1, 2)} = (0, 1) *
+ (\frac{1}{2}, 1) = (0, \frac{1}{2})$ is $\frac{1}{4}$,
+ while the width of $\frac{(1, 2)}{(1, 2)} = (1, 2) *
+ (\frac{1}{2}, 1) = (\frac{1}{2}, 2)$ is $\frac{3}{4}$.
+\end{itemize}
+
 \end{document}
 
 
