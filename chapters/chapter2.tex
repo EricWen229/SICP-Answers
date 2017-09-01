@@ -233,26 +233,26 @@ Code:
         (y0 (lower-bound x))
         (y1 (upper-bound y)))
     (if (> x0 0)
+        (if (> x1 0)
+            (if (> y0 0)
+                (if (> y1 0)
+                    (make-interval (* x0 y0) (* x1 y1)))
+                (if (> y1 0)
+                    (make-interval (* x1 y0) (* x1 y1))
+                    (make-interval (* x1 y1) (* x0 y0)))))
       (if (> x1 0)
-        (if (> y0 0)
-          (if (> y1 0)
-            (make-interval (* x0 y0) (* x1 y1)))
-          (if (> y1 0)
-            (make-interval (* x1 y0) (* x1 y1))
-            (make-interval (* x1 y1) (* x0 y0)))))
-      (if (> x1 0)
-        (if (> y0 0)
-          (if (> y1 0)
-            (make-interval (* x0 y1) (* x1 y1)))
-          (if (> y1 0)
-            (make-interval (min (* x0 y1) (* x1 y0)) (* x1 y1))
-            (make-interval (* x1 y1) (* x0 y1))))
-        (if (> y0 0)
-          (if (> y1 0)
-            (make-interval (* x0 y1) (* x1 y0)))
-          (if (> y1 0)
-            (make-interval (* x0 y1) (* x1 y0))
-            (make-interval (* x1 y0) (* x0 y1)))))))
+          (if (> y0 0)
+              (if (> y1 0)
+                  (make-interval (* x0 y1) (* x1 y1)))
+              (if (> y1 0)
+                  (make-interval (min (* x0 y1) (* x1 y0)) (* x1 y1))
+                  (make-interval (* x1 y1) (* x0 y1))))
+          (if (> y0 0)
+              (if (> y1 0)
+                  (make-interval (* x0 y1) (* x1 y0)))
+              (if (> y1 0)
+                  (make-interval (* x0 y1) (* x1 y0))
+                  (make-interval (* x1 y0) (* x0 y1)))))))
 \end{lstlisting}
 
 \section{Exercise 2.12}
@@ -337,6 +337,59 @@ Code:
         new
         (reverse-iter (cons (car lst) new) (cdr lst))))
   (reverse-iter (list) lst))
+\end{lstlisting}
+
+\section{Exercise 2.19}
+
+Code:
+
+\begin{lstlisting}
+(define (first-denomination coin-values)
+  (car coin-values))
+(define (except-first-denomination coin-values)
+  (cdr coin-values))
+(define (no-more? coin-values)
+  (null? coin-values))
+\end{lstlisting}
+
+The order of the list \lstinline{coin-values} does not
+ affect the answer produced. Given an amount and a
+ list of coin values, whatever the order is, there are
+ only two cases, which are to use the first type of coin
+ in the list or not. Therefore, the procedure \lstinline{cc}
+ performs a complete search in solution space, which
+ is not dependent of the order of \lstinline{coin-values}.
+
+\section{Exercise 2.20}
+
+Code:
+
+\begin{lstlisting}
+(define (same-parity i . lst)
+  (let ((parity (remainder i 2)))
+    (define (same? x)
+      (= (remainder x 2) parity))
+    (define (filter lst)
+      (if (null? lst)
+          (list)
+          (if (same? (car lst))
+              (cons (car lst) (filter (cdr lst)))
+              (filter (cdr lst)))))
+    (cons i (filter lst))))
+\end{lstlisting}
+
+\section{Exercise 2.21}
+
+Code:
+
+\begin{lstlisting}
+(define (square-list items)
+  (if (null? items)
+      '()
+      (cons (* item item) (square-list (cdr items)))))
+(define (square-list items)
+  (map (lambda (x) (* x x))
+       items)
 \end{lstlisting}
 
 \end{document}
