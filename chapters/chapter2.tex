@@ -266,6 +266,55 @@ Code:
   (/ (width interval) (center interval)))
 \end{lstlisting}
 
+\section{Exercise 2.13}
+
+Let $x$ be an interval with average $a_0$ and tolerance $t_0$,
+ $y$ be an interval with average $a_1$ and tolerance $t_1$, then we have:
+
+\begin{align*}
+x &= (a_0 - a_0 t_0, a_0 + a_0 t_0) \\
+y &= (a_1 - a_1 t_1, a_1 + a_1 t_1)
+\end{align*}
+
+Assume that all numbers are positive (no non-positive numbers
+ are included in any of the intervals), then we have:
+
+\begin{align*}
+x \cdot y &= ((a_0 - a_0 t_0)(a_1 - a_1 t_1), (a_0 + a_0 t_0)(a_1 + a_1 t_1)) \\
+&= (a_0 a_1 - a_0 a_1 (t_0 + t_1) + a_0 a_1 t_0 t_1, a_0 a_1 + a_0 a_1 (t_0 + t_1) + a_0 a_1 t_0 t_1)
+\end{align*}
+
+Denote $x \cdot y$ as $(u, v)$, then the tolerance of $x \cdot y$ is:
+
+\begin{align*}
+\frac{\frac{v-u}{2}}{\frac{v+u}{2}} &= \frac{a_0 a_1 (t_0 + t_1)}{a_0 a_1 + a_0 a_1 t_0 t_1} \\
+&= \frac{t_0 + t_1}{1 + t_0 t_1}
+\end{align*}
+
+\section{Exercise 2.14}
+
+For $R_1 = (1, 2)$ and $R_2 = (2, 3)$, $\frac{R_1 R_2}{R_1 + R_2} = (\frac{2}{5}, 2)$, while
+$\frac{1}{1/R_1 + 1/R_2} = (\frac{2}{3}, \frac{5}{6})$
+
+\section{Exercise 2.15}
+
+\lstinline{par2} is indeed better, but for a different reason.
+
+In $\frac{R_1 R_2}{R_1 + R_2}$, we want to refer to the same variable
+ when referring to $R_1$ in numerator and demonimator. However, we are
+ actually treating them as if they're independent of each other. Using
+ \lstinline{par2} there won't be such issue.
+
+\section{Exercise 2.16}
+
+Because the operands are random variables instead of real values. This
+ could bring severe problems. For example, when we write $\frac{(1, 2)}{(1, 2)}$,
+ there's no way to tell if we are referring to an interval divided by itself,
+ or an interval divided by another with the same distribution. For the former
+ result should be 1 (or written as $(1, 1)$ in interval format), for the latter
+ result should be $(\frac{1}{2}, 2)$. This kind of ambiguity determines that
+ it's impossible to devise such arithmetic package for intervals.
+
 \end{document}
 
 
