@@ -315,6 +315,30 @@ Because the operands are random variables instead of real values. This
  result should be $(\frac{1}{2}, 2)$. This kind of ambiguity determines that
  it's impossible to devise such arithmetic package for intervals.
 
+\section{Exercise 2.17}
+
+Code:
+
+\begin{lstlisting}
+(define (last-pair lst)
+  (if (null? (cdr lst))
+      lst
+      (last-pair (cdr lst))))
+\end{lstlisting}
+
+\section{Exercise 2.18}
+
+Code:
+
+\begin{lstlisting}
+(define (reverse lst)
+  (define (reverse-iter new lst)
+    (if (null? lst)
+        new
+        (reverse-iter (cons (car lst) new) (cdr lst))))
+  (reverse-iter (list) lst))
+\end{lstlisting}
+
 \end{document}
 
 
