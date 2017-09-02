@@ -392,6 +392,34 @@ Code:
        items)
 \end{lstlisting}
 
+\section{Exercise 2.22}
+
+In the first version, the procedure inserts
+ each result to the head of the answer list
+ while iterating over the original list, thus
+ the answer list is in reverse order.
+
+In the second version, applying \lstinline{cons}
+ to a list and a number produces a new list with
+ the given list be the first element and the given
+ number be the second element instead of the result
+ of appending the given number to the given list.
+
+\section{Exercise 2.23}
+
+Code:
+
+\begin{lstlisting}
+(define (for-each fn lst)
+  (if (null? lst)
+    '()
+    ((lambda (lst) (fn (car lst)) (for-each fn (cdr lst))) lst)))
+\end{lstlisting}
+
+\section{Exercise 2.24}
+
+Output: \lstinline{(1 (2 (3 4)))}
+
 \end{document}
 
 
