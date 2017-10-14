@@ -384,9 +384,10 @@ Code:
 
 \begin{lstlisting}
 (define (square-list items)
+  (define (square x) (* x x))
   (if (null? items)
-      '()
-      (cons (* item item) (square-list (cdr items)))))
+      items
+      (cons (square (car items)) (square-list (cdr items)))))
 (define (square-list items)
   (map (lambda (x) (* x x))
        items)
@@ -412,7 +413,7 @@ Code:
 \begin{lstlisting}
 (define (for-each fn lst)
   (if (null? lst)
-      '()
+      lst
       ((lambda (lst) (fn (car lst)) (for-each fn (cdr lst))) lst)))
 \end{lstlisting}
 
@@ -495,11 +496,90 @@ Code:
 (define (fringe t)
   (if (list? t)
       (if (null? t)
-          (list)
+          t
           (append (fringe (car t))
                   (fringe (cdr t))))
       (list t)))
 \end{lstlisting}
+
+\section{Exercise 2.29}
+
+\subsection{a.}
+
+Code:
+
+\begin{lstlisting}
+(define (left-branch mobile)
+  (car mobile))
+(define (right-branch mobile)
+  (car (cdr mobile)))
+(define (branch-length branch)
+  (car branch))
+(define (branch-structure branch)
+  (car (cdr branch)))
+\end{lstlisting}
+
+\subsection{b.}
+
+Code:
+
+\begin{lstlisting}
+(define (total-weight mobile)
+  (+ (branch-weight (left-branch mobile))
+     (branch-weight (right-branch mobile))))
+\end{lstlisting}
+
+\subsection{c.}
+
+Methods to be rewritten:
+
+\begin{lstlisting}
+(define (right-branch mobile)
+  (cdr mobile))
+(define (branch-structure branch)
+  (cdr branch))
+\end{lstlisting}
+
+\section{Exercise 2.30}
+
+Code defining \lstinline{square-tree} directly:
+
+\begin{lstlisting}
+(define (square-tree t)
+  (cond ((null? t) t)
+        ((not (pair? t)) (* t t))
+        (else (cons (square-tree (car t))
+                    (square-tree (cdr t))))))
+\end{lstlisting}
+
+Code defining the same method using higher-order
+ procedures:
+ 
+\begin{lstlisting}
+(define (square-tree t)
+  (map (lambda (subtree)
+         (if (pair? subtree)
+           (square-tree subtree)
+           (* subtree subtree)))
+       t))
+\end{lstlisting}
+
+\section{Exercise 2.31}
+
+Code:
+
+\begin{lstlisting}
+(define (tree-map method t)
+  (map (lambda (subtree)
+         (if (pair? subtree)
+           (tree-map method subtree)
+           (method subtree)))
+       t))
+\end{lstlisting}
+
+\section{Exercise 2.32}
+
+
 
 \end{document}
 
