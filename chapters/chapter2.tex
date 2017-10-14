@@ -412,13 +412,94 @@ Code:
 \begin{lstlisting}
 (define (for-each fn lst)
   (if (null? lst)
-    '()
-    ((lambda (lst) (fn (car lst)) (for-each fn (cdr lst))) lst)))
+      '()
+      ((lambda (lst) (fn (car lst)) (for-each fn (cdr lst))) lst)))
 \end{lstlisting}
 
 \section{Exercise 2.24}
 
-Output: \lstinline{(1 (2 (3 4)))}
+Interpreter output:
+
+\begin{lstlisting}
+(1 (2 (3 4)))
+\end{lstlisting}
+
+Box-n-pointer structure:
+
+\begin{lstlisting}
+* -> */
+|    |
+1    * -> */
+     |    |
+     2    * -> */
+          |    |
+          3    4
+\end{lstlisting}
+
+Tree interpretation:
+
+\begin{tikzpicture}[sibling distance=64pt, level distance=24pt]
+\node{\lstinline{(1 (2 (3 4)))}}
+  child{node{\lstinline{1}}}
+  child{node{\lstinline{(2 (3 4))}}
+    child{node{\lstinline{2}}}
+    child{node{\lstinline{(3 4)}}
+      child{node{\lstinline{3}}}
+      child{node{\lstinline{4}}}}};
+\end{tikzpicture}
+
+\section{Exercise 2.25}
+
+Code:
+
+\begin{lstlisting}
+(let ((l (list 1 3 (list 5 7) 9)))
+  (car (cdr (car (cdr (cdr l))))))
+(let ((l (list (list 7))))
+  (car (car l)))
+(let ((l (list 1 (list 2 (list 3 (list 4
+  (list 5 (list 6 7))))))))
+  (car (cdr (car (cdr (car (cdr (car (cdr
+    (car (cdr (car (cdr l)))))))))))))
+\end{lstlisting}
+
+\section{Exercise 2.26}
+
+The results are respectively
+\lstinline{(1 2 3 4 5 6)},
+\lstinline{((1 2 3) 4 5 6)},
+and \lstinline{((1 2 3) (4 5 6))}.
+
+\section{Exercise 2.27}
+
+Code:
+
+\begin{lstlisting}
+(define (deep-reverse lst)
+  (define (reverse-iter new lst)
+    (define (reverse-elem elem)
+      (if (list? elem)
+          (reverse-iter (list) elem)
+          elem))
+    (if (null? lst)
+        new
+        (reverse-iter (cons (reverse-elem (car lst)) new) (cdr lst))))
+  (reverse-iter (list) lst))
+\end{lstlisting}
+
+\section{Exercise 2.28}
+
+Code:
+
+\begin{lstlisting}
+(define (fringe t)
+  (if (list? t)
+      (if (null? t)
+          (list)
+          (append (fringe (car t))
+                  (fringe (cdr t))))
+      (list t)))
+\end{lstlisting}
 
 \end{document}
 

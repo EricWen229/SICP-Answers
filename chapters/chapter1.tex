@@ -317,52 +317,50 @@ Since the tree is really large, here only the process of \lstinline{(count-chang
 
 \vspace{5mm}
 \begin{tikzpicture}[sibling distance=64pt, level distance=24pt]
-
-\node{\lstinline{count-change 4}}
-  child{node{\lstinline{cc 4 5}}
-    child{node{\lstinline{cc 4 4}}
-      child{node{\lstinline{cc 4 3}}
-        child{node{\lstinline{cc 4 2}}
-          child{node{\lstinline{cc 4 1}}
-            child{node{\lstinline{cc 4 0}}
+\node{\lstinline{(count-change 4)}}
+  child{node{\lstinline{(cc 4 5)}}
+    child{node{\lstinline{(cc 4 4)}}
+      child{node{\lstinline{(cc 4 3)}}
+        child{node{\lstinline{(cc 4 2)}}
+          child{node{\lstinline{(cc 4 1)}}
+            child{node{\lstinline{(cc 4 0)}}
               child{node{\lstinline{0}}}
             }
-            child{node{\lstinline{cc 3 1}}
-              child{node{\lstinline{cc 3 0}}
+            child{node{\lstinline{(cc 3 1)}}
+              child{node{\lstinline{(cc 3 0)}}
                 child{node{\lstinline{0}}}
               }
-              child{node{\lstinline{cc 2 1}}
-                child{node{\lstinline{cc 2 0}}
+              child{node{\lstinline{(cc 2 1)}}
+                child{node{\lstinline{(cc 2 0)}}
                   child{node{\lstinline{0}}}
                 }
-                child{node{\lstinline{cc 1 1}}
-                  child{node{\lstinline{cc 1 0}}
+                child{node{\lstinline{(cc 1 1)}}
+                  child{node{\lstinline{(cc 1 0)}}
                     child{node{\lstinline{0}}}
                   }
-                  child{node{\lstinline{cc 0 1}}
+                  child{node{\lstinline{(cc 0 1)}}
                     child{node{\lstinline{1}}}
                   }
                 }
               }
             }
           }
-          child{node{\lstinline{cc -1 2}}
+          child{node{\lstinline{(cc -1 2)}}
             child{node{\lstinline{0}}}
           }
         }
-        child{node{\lstinline{cc -6 3}}
+        child{node{\lstinline{(cc -6 3)}}
           child{node{\lstinline{0}}}
         }
       }
-      child{node{\lstinline{cc -21 4}}
+      child{node{\lstinline{(cc -21 4)}}
         child{node{\lstinline{0}}}
       }
     }
-    child{node{\lstinline{cc -46 5}}
+    child{node{\lstinline{(cc -46 5)}}
       child{node{\lstinline{0}}}
     }
   };
-
 \end{tikzpicture}
 \vspace{5mm}
 
