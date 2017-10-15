@@ -591,6 +591,52 @@ Code:
                           rest)))))
 \end{lstlisting}
 
+\section{Exercise 2.33}
+
+Code:
+
+\begin{lstlisting}
+(define (accumulate op initial seq)
+  (if (null? seq)
+      initial
+      (op (car seq)
+          (accumulate op initial (cdr seq)))))
+(define (map p sequence)
+  (accumulate (lambda (x y) (cons (p x) y)) (list) sequence))
+(define (append seq1 seq2)
+  (accumulate cons seq2 seq1))
+(define (length sequence)
+  (accumulate (lambda (x y) (+ 1 y)) 0 sequence))
+\end{lstlisting}
+
+\section{Exercise 2.34}
+
+Code:
+
+\begin{lstlisting}
+(define (horner-eval x coefficient-sequence)
+  (accumulate (lambda (this-coeff higher-terms)
+                (+ this-coeff (* x higher-terms)))
+              0
+              coefficient-sequence))
+\end{lstlisting}
+
+\section{Exercise 2.35}
+
+Code:
+
+\begin{lstlisting}
+(define (count-leaves t)
+  (accumulate +
+              0
+              (map (lambda (subtree)
+                     (if (not (pair? subtree))
+                         1
+                         (+ (count-leaves (car subtree))
+                            (count-leaves (cdr subtree)))))
+                   t)))
+\end{lstlisting}
+
 \end{document}
 
 
