@@ -637,6 +637,69 @@ Code:
                    t)))
 \end{lstlisting}
 
+\section{Exercise 2.36}
+
+Code:
+
+\begin{lstlisting}
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+    (list)
+    (cons (accumulate op init (map car seqs))
+          (accumulate-n op init (map cdr seqs)))))
+\end{lstlisting}
+
+\section{Exercise 2.37}
+
+Code:
+
+\begin{lstlisting}
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+(define (matrix-*-vector mat vec)
+  (map (lambda (row) (dot-product row vec)) mat))
+(define (transpose mat)
+  (accumulate-n cons (list) mat))
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (lambda (row) (matrix-*-vector cols row)) m)))
+\end{lstlisting}
+
+\section{Exercise 2.38}
+
+Result:
+
+\begin{lstlisting}
+3/2 ; 1/(2/(3/1))
+1/6 ; ((1/1)/2)/3
+(1 (2 (3 ())))
+(((() 1) 2) 3)
+\end{lstlisting}
+
+The binary operation(procedure) \lstinline{op}
+ should satisfy the commutative property for
+ \lstinline{fold-left} and \lstinline{fold-right}
+ to produce the same values for any sequence. Such
+ operations include \lstinline{+}, \lstinline{*},
+ etc.
+
+\section{Exercise 2.39}
+
+Code:
+
+\begin{lstlisting}
+(define (reverse sequence)
+  (fold-right (lambda (curr result)
+                (append result (list curr)))
+              (list)
+              sequence))
+(define (reverse sequence)
+  (fold-left (lambda (result curr)
+               (cons curr result))
+             (list)
+             sequence))
+\end{lstlisting}
+
 \end{document}
 
 
