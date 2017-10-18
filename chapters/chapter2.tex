@@ -700,6 +700,84 @@ Code:
              sequence))
 \end{lstlisting}
 
+\section{Exercise 2.40}
+
+Code:
+
+\begin{lstlisting}
+(define (enumerate-interval start end)
+  (define (enum-iter start end result)
+    (if (> start end)
+        result
+        (enum-iter (+ start 1) end (append result (list start)))))
+  (enum-iter start end (list)))
+(define (unique-pairs n)
+  (accumulate append
+              (list)
+              (map (lambda (i)
+                     (map (lambda (j)
+                            (list i j))
+                          (enumerate-interval 1 (- i 1))))
+                   (enumerate-interval 1 n))))
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum? (unique-pairs n))))
+\end{lstlisting}
+
+\section{Exercise 2.41}
+
+Code:
+
+\begin{lstlisting}
+(define (flatmap proc seq)
+  (accumulate append (list) (map proc seq)))
+(define (enumerate-triple-with-sum n)
+  (flatmap append
+           (map (lambda (i)
+                  (map (lambda (j) (list i j (- n i j)))
+                       (enumerate-interval 1 (- n i 1))))
+                (enumerate-interval 1 (- n 2)))))
+\end{lstlisting}
+
+\section{Exercise 2.42}
+
+Code:
+
+\begin{lstlisting}
+(define (queens board-size)
+  (define empty-board (list))
+  (define (get-row positions row)
+    (list-ref positions (- (length positions) row)))
+  (define (safe? k positions) ; is the last position (the kth) safe?
+    (define (safe?-recur row1 row2)
+      (define (safe?-test row1 row2)
+        (let ((col1 (get-row positions row1))
+              (col2 (get-row positions row2)))
+          (if (or (= col1 col2)
+                  (= (- col2 col1) (- row2 row1))
+                  (= (- col1 col2) (- row2 row1)))
+              #f
+              (safe?-recur (+ row1 1) row2))))
+      (if (= row1 row2)
+          #t
+          (safe?-test row1 row2)))
+    (safe?-recur 1 k))
+  (define (adjoin-position new-row k rest-of-queens)
+    (cons new-row rest-of-queens))
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+          (lambda (positions) (safe? k positions))
+          (flatmap
+            (lambda (rest-of-queens)
+              (map (lambda (new-row)
+                     (adjoin-position new-row k rest-of-queens))
+                   (enumerate-interval 1 board-size)))
+            (queen-cols (- k 1))))))
+  (queen-cols board-size))
+\end{lstlisting}
+
 \end{document}
 
 
