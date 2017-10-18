@@ -778,6 +778,59 @@ Code:
   (queen-cols board-size))
 \end{lstlisting}
 
+\section{Exercise 2.43}
+
+Let $T(k)$ be the time needed by calling \lstinline{(queen-cols k)},
+ $S(k)$ be the sum of combinations returned by
+ \lstinline{(queen-cols k)}, $d$ be the size of board and
+ $Q(k)$ be the time needed to check if one combination
+ is valid. All operations that need constant time
+ are denoted as 1s.
+
+When calling \lstinline{(queen-cols k)} in the
+ program in exercise 2.42, first \lstinline{(queen-cols (- k 1))}
+ is called, which is time-consuming.
+ It returns all combinations of the first $k-1$
+ queens, each of which is later respectively appended
+ with all possible column positions at the new row.
+ Finally, all combinations, each of which consisting
+ of $k$ queens, are evaluated and filtered to reserve
+ only those without any checks.
+
+According to the relation above, we have
+
+\begin{align*}
+T(k) &= T(k-1) + S(k-1) \cdot d \cdot Q(k) \\
+&= T(k-2) + d \cdot \left[S(k-2) \cdot Q(k-1) + S(k-1) \cdot Q(k)\right] \\
+&\vdots \\
+&= T(0) + d \cdot \sum_{i=0}^{k-1} S(i) \cdot Q(i+1)
+\end{align*}
+
+On the contrary, when calling \lstinline{(queen-cols k)}
+ in the program written by Louis, first all possible
+ positions, with the sum of $d$, is generated. For each
+ possible position, \lstinline{(queen-cols (- k 1))} is
+ called and each of the combination returned is appended
+ with the possible position in the new row. Finally,
+ all combinations with the sum of $k$ queens are evaluated
+ and filtered.
+
+According to the relation above, we have
+
+\begin{align*}
+T'(k) &= d \cdot \left[T'(k-1) + S(k-1) \cdot Q(k)\right] \\
+&= d \cdot T'(k-1) + S(k-1) \cdot d \cdot Q(k) \\
+&= d^2 \cdot T'(k-2) + S(k-2) \cdot d^2 \cdot Q(k-1) + S(k-1) \cdot d \cdot Q(k) \\
+&\vdots \\
+&= d^k \cdot T'(0) + \sum_{i=0}^{k-1} S(i) \cdot d^{k-i} \cdot Q(i + 1)
+\end{align*}
+
+From which we have
+
+$$
+T' \approx d^k T
+$$
+
 \end{document}
 
 
