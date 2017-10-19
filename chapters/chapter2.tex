@@ -923,10 +923,10 @@ Code:
 
 \begin{lstlisting}
 (define frame-painter
-  (let ((top-left (make-vect 0 1))
-        (top-right (make-vect 1 1))
-        (bottom-left (make-vect 0 0))
-        (bottom-right (make-vect 1 0)))
+  (let ((top-left (make-vect 0.0 1.0))
+        (top-right (make-vect 1.0 1.0))
+        (bottom-left (make-vect 0.0 0.0))
+        (bottom-right (make-vect 1.0 0.0)))
     (segments->painter
       (list (make-segment top-left top-right)
             (make-segment top-right bottom-right)
@@ -938,10 +938,10 @@ Code:
 
 \begin{lstlisting}
 (define X-painter
-  (let ((top-left (make-vect 0 1))
-        (top-right (make-vect 1 1))
-        (bottom-left (make-vect 0 0))
-        (bottom-right (make-vect 1 0)))
+  (let ((top-left (make-vect 0.0 1.0))
+        (top-right (make-vect 1.0 1.0))
+        (bottom-left (make-vect 0.0 0.0))
+        (bottom-right (make-vect 1.0 0.0)))
     (segments-painter
       (list (make-segment top-left bottom-right)
             (make-segment top-right bottom-left)))))
@@ -951,10 +951,10 @@ Code:
 
 \begin{lstlisting}
 (define diamond-painter
-  (let ((left (make-vect 0 0.5))
-        (up (make-vect 0.5 1))
-        (right (make-vect 1 0.5))
-        (down (make-vect 0.5 0)))
+  (let ((left (make-vect 0.0 0.5))
+        (up (make-vect 0.5 1.0))
+        (right (make-vect 1.0 0.5))
+        (down (make-vect 0.5 0.0)))
     (segments-painter
       (list (make-segment left up)
             (make-segment up right)
@@ -965,6 +965,92 @@ Code:
 \subsection{d.}
 
 Omitted.
+
+\section{Exercise 2.50}
+
+Code:
+
+\begin{lstlisting}
+(define (flip-horiz painter)
+  (transform-painter painter
+                     (make-vect 1.0 0.0)
+                     (make-vect 0.0 0.0)
+                     (make-vect 1.0 1.0)))
+(define (rotate-counter-180 painter)
+  (transform-painter painter
+                     (make-vect 1.0 1.0)
+                     (make-vect 0.0 1.0)
+                     (make-vect 1.0 0.0)))
+(define (rotate-clock-90 painter)
+  (transfrom-painter painter
+                     (make-vect 0.0 1.0)
+                     (make-vect 0.0 0.0)
+                     (make-vect 1.0 1.0)))
+\end{lstlisting}
+
+\section{Exercise 2.51}
+
+First version of code:
+
+\begin{lstlisting}
+(define (below painter1 painter2)
+  (let ((paint-down
+          (transform-painter painter1
+                             (make-vect 0.0 0.0)
+                             (make-vect 1.0 0.0)
+                             (make-vect 0.0 0.5)))
+        (paint-up
+          (transform-painter painter2
+                             (make-vect 0.0 0.5)
+                             (make-vect 1.0 0.5)
+                             (make-vect 0.0 1.0)))
+    (lambda (frame)
+      (paint-down frame)
+      (paint-up frame)))))
+\end{lstlisting}
+
+Second version of code:
+
+\begin{lstlisting}
+(define (below painter1 painter2)
+  (rotate-counter-90
+    (beside (rotate-clock-90 painter1)
+            (rotate-clock-90 painter2))))
+\end{lstlisting}
+
+\section{Exercise 2.52}
+
+Code:
+
+\subsection{a.}
+
+Omitted.
+
+\subsection{b.}
+
+\begin{lstlisting}
+(define (corner-split painter n)
+  (if (= n 0)
+      painter
+      (let ((up (up-split painter (- n 1)))
+            (right (right-split painter (- n 1))))
+        (let ((top-left up)
+              (bottom-right right)
+              (corner (corner-split painter (- n 1)))))
+          (beside (below painter top-left)
+                  (below bottom-right corner)))))
+\end{lstlisting}
+
+\subsection{c.}
+
+\begin{lstlisting}
+(define (square-limit painter n)
+  (let ((combine4 (square-of-four flip-horiz
+                                  identity
+                                  rotate180
+                                  flip-vert)))
+    (combine4 (corner-split (flip-vert painter) n))))
+\end{lstlisting}
 
 \end{document}
 
