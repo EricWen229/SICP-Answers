@@ -831,6 +831,141 @@ $$
 T'(d) \approx d^d T(d)
 $$
 
+\section{Exercise 2.44}
+
+Code:
+
+\begin{lstlisting}
+(define (up-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (up-split painter (- n 1))))
+        (below painter (beside smaller smaller)))))
+\end{lstlisting}
+
+\section{Exercise 2.45}
+
+Code:
+
+\begin{lstlisting}
+(define (split op1 op2)
+  (define (compound painter n)
+    (if (= n 0)
+        painter
+        (let ((smaller (compound painter (- n 1))))
+          (op1 painter (op2 smaller smaller))))))
+\end{lstlisting}
+
+\section{Exercise 2.46}
+
+Code:
+
+\begin{lstlisting}
+(define (make-vect x y)
+  (cons x y))
+(define (xcor-vect vect)
+  (car vect))
+(define (ycor-vect vect)
+  (cdr vect))
+(define (add-vect vec1 vec2)
+  (make-vect (+ (xcor-vect vec1) (xcor-vect vec2))
+             (+ (ycor-vect vec1) (ycor-vect vec2))))
+(define (sub-vect vec1 vec2)
+  (make-vect (- (xcor-vect vec1) (xcor-vect vec2))
+             (- (ycor-vect vec1) (ycor-vect vec2))))
+(define (scale-vect factor vec)
+  (make-vect (* factor (xcor-vect vec1))
+             (* factor (ycor-vect vec2))))
+\end{lstlisting}
+
+\section{Exercise 2.47}
+
+Selectors for the first implementation:
+
+\begin{lstlisting}
+(define (origin-frame frame)
+  (list-ref frame 0))
+(define (edge1-frame frame)
+  (list-ref frame 1))
+(define (edge2-frame frame)
+  (list-ref frame 2))
+\end{lstlisting}
+
+Selectors for the second implementation:
+
+\begin{lstlisting}
+(define (origin-frame frame)
+  (car frame))
+(define (edge1-frame frame)
+  (car (cdr frame)))
+(define (edge2-frame frame)
+  (cdr (cdr frame)))
+\end{lstlisting}
+
+\section{Exercise 2.48}
+
+Code:
+
+\begin{lstlisting}
+(define (make-segment start end)
+  (cons start end))
+(define (start-segment segment)
+  (car segment))
+(define (end-segment segment)
+  (cdr segment))
+\end{lstlisting}
+
+\section{Exercise 2.49}
+
+Code:
+
+\subsection{a.}
+
+\begin{lstlisting}
+(define frame-painter
+  (let ((top-left (make-vect 0 1))
+        (top-right (make-vect 1 1))
+        (bottom-left (make-vect 0 0))
+        (bottom-right (make-vect 1 0)))
+    (segments->painter
+      (list (make-segment top-left top-right)
+            (make-segment top-right bottom-right)
+            (make-segment bottom-right bottom-left)
+            (make-segment bottom-left top-left)))))
+\end{lstlisting}
+
+\subsection{b.}
+
+\begin{lstlisting}
+(define X-painter
+  (let ((top-left (make-vect 0 1))
+        (top-right (make-vect 1 1))
+        (bottom-left (make-vect 0 0))
+        (bottom-right (make-vect 1 0)))
+    (segments-painter
+      (list (make-segment top-left bottom-right)
+            (make-segment top-right bottom-left)))))
+\end{lstlisting}
+
+\subsection{c.}
+
+\begin{lstlisting}
+(define diamond-painter
+  (let ((left (make-vect 0 0.5))
+        (up (make-vect 0.5 1))
+        (right (make-vect 1 0.5))
+        (down (make-vect 0.5 0)))
+    (segments-painter
+      (list (make-segment left up)
+            (make-segment up right)
+            (make-segment right down)
+            (make-segment down left)))))
+\end{lstlisting}
+
+\subsection{d.}
+
+Omitted.
+
 \end{document}
 
 
