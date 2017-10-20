@@ -1052,6 +1052,49 @@ Omitted.
     (combine4 (corner-split (flip-vert painter) n))))
 \end{lstlisting}
 
+\section{Exercise 2.53}
+
+Output:
+
+\begin{lstlisting}
+(a b c)
+((george))
+((y1 y2))
+(y1 y2)
+#f
+#f
+(red shoes blue socks)
+\end{lstlisting}
+
+\section{Exercise 2.54}
+
+\begin{lstlisting}
+(define (equal? stuff1 stuff2)
+  (define (equal-list? list1 list2)
+     (cond ((and (null? list1) (null? list2)) #t)
+           ((or (null? list1) (null? list2)) #f)
+           ((eq? (car list1) (car list2))
+             (equal-list? (cdr list1) (cdr list2)))
+           (else #f)))
+  (cond ((and (list? stuff1) (list? stuff2))
+          (equal-list? stuff1 stuff2))
+        ((and (not (list? stuff1)) (not (list? stuff2)))
+          (eq? stuff1 stuff2))
+        (else #f)))
+\end{lstlisting}
+
+\section{Exercise 2.55}
+
+\lstinline{'expr} is just an abbreviation of
+ \lstinline{(quote expr)}, thus \lstinline{(car 'expr)}
+ actually returns \lstinline{(car (quote expr))}.
+
+In \lstinline{''abra...} where the expression itself
+ is \lstinline{(quote abra...)}. The outer \lstinline{quote}
+ prevents it from being evaluated, so it remains
+ \lstinline{(quote abra...)} when passed to \lstinline{car},
+ which returns \lstinline{quote}.
+
 \end{document}
 
 
