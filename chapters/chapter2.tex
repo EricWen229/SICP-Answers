@@ -1095,6 +1095,86 @@ In \lstinline{''abra...} where the expression itself
  \lstinline{(quote abra...)} when passed to \lstinline{car},
  which returns \lstinline{quote}.
 
+\section{Exercise 2.56}
+
+Code:
+
+\begin{lstlisting}
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp)
+          (if (same-variable? exp var) 1 0))
+        ((sum? exp)
+          (make-sum (deriv (addend exp) var)
+                    (deriv (augend exp) var)))
+        ((product? exp)
+          (make-sum
+            (make-product (multiplier exp)
+                          (deriv (multiplicand exp) var))
+            (make-product (deriv (multiplier exp) var)
+                          (multiplicand exp))))
+        ((expo? exp)
+          (make-product (make-product (exponent exp)
+                                      (make-expo (base exp)
+                                                 (make-sum (exponent exp)
+                                                           -1)))
+                        (deriv (base exp) var)))))
+(define (expo? x)
+  (and (pair? x) (eq? (car x) '**)))
+(define (base x)
+  (cadr x))
+(define (exponent x)
+  (caddr x))
+(define (make-expo base exponent)
+  (cond ((=number? exponent 0) 1)
+        ((=number? base 0) 0)
+        ((=number? exponent 1) base)
+        (else (list '** base exponent))))
+\end{lstlisting}
+
+Definition of \lstinline{=number?}:
+
+\begin{lstlisting}
+(define (=number? exp num)
+  (and (real? exp) (= exp num)))
+\end{lstlisting}
+
+\section{Exercise 2.57}
+
+Code:
+
+\begin{lstlisting}
+(define (augend s)
+  (if (= (length s) 3)
+      (caddr s)
+      (cons '+ (cddr s))))
+(define (multiplicand p)
+  (if (= (length p) 3)
+      (caddr p)
+      (cons '* (cddr p))))
+\end{lstlisting}
+
+\section{2.58}
+
+\subsection{a.}
+
+This is quite simple actually, since
+ nothing but only the relative positions
+ are changed.
+
+\subsection{b.}
+
+First search the expression for \lstinline{+}.
+ If \lstinline{+} is found, then compute
+ differentials of both sides of the expression
+ respectively and make summand of them.
+
+If no \lstinline{+} is found, then select any
+ one of the \lstinline{*}s, and regard both sides
+ of the expression repectively as the multiplier
+ and the multiplicand, so as to apply the rule
+ for products.
+
 \end{document}
 
 
