@@ -1175,6 +1175,84 @@ If no \lstinline{+} is found, then select any
  and the multiplicand, so as to apply the rule
  for products.
 
+\section{Exercise 2.59}
+
+Code:
+
+\begin{lstlisting}
+(define (union-set set1 set2)
+  (cond ((or (null? set1) (null? set2))
+          (append set1 set2))
+        ((element-of-set? (car set1) set2)
+          (union-set (cdr set1) set2))
+        (else (cons (car set1)
+            (union-set (cdr set1) set2)))))
+\end{lstlisting}
+
+\section{Exercise 2.60}
+
+Code:
+
+\begin{lstlisting}
+(define (element-of-set? x set)
+  (cond ((null? set) #f)
+        ((equal? x (car set)) #t)
+        (else (element-of-set? x (cdr set)))))
+(define (adjoin-set x set)
+  (cons x set))
+(define (union-set set1 set2)
+  (append set1 set2))
+(define (intersection-set set1 set2)
+  (cond ((or (null? set1) (null? set2)) '())
+        ((element-of-set? (car set1) set2)
+          (cons (car set1)
+                (intersection-set (cdr set1) set2)))
+        (else (intersection-set (cdr set1) set2))))
+\end{lstlisting}
+
+The \lstinline{element-of-set?} and
+ \lstinline{intersection-set} operations
+ can be much more time consuming, while the
+ \lstinline{adjoin-set} and \lstinline{union-set}
+ operations are much more efficient.
+ Applications dealing with sparse elements
+ may prefer this representation, since they
+ don't bring about too much duplication and
+ at the same time are much efficient when
+ doing \lstinline{adjoin-set} and \lstinline{union-set}.
+
+\section{Exercise 2.61}
+
+Code:
+
+\begin{lstlisting}
+(define (adjoin-set x set)
+  (define (adjoin-set-iter result x rest)
+    (cond ((null? rest) (append set (list x)))
+          ((= (car rest) x) set)
+          ((< (car rest) x)
+            (adjoin-set-iter (append result (list (car rest)))
+                             x
+                             (cdr rest)))
+          (else (append result (list x) rest))))
+  (adjoin-set-iter '() x set))
+\end{lstlisting}
+
+Suppose there are $n$ elements already in the set
+ before adjoining $x$ into the set. In average case
+ about half the elements (i.e. $\frac{n}{2}$ elements)
+ are smaller than $x$ and the other half are larger
+ than $x$. Therefore on average only $\frac{n}{2}$
+ iterations are needed.
+
+As for the unordered representation, every time
+ \lstinline{adjoin-set} is carried out iterations
+ (with a total of $n$)
+ through the whole set must be done to ensure
+ that no duplication exists.
+
+\section{Exercise 2.63}
+
 \end{document}
 
 
