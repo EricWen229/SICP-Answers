@@ -439,6 +439,8 @@ Box-n-pointer structure:
 
 Tree interpretation:
 
+\vspace{2mm}
+
 \begin{tikzpicture}[sibling distance=64pt, level distance=24pt]
 \node{\lstinline{(1 (2 (3 4)))}}
   child{node{\lstinline{1}}}
@@ -1252,6 +1254,75 @@ As for the unordered representation, every time
  that no duplication exists.
 
 \section{Exercise 2.63}
+
+\subsection{a.}
+
+They do.
+
+Result:
+
+\begin{lstlisting}
+(1 3 5 7 9 11)
+\end{lstlisting}
+
+\subsection{b.}
+
+The time consumption of the first procedure,
+ denoted as $T_1(n)$, satisfies the following
+ equation:
+
+\begin{align*}
+&T_1(n) = 2T_1\left(\frac{n}{2}\right) + \Theta(n) \\
+\implies &T_1(n) = \Theta(n\log n)
+\end{align*}
+
+For the second procedure:
+
+\begin{align*}
+&T_2(n) = 2T_2\left(\frac{n}{2}\right) + C \\
+\implies &T_2(n) = \Theta(n)
+\end{align*}
+
+\section{Exercise 2.64}
+
+\subsection{a.}
+
+First, consider whether the length of list
+ to be converted is 0. If so, just return
+ an empty tree and the list unmodified.
+
+If not, then select one element around the center
+ of the interval, and recursively convert
+ the left part and the right part as two subtrees.
+ Finally return this tree and remaining part
+ of list.
+
+The tree produced by \lstinline{list->tree}:
+
+\vspace{2mm}
+
+\tikzset{sibling distance=24pt, level distance=24pt}
+\Tree
+[.{5}
+	[.{1}
+		\edge[draw=none];{}
+		{3}
+	]
+	[.{9}
+		{7}
+		{11}
+	]
+]
+
+\subsection{b.}
+
+Let the time taken to convert a list of $n$
+ be $T(n)$, then we have
+
+\begin{align*}
+&T(n) = 2T\left(\frac{n}{2}\right) + C \\
+\implies &T(n) = \Theta(n)
+\end{align*}
 
 \end{document}
 
