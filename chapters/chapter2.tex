@@ -1076,12 +1076,12 @@ Output:
      (cond ((and (null? list1) (null? list2)) #t)
            ((or (null? list1) (null? list2)) #f)
            ((eq? (car list1) (car list2))
-             (equal-list? (cdr list1) (cdr list2)))
+            (equal-list? (cdr list1) (cdr list2)))
            (else #f)))
   (cond ((and (list? stuff1) (list? stuff2))
-          (equal-list? stuff1 stuff2))
+         (equal-list? stuff1 stuff2))
         ((and (not (list? stuff1)) (not (list? stuff2)))
-          (eq? stuff1 stuff2))
+         (eq? stuff1 stuff2))
         (else #f)))
 \end{lstlisting}
 
@@ -1184,11 +1184,11 @@ Code:
 \begin{lstlisting}
 (define (union-set set1 set2)
   (cond ((or (null? set1) (null? set2))
-          (append set1 set2))
+         (append set1 set2))
         ((element-of-set? (car set1) set2)
-          (union-set (cdr set1) set2))
+         (union-set (cdr set1) set2))
         (else (cons (car set1)
-            (union-set (cdr set1) set2)))))
+                    (union-set (cdr set1) set2)))))
 \end{lstlisting}
 
 \section{Exercise 2.60}
@@ -1207,8 +1207,8 @@ Code:
 (define (intersection-set set1 set2)
   (cond ((or (null? set1) (null? set2)) '())
         ((element-of-set? (car set1) set2)
-          (cons (car set1)
-                (intersection-set (cdr set1) set2)))
+         (cons (car set1)
+               (intersection-set (cdr set1) set2)))
         (else (intersection-set (cdr set1) set2))))
 \end{lstlisting}
 
@@ -1233,9 +1233,9 @@ Code:
     (cond ((null? rest) (append set (list x)))
           ((= (car rest) x) set)
           ((< (car rest) x)
-            (adjoin-set-iter (append result (list (car rest)))
-                             x
-                             (cdr rest)))
+           (adjoin-set-iter (append result (list (car rest)))
+                            x
+                            (cdr rest)))
           (else (append result (list x) rest))))
   (adjoin-set-iter '() x set))
 \end{lstlisting}
@@ -1323,6 +1323,44 @@ Let the time taken to convert a list of $n$
 &T(n) = 2T\left(\frac{n}{2}\right) + C \\
 \implies &T(n) = \Theta(n)
 \end{align*}
+
+\section{Exercise 2.65}
+
+Code:
+
+\begin{lstlisting}
+(define (union-set set1 set2)
+  (let ((list1 (tree->list set1))
+        (list2 (tree->list set2)))
+    (list->tree (union-list list1 list2))))
+(define (intersection-set set1 set2)
+  (let ((list1 (tree->list set1))
+        (list2 (tree->list set2)))
+    (list->tree (intersection-list list1 list2))))
+\end{lstlisting}
+
+Let the size of \lstinline{set1} and \lstinline{set2}
+ be both $n$, then converting them to lists, doing
+ union/intersection and converting the final list back
+ to set each takes $\Theta(n)$ time, thus the entire
+ procedure is $\Theta(n)$ growth.
+
+\section{Exercise 2.66}
+
+Code:
+
+\begin{lstlisting}
+(define (lookup given-key set-of-records)
+  (cond ((null? set-of-records) false)
+        ((equal? given-key (key (entry set-of-records)))
+         (entry set-of-records))
+        (else (let ((left-result (lookup given-key
+                                         (left-branch set-of-records))))
+                (if (equal? left-result false)
+                    false
+                    (lookup given-key
+                            (right-branch set-of-records)))))))
+\end{lstlisting}
 
 \end{document}
 
