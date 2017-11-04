@@ -1552,6 +1552,58 @@ To reduce the time of comparing target symbol
 Encoding both the most frequent symbol and the lease
 frequent symbol takes $\Theta(n)$ time.
 
+\section{Exercise 2.73}
+
+\subsection{a.}
+
+When calling \lstinline{deriv}, tell if the given
+ expression is a number or a variable. If so, apply
+ to corresponding rule to the expression. Elsewise,
+ get the corresponding derivative handler to the
+ operator, then apply it to the operands.
+
+For numbers and variables, \lstinline{(car exp)} returns
+ the single number/variable, which is not operator and
+ shouldn't be passed to \lstinline{get} that is expecting
+ a type instead of a value.
+
+\subsection{b.}
+
+Code:
+
+\begin{lstlisting}
+(define (deriv-sum exp var)
+  (make-sum (deriv (addend exp) var)
+            (deriv (augend exp) var)))
+(define (deriv-product exp var)
+  (make-sum
+    (make-product (multiplier exp)
+                  (deriv (multiplicand exp) var))
+    (make-product (deriv (multiplier exp) var)
+                  (multiplicand exp))))
+(put 'deriv '(+) deriv-sum)
+(put 'deriv '(*) deriv-product)
+\end{lstlisting}
+
+\subsection{c.}
+
+Code:
+
+\begin{lstlisting}
+(define (deriv-expo exp var)
+  (make-product (make-product (exponent exp)
+                              (make-expo (base exp)
+                                         (make-sum (exponent exp)
+                                                   -1)))
+                (deriv (base exp) var)))
+(put 'deriv '(**) deriv-expo)
+\end{lstlisting}
+
+\subsection{d.}
+
+Simply exchange the first two arguments when calling
+ \lstinline{put}.
+
 \end{document}
 
 
