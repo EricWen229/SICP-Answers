@@ -1603,6 +1603,118 @@ Code:
 
 Simply exchange the first two arguments when calling
  \lstinline{put}.
+ 
+\section{Exercise 2.74}
+
+\subsection{a.}
+
+Code:
+
+\begin{lstlisting}
+(define (get-record file employee)
+   ((get 'get-record (division file)) (content file) employee))
+\end{lstlisting}
+
+Each division should implement its own
+ \lstinline{get-record} method and install
+ it in the table. The file should be tagged
+ with division identifier (using the same
+ procedure as every other division).
+
+\subsection{b.}
+
+Code:
+
+\begin{lstlisting}
+(define (get-salary record)
+  ((get 'get-salary (division record)) (content record)))
+\end{lstlisting}
+
+Each division should implement its own
+ \lstinline{get-salary} method and install
+ it in the table. The record should be tagged
+ with division identifier.
+
+\subsection{c.}
+
+Code:
+
+\begin{lstlisting}
+(define (find-employee-record employee file-list)
+  (if (null? file-list)
+      '()
+      (let ((curr-result (get-record (car file-list)
+                                     employee)))
+        (if (null? curr-result)
+            (find-employee-record employee (cdr file-list))
+            curr-result))))
+\end{lstlisting}
+
+\subsection{d.}
+
+Type information now consists of company identifier
+ and division identifier. All entries in the table
+ must be updated.
+
+\section{Exercise 2.75}
+
+Code:
+
+\begin{lstlisting}
+(define (make-from-mag-ang mag ang)
+  (define (dispatch op)
+    (cond ((eq? op 'real-part) 
+            (* mag (cos ang)))
+          ((eq? op 'imag-part)
+            (* mag (sin ang)))
+          ((eq? op 'magnitude) mag)
+          ((eq? op 'angle) ang)
+          (else
+            (error "Unknown op -- MAKE-FROM-MAG-ANG" op))))
+  dispatch)
+\end{lstlisting}
+
+\section{Exercise 2.76}
+
+When using generic operations with explicit
+ dispatch:
+
+\begin{itemize}
+\item When new types are added, all original
+ operations need to be modified to adapt to
+ new types.
+\item When new operations are added, no
+ modifications are needed for the original
+ part.
+\end{itemize}
+
+When using data-directed style:
+
+\begin{itemize}
+\item When new types are added, operations
+ for new types need to be added to table.
+\item When new operations are added, no
+ modifications are needed for the original
+ part.
+\end{itemize}
+
+When using message-passing style:
+
+\begin{itemize}
+\item When new types are added, no modifications
+ are needed for the original part.
+\item When new operations are added, all
+ original types need to be modified to adapt to
+ new operations.
+\end{itemize}
+
+To make as little modifications as possible,
+ choose the first or second one when new operations
+ are more likely to be added often, the third
+ one when new types are more likely to be added
+ often. The first strategy is easier to implement,
+ while the second one can save much effort when
+ new types are added.
 
 \end{document}
 
