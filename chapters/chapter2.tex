@@ -1716,6 +1716,76 @@ To make as little modifications as possible,
  while the second one can save much effort when
  new types are added.
 
+\section{Exercise 2.77}
+
+Evaluation procedure is as below:
+
+\begin{lstlisting}
+(magnitude (complex rectangular 3 . 4)) ->
+(apply-generic 'magnitude (complex rectangular 3 . 4)) ->
+(magnitude (rectangular 3 . 4)) ->
+(apply-generic 'magnitude (rectangular 3 . 4)) ->
+25
+\end{lstlisting}
+
+When \lstinline{apply-generic} get invoked for the first time,
+ \lstinline{magnitude} is dispatched to according to tag
+ \lstinline{complex}. Then \lstinline{apply-generic} get invoked
+ for the second time, when the actual \lstinline{magitude}
+ procedure for \lstinline{rectangle} numbers is dispatched to.
+
+\section{Exercise 2.78}
+
+Code:
+
+\begin{lstlisting}
+(define (type-tag datum)
+  (cond ((pair? datum) (car datum))
+        ((number? datum) 'scheme-number)
+        (else (error "Bad tagged datum -- TYPE-TAG" datum))))
+(define (contents datum)
+  (cond ((pair? datum) (cdr datum))
+        ((number? datum) datum)
+        (else (error "Bad tagged datum -- CONTENTS" datum))))
+(define (attach-tag type-tag contents)
+  (if (number? contents)
+      contents
+      (cons type-tag contents)))
+\end{lstlisting}
+
+\section{Exercise 2.79}
+
+Code:
+
+\begin{lstlisting}
+(put 'equ? '(scheme-number scheme-number)
+  (lambda (x y) (= x y)))
+(put 'equ? '(rational rational)
+  (lambda (x y) (and (= (numer x) (numer y))
+                     (= (denom x) (denom y)))))
+(put 'equ? '(complex complex)
+  (lambda (x y) (and (= (real-part x) (real-part y))
+                     (= (imag-part y) (imag-part y)))))
+(define (equ? x y)
+  (apply-generic 'equ? x y))
+\end{lstlisting}
+
+\section{Exercise 2.80}
+
+Code:
+
+\begin{lstlisting}
+(put '=zero? '(scheme-number)
+  (lambda (x) (= x 0)))
+(put '=zero? '(rational)
+  (lambda (x) (= (numer x) 0)))
+(put '=zero? '(complex)
+  (lambda (x) (and (= (real-part x) 0)
+                   (= (imag-part x) 0))))
+(define (=zero? x)
+  (apply-generic '=zero? x))
+\end{lstlisting}
+
 \end{document}
 
 
