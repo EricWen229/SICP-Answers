@@ -1786,6 +1786,124 @@ Code:
   (apply-generic '=zero? x))
 \end{lstlisting}
 
+\section{Exercise 2.81}
+
+\subsection{a.}
+
+Since the operation is not in the table, the program
+ would apply coersions to each of the operands, and make
+ another call of \lstinline{apply-generic} with the
+ same operands still with the same type, causing an
+ infinite loop in the end.
+
+\subsection{b.}
+
+Louis is wrong, but something could be done, indeed.
+
+Suppose we've implemented complex numbers and operations
+ including addition and subtraction. Now when we implement
+ integers, we don't necessarily need to implement
+ addition and substraction again, since all integers can
+ be converted to complex numbers and be applied with
+ the operations of the complex numbers. Therefore, if
+ the program finds that there's no available operation
+ for two objects with the same type, it would be good
+ if it can look up in the type hierarchy for a common
+ supertype where the operation is available.
+
+\subsection{c.}
+
+Code:
+
+\begin{lstlisting}
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (apply proc (map contents args))
+          (if (= length args) 2)
+              (let ((type1 (car type-tags))
+                    (type2 (cadr type-tags))
+                    (a1 (car args))
+                    (a2 (cadr args)))
+                (if (eq? type1 type2)
+                    (error "No method for type" (list op type1))
+                    (let ((t1->t2 (get-coercion type1 type2))
+                          (t2->t1 (get-coercion type2 type1)))
+                      (cond (t1->t2
+                              (apply-generic op (t1->t2 a1) a2))
+                            (t2->t1
+                              (apply-generic op a1 (t2->t1 a2)))
+                            (else
+                              (error "No method for types" (list op type-tags)))))))
+              (error "No method for types" (list op type-tags))))))
+\end{lstlisting}
+
+\section{Exercise 2.82}
+
+First to prove that the given strategy is not sufficiently general, suppose
+ there are 3 arguments with type (B, B, A), where A is the supertype
+ of B. Now using the given strategy, the combination of (A, B, A) or (B, A, A)
+ will never be tried.
+
+To try every combination is actually to traverse a directed graph. Each node
+ represents a combination of types, and there's edge from one node to another
+ if the former combination can be transformed to the latter with a single
+ coercion. One fact about the graph is that there's only one node with the
+ indegree of 0 (the original combination) and only one node with the outdegree
+ of 0 (can't be coerced anymore). By performing a search (like BFS) on the graph
+ starting from the original combination, one can always find an available
+ combination if there is one.
+
+\section{Exercise 2.83}
+
+Code:
+
+\begin{lstlisting}
+(put 'raise '(integer)
+  (lambda (x) (make-rational (contents x) 1)))
+(put 'raise '(rational)
+  (lambda (x)
+          (let ((n (numer x))
+                (d (denom x)))
+            (make-real (/ n d)))))
+(put 'raise '(real)
+  (lambda (x) (make-complex (contents real) 0)))
+(define (raise x)
+  (apply-generic 'raise x))
+\end{lstlisting}
+
+\section{Exercise 2.84}
+
+Code:
+
+\begin{lstlisting}
+(define (install-level-package)
+  (put 'level 'integer 0)
+  (put 'level 'rational 1)
+  (put 'level 'real 2)
+  (put 'level 'complex 3))
+(define (operand-level op)
+  (get 'level (type-tag op)))
+(define (is-super? op1 op2)
+  (> (operand-level op1)
+     (operand-level op2)))
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (apply proc (map contents args)
+          (if (= (length args) 2)
+            (let ((a1 (car args))
+                  (a2 (cadr args)))
+              (cond ((is-super? a1 a2) (apply-generic op a1 (raise a2)))
+                    ((is-super? a2 a1) (apply-generic op (raise a1) a2))
+                    (else (error "No method for these types"
+                                 (list op type-tags)))))
+            (error "No method for these types"
+                   (list op type-tags))))))))
+\end{lstlisting}
+
 \end{document}
 
 
