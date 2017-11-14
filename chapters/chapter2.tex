@@ -1904,6 +1904,29 @@ Code:
                    (list op type-tags))))))))
 \end{lstlisting}
 
+\section{Exercise 2.85}
+
+Code:
+
+\begin{lstlisting}
+(define (drop n)
+  (if (equal-generic? (raise (project n))
+                      n)
+      (drop (project n))
+      n)))
+\end{lstlisting}
+
+This topic has been on for a really long period. I Really
+ want to speed up so a lot of code is omitted.
+
+\section{Exercise 2.86}
+
+It's been a long time since the last time I tested my code.
+ Honestly, writing code that can't run is really frustrating.
+ There's still a lot to go, and all the code can't run without
+ \lstinline{put} and \lstinline{get}. Now I'm done with it
+ and I'm gonna implement these two method before going on.
+
 \end{document}
 
 
