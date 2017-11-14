@@ -1926,6 +1926,120 @@ It's been a long time since the last time I tested my code.
  There's still a lot to go, and all the code can't run without
  \lstinline{put} and \lstinline{get}. Now I'm done with it
  and I'm gonna implement these two method before going on.
+ Besides, to simplify the work, only two types and three operations
+ are involved.
+
+Complete version of code:
+
+\begin{lstlisting}
+(define (make-table)
+  (let ((local-table (list '**table**)))
+    (define (assoc key records)
+      (cond ((null? records) #f)
+            ((equal? key (caar records)) (car records))
+            (else (assoc key (cdr records)))))
+    (define (lookup key1 key2)
+      (let ((subtable (assoc key1 (cdr local-table))))
+        (if subtable
+            (let ((record (assoc key2 (cdr subtable))))
+              (if record
+                  (cdr record)
+                  false))
+            false)))
+    (define (insert! key1 key2 value)
+      (let ((subtable (assoc key1 (cdr local-table))))
+        (if subtable
+            (let ((record (assoc key2 (cdr subtable))))
+              (if record
+                  (set-cdr! record value)
+                  (set-cdr! subtable
+                            (cons (cons key2 value)
+                                  (cdr subtable)))))
+            (set-cdr! local-table
+                      (cons (list key1
+                                  (cons key2 value))
+                            (cdr local-table)))))
+      'ok)
+    (define (dispatch method)
+      (cond ((eq? method 'lookup-proc) lookup)
+            ((eq? method 'insert-proc) insert!)
+            (else (error "No such method" method))))
+    dispatch))
+
+(define op-table (make-table))
+(define put (op-table 'insert-proc))
+(define get (op-table 'lookup-proc))
+
+(define (attach-tag tag x)
+  (if (number? x)
+      x
+      (cons tag x)))
+(define (get-tag x)
+  (if (number? x)
+      'real
+      (car x)))
+(define (get-content x)
+  (if (number? x)
+      x
+      (cdr x)))
+
+(define (apply-generic op . args)
+  (let ((type-tags (map get-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (apply proc (map get-content args))
+          (error "No method for" (list op type-tags))))))
+
+(define (make type-tag . args)
+  (apply (get 'make type-tag) args))
+(define (add x y)
+  (apply-generic 'add x y))
+(define (mul x y)
+  (apply-generic 'mul x y))
+(define (display x)
+  (apply-generic 'display x))
+
+(define (install-real-package)
+  (define (tag x)
+    (attach-tag 'real x))
+  (put 'make '(real)
+       (lambda (x) (tag x)))
+  (put 'add '(real real)
+       (lambda (x y) (tag (+ x y))))
+  (put 'mul '(real real)
+       (lambda (x y) (tag (* x y))))
+  (put 'display '(real)
+       (lambda (x) (write x)))
+  'ok)
+(install-real-package)
+(define (make-real x)
+  (make '(real) x))
+
+(define (install-rational-package)
+  (define (tag x)
+    (attach-tag 'rational x))
+  (put 'make '(rational)
+       (lambda (n d) (tag (cons n d))))
+  (put 'add '(rational rational)
+       (lambda (x y)
+         (tag (cons (add (mul (car x) (cdr y))
+                         (mul (cdr x) (car y)))
+                    (mul (cdr x) (cdr y))))))
+  (put 'mul '(rational rational)
+       (lambda (x y)
+         (tag (cons (mul (car x) (car y))
+                    (mul (cdr x) (cdr y))))))
+  (put 'display '(rational)
+       (lambda (x) (write-string "(")
+                   (display (car x))
+                   (write-string ")/(")
+                   (display (cdr x))
+                   (write-string ")")))
+  'ok)
+(install-rational-package)
+(define (make-rational n d)
+  (make '(rational) n d))
+\end{lstlisting}
 
 \end{document}
 
