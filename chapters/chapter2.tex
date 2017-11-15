@@ -2148,7 +2148,23 @@ Code:
             (t2 (first-term L2)))
         (if (> (order t2) (order t1))
             (list (the-empty-termlist) L1)
+            (let ((new-coeff (div (coeff t1) (coeff t2)))
+                  (new-order (- (order t1) (order t2))))
+              (let ((rest-of-result
+                     (div-terms (sub-terms L1
+                                           (mul-terms L2
+                                                      (list
+                                                        (make-term new-order new-coeff))))
+                                L2)))
+                (list (cons (make-term new-order new-coeff)
+                            (car rest-of-result))
+                      (cdr rest-of-result))))))))
 \end{lstlisting}
+
+\section{Exercise 2.92}
+
+This part is really complicated. I decide reserve
+ it for exercise in the future.
 
 \end{document}
 
