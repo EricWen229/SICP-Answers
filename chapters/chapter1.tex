@@ -38,6 +38,8 @@
 
 \section{Exercise 1.3}
 
+Code:
+
 \begin{lstlisting}
 (define (min2 a b)
   (if (< a b)
@@ -48,104 +50,326 @@
         (min2 b c)))
 (define (square x)
   (* x x))
-(define (f a b c)
+(define (larger-two-square-sum a b c)
   (- (+ (square a)
         (square b)
         (square c))
      (square (min3 a b c))))
 \end{lstlisting}
 
+Tests:
+
+\begin{lstlisting}
+(larger-two-square-sum 1 2 3) ; 13 expected
+(larger-two-square-sum 4 5 6) ; 61 expected
+(larger-two-square-sum 7 8 9) ; 145 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+13 ; pass
+61 ; pass
+145 ; pass
+\end{lstlisting}
+
 \section{Exercise 1.4}
 
-If b is positive, evaluate \lstinline{(- a b)} (i.e. a - b), otherwise evaluate \lstinline{(+ a b)} (i.e. a + b).
+If b is positive, evaluate and return \lstinline{(- a b)} (i.e. a - b).
+ Otherwise, evaluate and return \lstinline{(+ a b)} (i.e. a + b).
 
 \section{Exercise 1.5}
 
 \subsection*{Applicative-order Evaluation}
 
 \begin{lstlisting}
-(test 0 (p)) ->
-(test 0 (p)) ->
-(test 0 (p)) ->
-(test 0 (p)) ->
+(test 0 (p))
+(test 0 (p))
+(test 0 (p))
+(test 0 (p))
 ......
 \end{lstlisting}
 
-In applicative-order evaluation, a procedure is not reduced until all its arguments are evaluated. Thus the expression \lstinline{(p)} is constantly being expanded into itself over and over again while the procedure \lstinline{test} can never get the chance to be reduced.
+In applicative-order evaluation, a procedure is not reduced until
+ all its arguments are evaluated. Thus the expression \lstinline{(p)}
+  is constantly being expanded into itself over and over again while
+   the procedure \lstinline{test} can never get the chance to be reduced.
 
 \subsection*{Normal-order Evaluation}
 
 \begin{lstlisting}
-(test 0 (p)) ->
-(if (= 0 0) 0 (p)) ->
+(test 0 (p))
+(if (= 0 0) 0 (p))
 0
 \end{lstlisting}
 
-In normal-order evaluation, a procedure's arguments are not evaluated until they're needed, which means the procedure is always reduced until it only involves primitive operators before its arguments are evaluated. Due to the special evaluation rule of \lstinline{if} where the alternative expression is not evaluated if the predicate expression is evaluated to be true, the function \lstinline{test} returns 0 before \lstinline{(p)} gets the chance to be evaluated.
+In normal-order evaluation, a procedure's arguments are not evaluated
+ until they're needed, which means the procedure is always reduced
+ until it only involves primitive operators before its arguments are
+ evaluated. Due to the special evaluation rule of \lstinline{if}
+ where the alternative expression is not evaluated if the predicate
+ expression is evaluated to be true, the function \lstinline{test}
+ returns 0 before \lstinline{(p)} gets the chance to be evaluated.
 
 \section{Exercise 1.6}
 
 The program will run infinitely until it runs out of memory.
 
-\lstinline{if} has a special evaluation rule where either the consequent or the alternative expression is evaluated depending on the value of the predicate expression. In the implementation of Newton's Method, the procedure should immediately return current value when the value is good enough, and here's where \lstinline{if} comes in: if the requirement is met, the recursive call is not made.
+\lstinline{if} has a special evaluation rule where either the consequent
+ or the alternative expression is evaluated depending on the value of
+ the predicate expression. In the implementation of Newton's Method,
+ the procedure should immediately return current value when the value
+ is good enough, and here's where \lstinline{if} comes in: if the
+ requirement is met, the recursive call is not made.
  
-But the program using \lstinline{new-if} always evaluates both the consequent and the alternative expression, causing the procedure to recursively call itself infinitely.
+But the program using \lstinline{new-if} always evaluates both the
+ consequent and the alternative expression, causing the procedure to
+ recursively call itself infinitely.
 
 \section{Exercise 1.7}
 
-For very small numbers, the threshold value 0.001 is too large to tell if current estimation is close enough to real value.
+For very small numbers, the threshold value 0.001 is too large to tell
+ if current estimation is close enough to real value.
 
 \lstinline{(sqrt 0.00000001)} returns 0.03125, while 0.0001 is the real value.
 
-For very large numbers, the precision is lost during calculation, hence the estimation can never get close enough ('close' defined by the threshold value 0.001) to real value.
+For very large numbers, the precision is lost during calculation, hence
+ the estimation can never get close enough ('close' defined by the
+ threshold value 0.001) to real value.
 
-\lstinline{(sqrt (expt 10 150))} fails to return within a reasonable amount of time.
+\lstinline{(sqrt (expt 10 150))} fails to return within a reasonable
+ amount of time.
 
 Code after improvement:
 
 \begin{lstlisting}
-(define (sqrt-iter guess last x)
-  (if (enough? guess last)
-      guess
-      (sqrt-iter (improve guess x)
-                 guess
-                 x)))
-(define (improve guess x)
-  (average guess
-           (/ x guess)))
-(define (average x y)
-  (/ (+ x y)
-     2))
-(define (enough? guess last)
-  (< (/ (abs (- guess last))
-        last)
-     0.001))
 (define (sqrt x)
+  (define (sqrt-iter guess last x)
+    (define (enough? guess last)
+      (< (/ (abs (- guess last))
+            last)
+         0.001))
+    (define (improve guess x)
+      (define (average x y)
+        (/ (+ x y)
+           2))
+      (average guess
+               (/ x guess)))
+    (if (enough? guess last)
+        guess
+        (sqrt-iter (improve guess x)
+                   guess
+                   x)))
   (sqrt-iter 1.0 x x))
 \end{lstlisting}
 
-After improvement, function calls mentioned above return 1e-4 and 1e75 respectively.
+Tests:
+
+\begin{lstlisting}
+(sqrt 144) ; 12 expected
+(sqrt 0) ; 0 expected
+(sqrt -1) ; reject
+(sqrt (expt 10 -8)) ; 1e-4 expected
+(sqrt (expt 10 150)) ; 1e75 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+12.000000012408687 ; pass
+;; fail to return within a reasonable amount of time
+1. ; fail
+1.0000000000082464e-4 ; pass
+1.0000000000005358e75 ; pass
+\end{lstlisting}
+
+Here is the analysis of why the program fail with 0.
+
+Process of evaluation of \lstinline{(sqrt 0)}:
+
+\begin{lstlisting}
+(sqrt 0)
+(sqrt-iter 1.0 0 0)
+(sqrt-iter 0.5 1.0 0)
+(sqrt-iter 0.25 0.5 0)
+(sqrt-iter 0.125 0.25 0)
+...
+\end{lstlisting}
+
+After every iteration guess get halved, so that
+ $\frac{|guess-last|}{last}$ is always 0.5,
+ causing the program to iterate infinitely.
+
+Such thing won't happen to a positive input. To prove it, let
+ the $n$th guess be $g_n$, then we have
+ 
+\begin{align*}
+g_0 &= 1.0, \\
+g_{n+1} &= \frac{1}{2}(g_n+\frac{x}{g_n}) \\
+&\geq \frac{1}{2}\cdot2\sqrt{x} \\
+&= \sqrt{x}
+\end{align*}
+
+Thus if $g_n \neq \sqrt{x}$, $g_{n+1} > \sqrt{x}$ (otherwise $g_{n+1} = \sqrt{x}$).
+ Suppose $g_0 \neq \sqrt{x}$, then $g_n > \sqrt{x} (n > 0)$, $\frac{x}{g_n} <
+ \sqrt{x} < g_n$.
+
+Also,
+
+\begin{align*}
+g_{n+1} &= \frac{1}{2}(g_n+\frac{x}{g_n}) \\
+&< \frac{1}{2}(g_n+g_n) \\
+&= g_n (n > 0)
+\end{align*}
+
+As $g_n$ is both monotonous and bounded, $\lim_{n \to \infty}g_n$ exists.
+ Let $\lim_{n \to \infty}g_n = \alpha$, then by solving
+ $\alpha = \frac{1}{2}(\alpha+\frac{x}{\alpha})$ we have
+ $\lim_{n \to \infty}g_n = \sqrt{x}$ (which proves that the method is valid).
+
+Look back at the program, we have
+
+\begin{align*}
+\frac{|guess-last|}{last} &= |\frac{guess}{last} - 1| \\
+&= |\frac{last + \frac{x}{last}}{2 last} - 1| \\
+&= |\frac{1}{2} - \frac{x}{2 last^2}| \\
+&= \frac{1}{2}|1-\frac{x}{last^2}|
+\end{align*}
+
+If $x > 0$, $\lim_{n \to \infty}\frac{x}{last^2} = 1$, 
+ $\lim_{n \to \infty}\frac{|guess-last|}{last} = 0$. So
+ infinite loop won't occur given a positive input.
+
+To deal with 0 and negative inputs, here are the code after
+ improvement:
+
+\begin{lstlisting}
+(define (sqrt x)
+  (define (sqrt-iter guess last x)
+    (define (enough? guess last)
+      (< (/ (abs (- guess last))
+            last)
+         0.001))
+    (define (improve guess x)
+      (define (average x y)
+        (/ (+ x y)
+           2))
+      (average guess
+               (/ x guess)))
+    (if (enough? guess last)
+        guess
+        (sqrt-iter (improve guess x)
+                   guess
+                   x)))
+  (cond ((= x 0) 0)
+        ((< x 0) (error "Can't compute square root of positive number" x))
+        (else (sqrt-iter 1.0 x x))))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(sqrt 144) ; 12 expected
+(sqrt 0) ; 0 expected
+(sqrt -1) ; reject
+(sqrt (expt 10 -8)) ; 1e-4 expected
+(sqrt (expt 10 150)) ; 1e75 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+12.000000012408687 ; pass
+0 ; pass
+Can't compute square root of positive number -1 ; pass
+1.0000000000082464e-4 ; pass
+1.0000000000005358e75 ; pass
+\end{lstlisting}
 
 \section{Exercise 1.8}
 
+Code:
+
 \begin{lstlisting}
-(define (cbrt-iter guess last x)
-  (if (enough? guess last)
-      guess
-      (cbrt-iter (improve guess x)
-                guess
-                x)))
-(define (improve guess x)
-  (/ (+ (/ x
-           (* guess guess))
-        (* guess 2))
-     3))
-(define (enough? guess last)
-  (< (/ (abs (- guess last))
-        last)
-     0.001))
 (define (cbrt x)
+  (define (cbrt-iter guess last x)
+    (define (enough? guess last)
+      (< (/ (abs (- guess last))
+            last)
+         0.001))
+    (define (improve guess x)
+      (/ (+ (/ x
+               (* guess guess))
+            (* guess 2))
+         3))
+    (if (enough? guess last)
+        guess
+        (cbrt-iter (improve guess x)
+                  guess
+                  x)))
   (cbrt-iter 1.0 x x))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(cbrt 27) ; 3 expected
+(cbrt 0) ; 0 expected
+(cbrt -27) ; -3 expected
+(cbrt (expt 10 -9)) ; 1e-3 expected
+(cbrt (expt 10 270)) ; 1e90 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+3.0000005410641766 ; pass
+4.9406564584124654e-324 ; pass
+1. ; fail
+1.0000009808132022e-3 ; pass
+1.0000000016216367e90 ; pass
+\end{lstlisting}
+
+Here comes an interesting question: why do
+ \lstinline{sqrt} and \lstinline{cbrt}
+ both fail on negative inputs and always
+ return 1?
+
+It turns out that when \lstinline{enough?} is invoked
+ for the first time, \lstinline{guess} is 1.0 and
+ \lstinline{last} is a negative number, making
+ $\frac{|guess-last|}{last}$ a negative number. That's
+ when \lstinline{enough?} returns true, and the
+ program stops immediately to return 1.
+
+To fix this issue, just apply \lstinline{abs} to
+ denominator as well:
+
+\begin{lstlisting}
+(define (enough? guess last)
+  (< (abs (/ (- guess last)
+        last))
+     0.001))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(cbrt 27) ; 3 expected
+(cbrt 0) ; 0 expected
+(cbrt -27) ; -3 expected
+(cbrt (expt 10 -9)) ; 1e-3 expected
+(cbrt (expt 10 270)) ; 1e90 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+3.0000005410641766 ; pass
+4.9406564584124654e-324 ; pass
+-3.000000005383821 ; pass
+1.0000009808132022e-3 ; pass
+1.0000000016216367e90 ; pass
 \end{lstlisting}
 
 \section{Exercise 1.9}
@@ -245,28 +469,46 @@ The process is iterative.
 Recursive version:
 
 \begin{lstlisting}
-(define (f n)
+(define (f-recur n)
   (if (< n 3)
       n
-      (+ (f (- n 1))
-         (* 2 (f (- n 2)))
-         (* 3 (f (- n 3))))))
+      (+ (f-recur (- n 1))
+         (* 2 (f-recur (- n 2)))
+         (* 3 (f-recur (- n 3))))))
 \end{lstlisting}
 
 Iterative version:
 
 \begin{lstlisting}
-(define (f n)
-  (define (f-iter n curr a b c)
-    (if (= curr n)
-        a
-        (f-iter n (+ 1 curr) (+ a (* 2 b) (* 3 c)) a b)))
+(define (f-iter n)
+  (define (f-iter-helper n curr-n fn fn-1 fn-2)
+    (if (= curr-n n)
+        fn
+        (f-iter-helper n (+ 1 curr-n) (+ fn (* 2 fn-1) (* 3 fn-2)) fn fn-1)))
   (if (< n 3)
       n
-      (f-iter n 2 2 1 0)))
+      (f-iter-helper n 2 2 1 0)))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(map (lambda (x)
+       (- (f-iter x)
+          (f-recur x)))
+     '(1 2 3 4 5 6 7 8 9 10))
+;; (0 0 0 0 0 0 0 0 0 0) expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+(0 0 0 0 0 0 0 0 0 0) ; pass
 \end{lstlisting}
 
 \section{Exercise 1.12}
+
+Code:
 
 \begin{lstlisting}
 (define (pascal line row)
@@ -275,6 +517,36 @@ Iterative version:
       1
       (+ (pascal (- line 1) (- row 1))
          (pascal (- line 1) row))))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(pascal 1 1) ; 1 expected
+(pascal 2 1) ; 1 expected
+(pascal 2 2) ; 1 expected
+(pascal 3 1) ; 1 expected
+(pascal 3 2) ; 2 expected
+(pascal 3 3) ; 1 expected
+(pascal 4 1) ; 1 expected
+(pascal 4 2) ; 3 expected
+(pascal 4 3) ; 3 expected
+(pascal 4 4) ; 1 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+1 ; pass
+1 ; pass
+1 ; pass
+1 ; pass
+2 ; pass
+1 ; pass
+1 ; pass
+3 ; pass
+3 ; pass
+1 ; pass
 \end{lstlisting}
 
 \section{Exercise 1.13}
@@ -376,15 +648,35 @@ The number of steps as well as the space is $\Theta(log(a))$.
 
 \section{Exercise 1.16}
 
+Code:
+
 \begin{lstlisting}
 (define (fast-exp b n)
+  (define (fast-exp-iter b n product)
+    (define (even n)
+      (= (remainder n 2) 0))
+    (cond ((= n 0) product)
+          ((even n) (fast-exp-iter (* b b) (/ n 2) product))
+          (else (fast-exp-iter b (- n 1) (* product b)))))
   (fast-exp-iter b n 1))
-(define (fast-exp-iter b n product)
-  (cond ((= n 0) product)
-        ((even n) (fast-exp-iter (* b b) (/ n 2) product))
-        (else (fast-exp-iter b (- n 1) (* product b)))))
-(define (even n)
-  (= (remainder n 2) 0))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(fast-exp 1 10) ; 1 expected
+(fast-exp 2 10) ; 1024 expected
+(fast-exp -2 10) ; 1024 expected
+(fast-exp -2 11) ; -2048 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+1 ; pass
+1024 ; pass
+1024 ; pass
+-2048 ; pass
 \end{lstlisting}
 
 \section{Exercise 1.17}
@@ -542,7 +834,7 @@ Code used for testing:
 (search-for-primes (+ 1 1e12) 3)
 \end{lstlisting}
 
-Output:
+Result:
 
 \begin{lstlisting}
 10000000019. *** .21999999999999975
@@ -581,7 +873,7 @@ The code used for testing:
 (search-for-primes (+ 1 1e12) 3)
 \end{lstlisting}
 
-Output:
+Result:
 
 \begin{lstlisting}
 10000000019. *** .12000000000000002
@@ -609,7 +901,7 @@ Code used for testing (given that \lstinline{n=100} in \lstinline{fast-prime?}):
 (search-for-primes 1000000000000000001 3)
 \end{lstlisting}
 
-Output:
+Result:
 
 \begin{lstlisting}
 10000000019 *** 1.0000000000000009e-2
@@ -806,7 +1098,7 @@ Code used for testing:
 (simpson cube 0 1 100000)
 \end{lstlisting}
 
-Output:
+Result:
 
 \begin{lstlisting}
 .25
@@ -1006,7 +1298,7 @@ Code used for testing:
 (fixed-point (lambda (x) (+ 1 (/ 1.0 x))) 1.0)
 \end{lstlisting}
 
-Output:
+Result:
 
 \begin{lstlisting}
 1.6180327868852458
@@ -1070,7 +1362,7 @@ Code used for testing:
            12)
 \end{lstlisting}
 
-Output:
+Result:
 
 \begin{lstlisting}
 .6176470588235294
@@ -1271,7 +1563,7 @@ Code used for testing:
 (count-average-damp-needed-range 2 128)
 \end{lstlisting}
 
-Output:
+Result:
 
 \begin{lstlisting}
 n: 2, average damping needed: 1
