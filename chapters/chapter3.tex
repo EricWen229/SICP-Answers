@@ -2,6 +2,41 @@
 
 \begin{document}
 
+\section{Exercise 3.1}
+
+Code:
+
+\begin{lstlisting}
+(define (make-accumulator sum)
+  (lambda (x)
+    (begin (set! sum (+ sum x))
+           sum))))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define acc-5 (make-accumulator 5))
+(acc-5 1) ; 6 expected
+(acc-5 2) ; 8 expected
+(acc-5 3) ; 11 expected
+(acc-5 4) ; 15 expected
+(acc-5 -15) ; 0 expected
+(define acc-neg-1 (make-accumulator -1))
+(acc-neg-1 11) ; 10 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+6 ; pass
+8 ; pass
+11 ; pass
+15 ; pass
+0 ; pass
+10 ; pass
+\end{lstlisting}
+
 \end{document}
 
 
