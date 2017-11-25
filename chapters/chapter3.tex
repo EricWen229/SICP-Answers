@@ -37,6 +37,59 @@ Result:
 10 ; pass
 \end{lstlisting}
 
+Code:
+
+\begin{lstlisting}
+(define (make-monitored proc)
+  (let ((count 0))
+    (define (dispatch . args)
+      (cond ((equal? args '(how-many-calls?)) count)
+            ((equal? args '(reset-count))
+             (begin (set! count 0)
+                    'ok))
+            (else (begin (set! count (+ 1 count))
+                         (apply proc args)))))
+    dispatch))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define s (make-monitored sqrt))
+(s 'how-many-calls?) ; 0 expected
+(s 100) ; 10 expected
+(s 49) ; 7 expected
+(s 1) ; 1 expected
+(s 0) ; 0 expected
+(s 'how-many-calls?) ; 4 expected
+(s 'reset-count) ; 'ok expected
+(s 'how-many-calls?) ; 0 expected
+(s 144) ; 12 expected
+(s 64) ; 8 expected
+(s 4) ; 2 expected
+(s 0) ; 0 expected
+(s 'how-many-calls?) ; 4 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+;; procedure s defined
+0 ; pass
+10 ; pass
+7 ; pass
+1 ; pass
+0 ; pass
+4 ; pass
+ok ; pass
+0 ; pass
+12 ; pass
+8 ; pass
+2 ; pass
+0 ; pass
+4 ; pass
+\end{lstlisting}
+
 \end{document}
 
 
