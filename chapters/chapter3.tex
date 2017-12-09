@@ -29,13 +29,15 @@ Tests:
 Result:
 
 \begin{lstlisting}
-6 ; pass
-8 ; pass
+6  ; pass
+8  ; pass
 11 ; pass
 15 ; pass
-0 ; pass
+0  ; pass
 10 ; pass
 \end{lstlisting}
+
+\section{Exercise 3.2}
 
 Code:
 
@@ -75,19 +77,167 @@ Result:
 
 \begin{lstlisting}
 ;; procedure s defined
-0 ; pass
+0  ; pass
 10 ; pass
-7 ; pass
-1 ; pass
-0 ; pass
-4 ; pass
+7  ; pass
+1  ; pass
+0  ; pass
+4  ; pass
 ok ; pass
-0 ; pass
+0  ; pass
 12 ; pass
-8 ; pass
-2 ; pass
+8  ; pass
+2  ; pass
+0  ; pass
+4  ; pass
+\end{lstlisting}
+
+\section{Exercise 3.3}
+
+Code:
+
+\begin{lstlisting}
+(define (make-account balance password)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch pwd m)
+    (cond ((not (eq? pwd password))
+           (lambda (amount) "Incorrect password"))
+          ((eq? m 'withdraw) withdraw)
+          ((eq? m 'deposit) deposit)
+          (else "Unknown method")))
+  dispatch)
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define my-account (make-account 100 'take-that))
+((my-account 'take-that 'withdraw) 50) ; 50 expected
+((my-account 'take-that 'deposit) 30) ; 80 expected
+((my-account 'take-this 'withdraw) 80) ; error expected
+((my-account 'take-that 'withdraw) 80) ; 0 expected
+\end{lstlisting}
+
+Results:
+
+\begin{lstlisting}
+;; my-account defined
+50 ; pass
+80 ; pass
+"Incorrect password" ; pass
 0 ; pass
-4 ; pass
+\end{lstlisting}
+
+\section{Exercise 3.4}
+
+Code:
+
+\begin{lstlisting}
+(define (call-the-cops)
+  "Hey you b**stard!")
+(define (make-account balance password)
+  (let ((error-count 0))
+    (define (withdraw amount)
+      (if (>= balance amount)
+          (begin (set! balance (- balance amount))
+                 balance)
+          "Insufficient funds"))
+    (define (deposit amount)
+      (set! balance (+ balance amount))
+      balance)
+    (define (error amount)
+      (if (< error-count 7)
+          (begin (set! error-count (+ error-count 1))
+                 "Incorrect password")
+          (call-the-cops)))
+    (define (dispatch pwd m)
+      (if (not (eq? pwd password))
+          error
+          (begin (set! error-count 0)
+                 (cond ((eq? m 'withdraw) withdraw)
+                       ((eq? m 'deposit) deposit)
+                       (else "Unknown method")))))
+    dispatch))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define my-account (make-account 100 'take-that))
+((my-account 'take-this 'withdraw) 50) ; error expected
+((my-account 'take-this 'withdraw) 50) ; error expected
+((my-account 'take-this 'withdraw) 50) ; error expected
+((my-account 'take-this 'withdraw) 50) ; error expected
+((my-account 'take-this 'withdraw) 50) ; error expected
+((my-account 'take-this 'withdraw) 50) ; error expected
+((my-account 'take-this 'withdraw) 50) ; error expected
+((my-account 'take-this 'withdraw) 50) ; cops expected
+((my-account 'take-that 'withdraw) 50) ; 50 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+"Incorrect password" ; pass
+"Incorrect password" ; pass
+"Incorrect password" ; pass
+"Incorrect password" ; pass
+"Incorrect password" ; pass
+"Incorrect password" ; pass
+"Incorrect password" ; pass
+"Hey you b**stard!"  ; pass
+50                   ; pass
+\end{lstlisting}
+
+\section{Exercise 3.5}
+
+Code:
+
+\begin{lstlisting}
+(define (monte-carlo trials experiment)
+  (define (iter trials-remaining trials-passed)
+    (cond ((= trials-remaining 0)
+           (/ (+ 0.0 trials-passed) trials))
+          ((experiment)
+           (iter (- trials-remaining 1) (+ trials-passed 1)))
+          (else
+           (iter (- trials-remaining 1) trials-passed))))
+  (iter trials 0))
+(define (estimate-integral P xl xu yl yu trials)
+  (define (rand-range lower upper)
+    (+ lower (* (random 1.0) (- upper lower))))
+  (define (experiment)
+    (let ((x (rand-range xl xu))
+          (y (rand-range yl yu)))
+      (P x y)))
+  (monte-carlo trials experiment))
+\end{lstlisting}
+
+Tests (same test for 5 times):
+
+\begin{lstlisting}
+(* 4
+   (estimate-integral
+     (lambda (x y)
+       (< (+ (* x x) (* y y)) 1))
+     -1 1 -1 1 100000)) ;; 3.14159 expected
+\end{lstlisting}
+
+Results:
+
+\begin{lstlisting}
+3.14116 ; pass
+3.15324 ; pass
+3.13736 ; pass
+3.132   ; pass
+3.14752 ; pass
 \end{lstlisting}
 
 \end{document}
