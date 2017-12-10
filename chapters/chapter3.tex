@@ -64,7 +64,7 @@ Tests:
 (s 1) ; 1 expected
 (s 0) ; 0 expected
 (s 'how-many-calls?) ; 4 expected
-(s 'reset-count) ; 'ok expected
+(s 'reset-count) ; ok expected
 (s 'how-many-calls?) ; 0 expected
 (s 144) ; 12 expected
 (s 64) ; 8 expected
@@ -212,7 +212,7 @@ Code:
   (iter trials 0))
 (define (estimate-integral P xl xu yl yu trials)
   (define (rand-range lower upper)
-    (+ lower (* (random 1.0) (- upper lower))))
+    (+ lower (random (- upper lower))))
   (define (experiment)
     (let ((x (rand-range xl xu))
           (y (rand-range yl yu)))
@@ -227,10 +227,10 @@ Tests (same test for 5 times):
    (estimate-integral
      (lambda (x y)
        (< (+ (* x x) (* y y)) 1))
-     -1 1 -1 1 100000)) ;; 3.14159 expected
+     -1.0 1.0 -1.0 1.0 100000)) ;; 3.14159 expected
 \end{lstlisting}
 
-Results:
+Result:
 
 \begin{lstlisting}
 3.14116 ; pass
@@ -238,6 +238,57 @@ Results:
 3.13736 ; pass
 3.132   ; pass
 3.14752 ; pass
+\end{lstlisting}
+
+\section{Exercise 3.6}
+
+To test the code, a pseudo \lstinline{rand-update}
+ procedure and a constant initial seed are used.
+
+Code:
+
+\begin{lstlisting}
+(define rand
+  (let ((x 2333))
+    (define (rand-update x)
+      (+ x 1))
+    (define (generate)
+      (set! x (rand-update x))
+      x)
+    (define (reset value)
+      (set! x value)
+      'ok)
+    (define (dispatch method)
+      (cond ((eq? method 'generate) (generate))
+            ((eq? method 'reset) reset)
+            (else "Unknown method")))
+    dispatch))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+((rand 'reset) 0) ; ok expected
+(rand 'generate)  ; 1 expected
+(rand 'generate)  ; 2 expected
+(rand 'generate)  ; 3 expected
+((rand 'reset) 0) ; ok expected
+(rand 'generate)  ; 1 expected
+(rand 'generate)  ; 2 expected
+(rand 'generate)  ; 3 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+ok ; pass
+1  ; pass
+2  ; pass
+3  ; pass
+ok ; pass
+1  ; pass
+2  ; pass
+3  ; pass
 \end{lstlisting}
 
 \end{document}
