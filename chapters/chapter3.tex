@@ -291,6 +291,81 @@ ok ; pass
 3  ; pass
 \end{lstlisting}
 
+\section{Exercise 3.7}
+
+Code:
+
+\begin{lstlisting}
+;; original account definition
+(define (make-account balance password)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch pwd m)
+    (cond ((not (eq? pwd password))
+           (lambda (amount) "Incorrect password"))
+          ((eq? m 'withdraw) withdraw)
+          ((eq? m 'deposit) deposit)
+          (else "Unknown method")))
+  dispatch)
+
+;; joint account definition
+(define (make-joint account password new-password)
+  (define (withdraw amount)
+    ((account password 'withdraw) amount))
+  (define (deposit amount)
+    ((account password 'deposit) amount))
+  (define (dispatch pwd m)
+    (cond ((not (eq? pwd new-password))
+           (lambda (amount) "Incorrect password"))
+          ((eq? m 'withdraw) withdraw)
+          ((eq? m 'deposit) deposit)
+          (else "Unknown method")))
+  dispatch)
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define peter-acc (make-account 100 'peter))
+(define paul-acc (make-joint peter-acc 'peter 'paul))
+((paul-acc 'paul 'withdraw) 50) ; 50 expected
+((peter-acc 'peter 'deposit) 100) ; 150 expected
+((paul-acc 'paul 'withdraw) 0) ; 150 expected
+((paul-acc 'peter 'withdraw) 0) ; error expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+;; peter-acc defined
+;; paul-acc defined
+50  ; pass
+150 ; pass
+150 ; pass
+"Incorrect password" ; pass
+\end{lstlisting}
+
+\section{Exercise 3.8}
+
+Code:
+
+\begin{lstlisting}
+(define (f x)
+  (let ((multiplier 0))
+    (begin (set! multiplier (+ multiplier 1))
+           (* multiplier x))))
+\end{lstlisting}
+
+Evaluating \lstinline{(+ (f 0) (f 1))} from left
+ to right produces 2 and doing so from right to
+ left produces 1.
+
 \end{document}
 
 
