@@ -366,6 +366,172 @@ Evaluating \lstinline{(+ (f 0) (f 1))} from left
  to right produces 2 and doing so from right to
  left produces 1.
 
+\section{Exercise 3.9}
+
+Recursive version:
+
+\begin{lstlisting}
++-----------+
+| factorial |<- global env
++-----------+
+^    ^      ^
+|    |      |
++---++---+  +---+
+|n:6||n:5|..|n:1|
++---++---+  +---+
+\end{lstlisting}
+
+Iterative version:
+
+\begin{lstlisting}
++-----------+
+| factorial |<- global env
++-----------+
+^    ^^^
+|    |||..
++---++-----------+
+|n:6||product:1  |
++---+|counter:1  |
+     |max-count:6|
+     +-----------+
+      ||
+     +-----------+
+     |product:1  |
+     |counter:2  |
+     |max-count:6|
+     +-----------+
+       |
+     +-----------+
+     |product:2  |
+     |counter:3  |
+     |max-count:6|
+     +-----------+
+       ...
+\end{lstlisting}
+
+\section{Exercise 3.10}
+
+Implicit local state version:
+
+\begin{lstlisting}
+(define W1 (make-withdraw 100))
+
++-----------------+
+| make-withdraw:..|
+| W1              |<- global env
+| |               |
++-+---------------+
+  |              ^
+  |              |
+  |     +------------------+
+  |     |initial-amount:100|
+  |     +------------------+
+  |              ^
+  |              |
+  |        +-----------+
+  [+][+]-->|balance:100|
+  |        +-----------+
+  v
+  code
+
+
+(W1 50)
+
++----------------+
+|make-withdraw:..|
+|W1              |
+| |              |
++-+--------------+
+  |              ^
+  |              |
+  |     +------------------+
+  |     |initial-amount:100|
+  |     +------------------+
+  |              ^
+  |              |
+  |        +----------+
+  [+][+]-->|balance:50|
+  |        +----------+
+  v
+  code
+
+
+(define W2 (make-withdraw 100))
++---------------------------------------+
+| make-withdraw:..                      |
+| W2 ------------------------+          |<- global env
+| W1                         |          |
+| |                          |          |
++-+--------------------------+----------+
+  |              ^           |          ^
+  |              |           |          |
+  |     +------------------+ | +------------------+
+  |     |initial-amount:100| | |initial-amount:100|
+  |     +------------------+ | +------------------+
+  |              ^           v          ^
+  |              |        [+][+]        |
+  v        +----------+    |  |   +-----------+
+  [+][+]-->|balance:50|    |  +-->|balance:100|
+  |        +----------+    |      +-----------+
+  v                        |
+  code <-------------------+
+\end{lstlisting}
+
+Explicit local state version:
+
+\begin{lstlisting}
+(define W1 (make-withdraw 100))
+
++-----------------+
+| make-withdraw:..|
+| W1              |<- global env
+| |               |
++-+---------------+
+  |              ^
+  |              |
+  |        +-----------+
+  [+][+]-->|balance:100|
+  |        +-----------+
+  v
+  code
+
+
+(W1 50)
+
++----------------+
+|make-withdraw:..|
+|W1              |
+| |              |
++-+--------------+
+  |              ^
+  |              |
+  |        +----------+
+  [+][+]-->|balance:50|
+  |        +----------+
+  v
+  code
+
+
+(define W2 (make-withdraw 100))
++---------------------------------------+
+| make-withdraw:..                      |
+| W2 ------------------------+          |<- global env
+| W1                         |          |
+| |                          |          |
++-+--------------------------+----------+
+  |              ^           v          ^
+  |              |        [+][+]        |
+  v        +----------+    |  |   +-----------+
+  [+][+]-->|balance:50|    |  +-->|balance:100|
+  |        +----------+    |      +-----------+
+  v                        |
+  code <-------------------+
+\end{lstlisting}
+
+They act similarly except that in the former one
+ redundant environment is created and never used
+ for each account.
+
 \end{document}
 
 
