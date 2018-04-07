@@ -1552,6 +1552,137 @@ To reduce the time of comparing target symbol
 Encoding both the most frequent symbol and the lease
 frequent symbol takes $\Theta(n)$ time.
 
+\section{Complete code in section 2.4.3}
+
+\begin{lstlisting}
+; code offering type support
+(define (attach-tag type-tag contents)
+  (cons type-tag contents))
+(define (type-tag datum)
+  (if (pair? datum)
+      (car datum)
+      (error "bad tagged datum" datum)))
+(define (contents datum)
+  (if (pair? datum)
+      (cdr datum)
+      (error "bad tagged datum" datum)))
+(define (make-table)
+  (let ((local-table (list 'table)))
+    (define (lookup key1 key2)
+      (let ((subtable (assoc key1 (cdr local-table))))
+        (if subtable
+            (let ((record (assoc key2 (cdr subtable))))
+              (if record
+                  (cdr record)
+                  false))
+            false)))
+    (define (insert! key1 key2 value)
+      (let ((subtable (assoc key1 (cdr local-table))))
+        (if subtable
+            (let ((record (assoc key2 (cdr subtable))))
+              (if record
+                  (set-cdr! record value)
+                  (set-cdr! subtable
+                            (cons (cons key2 value)
+                                  (cdr subtable)))))
+            (let ((new-subtable (list key1 (cons key2 value))))
+              (set-cdr! local-table
+                        (cons new-subtable
+                              (cdr local-table))))))
+      'ok)
+    (define (dispatch method-name)
+      (cond ((eq? method-name 'lookup) lookup)
+            ((eq? method-name 'insert!) insert!)
+            (else (error "unknown method" method-name))))
+    dispatch))
+(define operation-table (make-table))
+(define get (operation-table 'lookup))
+(define put (operation-table 'insert!))
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (apply proc (map contents args))
+          (error "no method available"
+                 (list op type-tags))))))
+
+; type-dependent primitive operations
+(define (rectangular? z)
+  (eq? (type-tag z) 'rectangular))
+(define (polar? z)
+  (eq? (type-tag z) 'polar))
+(define (install-rectangular-package)
+  ; internal representation: (real-part, imag-part)
+  (define (real-part z) (car z))
+  (define (imag-part z) (cdr z))
+  (define (magnitude z)
+    (sqrt (+ (square (real-part z))
+             (square (imag-part z)))))
+  (define (angle z)
+    (atan (imag-part z) (real-part z)))
+  (define (make-from-real-imag x y) (cons x y))
+  (define (make-from-mag-ang r a)
+    (cons (* r (cos a)) (* r (sin a))))
+  (define (tag x) (attach-tag 'rectangular x))
+  (put 'real-part '(rectangular) real-part)
+  (put 'imag-part '(rectangular) imag-part)
+  (put 'magnitude '(rectangular) magnitude)
+  (put 'angle '(rectangular) angle)
+  (put 'make-from-real-imag '(rectangular)
+    (lambda (x y) (tag (make-from-real-imag x y))))
+  (put 'make-from-mag-ang '(rectangular)
+    (lambda (r a) (tag (make-from-mag-ang r a))))
+  'done)
+(define (install-polar-package)
+  ; internal representation: (magnitude, angle)
+  (define (magnitude z) (car z))
+  (define (angle z) (cdr z))
+  (define (real-part z)
+    (* (magnitude z) (cos (angle z))))
+  (define (imag-part z)
+    (* (magnitude z) (sin (angle z))))
+  (define (make-from-mag-ang r a) (cons r a))
+  (define (make-from-real-imag x y)
+    (cons (sqrt (+ (square x) (square y)))
+          (atan y x)))
+  (define (tag x) (attach-tag 'polar x))
+  (put 'real-part '(polar) real-part)
+  (put 'imag-part '(polar) imag-part)
+  (put 'magnitude '(polar) magnitude)
+  (put 'angle '(polar) angle)
+  (put 'make-from-real-imag '(polar)
+    (lambda (x y) (tag (make-from-real-imag x y))))
+  (put 'make-from-mag-ang '(polar)
+    (lambda (r a) (tag (make-from-mag-ang r a))))
+  'done)
+
+; type-independent primitive operations
+(define (make-from-real-imag x y)
+  ((get 'make-from-real-imag '(rectangular)) x y))
+(define (make-from-mag-ang r a)
+  ((get 'make-from-mag-ang '(polar)) r a))
+(define (real-part z)
+  (apply-generic 'real-part z))
+(define (imag-part z)
+  (apply-generic 'imag-part z))
+(define (magnitude z)
+  (apply-generic 'magnitude z))
+(define (angle z)
+  (apply-generic 'angle z))
+(define (add-complex z1 z2)
+  (make-from-real-imag (+ (real-part z1) (real-part z2))
+                       (+ (imag-part z1) (imag-part z2))))
+(define (sub-complex z1 z2)
+  (make-from-real-imag (- (real-part z1) (real-part z2))
+                       (- (imag-part z1) (imag-part z2))))
+(define (mul-complex z1 z2)
+  (make-from-mag-ang (* (magnitude z1) (magnitude z2))
+                     (+ (angle z1) (angle z2))))
+(define (div-complex z1 z2)
+  (make-from-mag-ang (/ (magnitude z1) (magnitude z2))
+                     (- (angle z1) (angle z2))))
+\end{lstlisting}
+
 \section{Exercise 2.73}
 
 \subsection{a.}
@@ -1564,7 +1695,7 @@ When calling \lstinline{deriv}, tell if the given
 
 For numbers and variables, \lstinline{(car exp)} returns
  the single number/variable, which is not operator and
- shouldn't be passed to \lstinline{get} that is expecting
+ shouldn't be passed to \lstinline{get}  expecting
  a type instead of a value.
 
 \subsection{b.}
