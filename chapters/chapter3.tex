@@ -59,24 +59,24 @@ Tests:
 \begin{lstlisting}
 (define s (make-monitored sqrt))
 (s 'how-many-calls?) ; 0 expected
-(s 100) ; 10 expected
-(s 49) ; 7 expected
-(s 1) ; 1 expected
-(s 0) ; 0 expected
+(s 100)              ; 10 expected
+(s 49)               ; 7 expected
+(s 1)                ; 1 expected
+(s 0)                ; 0 expected
 (s 'how-many-calls?) ; 4 expected
-(s 'reset-count) ; ok expected
+(s 'reset-count)     ; ok expected
 (s 'how-many-calls?) ; 0 expected
-(s 144) ; 12 expected
-(s 64) ; 8 expected
-(s 4) ; 2 expected
-(s 0) ; 0 expected
+(s 144)              ; 12 expected
+(s 64)               ; 8 expected
+(s 4)                ; 2 expected
+(s 0)                ; 0 expected
 (s 'how-many-calls?) ; 4 expected
 \end{lstlisting}
 
 Result:
 
 \begin{lstlisting}
-;; procedure s defined
+;; s defined
 0  ; pass
 10 ; pass
 7  ; pass
@@ -102,16 +102,16 @@ Code:
     (if (>= balance amount)
         (begin (set! balance (- balance amount))
                balance)
-        "Insufficient funds"))
+               "Insufficient funds"))
   (define (deposit amount)
     (set! balance (+ balance amount))
     balance)
   (define (dispatch pwd m)
     (cond ((not (eq? pwd password))
-           (lambda (amount) "Incorrect password"))
+           (lambda args "Incorrect password"))
           ((eq? m 'withdraw) withdraw)
           ((eq? m 'deposit) deposit)
-          (else "Unknown method")))
+          (else (lambda args "Unknown method"))))
   dispatch)
 \end{lstlisting}
 
@@ -120,7 +120,7 @@ Tests:
 \begin{lstlisting}
 (define my-account (make-account 100 'take-that))
 ((my-account 'take-that 'withdraw) 50) ; 50 expected
-((my-account 'take-that 'deposit) 30) ; 80 expected
+((my-account 'take-that 'deposit) 30)  ; 80 expected
 ((my-account 'take-this 'withdraw) 80) ; error expected
 ((my-account 'take-that 'withdraw) 80) ; 0 expected
 \end{lstlisting}
@@ -129,10 +129,10 @@ Results:
 
 \begin{lstlisting}
 ;; my-account defined
-50 ; pass
-80 ; pass
+50                   ; pass
+80                   ; pass
 "Incorrect password" ; pass
-0 ; pass
+0                    ; pass
 \end{lstlisting}
 
 \section{Exercise 3.4}
@@ -152,7 +152,7 @@ Code:
     (define (deposit amount)
       (set! balance (+ balance amount))
       balance)
-    (define (error amount)
+    (define (error . args)
       (if (< error-count 7)
           (begin (set! error-count (+ error-count 1))
                  "Incorrect password")
@@ -163,7 +163,7 @@ Code:
           (begin (set! error-count 0)
                  (cond ((eq? m 'withdraw) withdraw)
                        ((eq? m 'deposit) deposit)
-                       (else "Unknown method")))))
+                       (else (lambda args "Unknown method"))))))
     dispatch))
 \end{lstlisting}
 
@@ -261,7 +261,7 @@ Code:
     (define (dispatch method)
       (cond ((eq? method 'generate) (generate))
             ((eq? method 'reset) reset)
-            (else "Unknown method")))
+            (else (lambda args "Unknown method"))))
     dispatch))
 \end{lstlisting}
 
@@ -311,7 +311,7 @@ Code:
            (lambda (amount) "Incorrect password"))
           ((eq? m 'withdraw) withdraw)
           ((eq? m 'deposit) deposit)
-          (else "Unknown method")))
+          (else (lambda args "Unknown method"))))
   dispatch)
 
 ;; joint account definition
@@ -325,7 +325,7 @@ Code:
            (lambda (amount) "Incorrect password"))
           ((eq? m 'withdraw) withdraw)
           ((eq? m 'deposit) deposit)
-          (else "Unknown method")))
+          (else (lambda args "Unknown method"))))
   dispatch)
 \end{lstlisting}
 
@@ -356,15 +356,12 @@ Result:
 Code:
 
 \begin{lstlisting}
-(define (f x)
-  (let ((multiplier 0))
-    (begin (set! multiplier (+ multiplier 1))
-           (* multiplier x))))
+(define f
+  (let ((multiplier 2))
+    (lambda (x)
+      (begin (set! multiplier (- multiplier 1))
+             (* multiplier x)))))
 \end{lstlisting}
-
-Evaluating \lstinline{(+ (f 0) (f 1))} from left
- to right produces 2 and doing so from right to
- left produces 1.
 
 \section{Exercise 3.9}
 

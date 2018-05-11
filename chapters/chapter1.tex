@@ -68,8 +68,8 @@ Tests:
 Result:
 
 \begin{lstlisting}
-13 ; pass
-61 ; pass
+13  ; pass
+61  ; pass
 145 ; pass
 \end{lstlisting}
 
@@ -166,19 +166,19 @@ Code after improvement:
 Tests:
 
 \begin{lstlisting}
-(sqrt 144) ; 12 expected
-(sqrt 0) ; 0 expected
-(sqrt -1) ; reject
-(sqrt (expt 10 -8)) ; 1e-4 expected
+(sqrt 144)           ; 12 expected
+(sqrt 0)             ; 0 expected
+(sqrt -1)            ; rejection expected
+(sqrt (expt 10 -8))  ; 1e-4 expected
 (sqrt (expt 10 150)) ; 1e75 expected
 \end{lstlisting}
 
 Result:
 
 \begin{lstlisting}
-12.000000012408687 ; pass
+12.000000012408687    ; pass
 ;; fail to return within a reasonable amount of time
-1. ; fail
+1.                    ; fail
 1.0000000000082464e-4 ; pass
 1.0000000000005358e75 ; pass
 \end{lstlisting}
@@ -269,18 +269,18 @@ To deal with 0 and negative inputs, here are the code after
 Tests:
 
 \begin{lstlisting}
-(sqrt 144) ; 12 expected
-(sqrt 0) ; 0 expected
-(sqrt -1) ; reject
-(sqrt (expt 10 -8)) ; 1e-4 expected
+(sqrt 144)           ; 12 expected
+(sqrt 0)             ; 0 expected
+(sqrt -1)            ; rejection expected
+(sqrt (expt 10 -8))  ; 1e-4 expected
 (sqrt (expt 10 150)) ; 1e75 expected
 \end{lstlisting}
 
 Result:
 
 \begin{lstlisting}
-12.000000012408687 ; pass
-0 ; pass
+12.000000012408687    ; pass
+0                     ; pass
 Can't compute square root of positive number -1 ; pass
 1.0000000000082464e-4 ; pass
 1.0000000000005358e75 ; pass
@@ -313,21 +313,21 @@ Code:
 Tests:
 
 \begin{lstlisting}
-(cbrt 27) ; 3 expected
-(cbrt 0) ; 0 expected
-(cbrt -27) ; -3 expected
-(cbrt (expt 10 -9)) ; 1e-3 expected
+(cbrt 27)            ; 3 expected
+(cbrt 0)             ; 0 expected
+(cbrt -27)           ; -3 expected
+(cbrt (expt 10 -9))  ; 1e-3 expected
 (cbrt (expt 10 270)) ; 1e90 expected
 \end{lstlisting}
 
 Result:
 
 \begin{lstlisting}
-3.0000005410641766 ; pass
+3.0000005410641766      ; pass
 4.9406564584124654e-324 ; pass
-1. ; fail
-1.0000009808132022e-3 ; pass
-1.0000000016216367e90 ; pass
+1.                      ; fail
+1.0000009808132022e-3   ; pass
+1.0000000016216367e90   ; pass
 \end{lstlisting}
 
 Here comes an interesting question: why do
@@ -355,21 +355,21 @@ To fix this issue, just apply \lstinline{abs} to
 Tests:
 
 \begin{lstlisting}
-(cbrt 27) ; 3 expected
-(cbrt 0) ; 0 expected
-(cbrt -27) ; -3 expected
-(cbrt (expt 10 -9)) ; 1e-3 expected
+(cbrt 27)            ; 3 expected
+(cbrt 0)             ; 0 expected
+(cbrt -27)           ; -3 expected
+(cbrt (expt 10 -9))  ; 1e-3 expected
 (cbrt (expt 10 270)) ; 1e90 expected
 \end{lstlisting}
 
 Result:
 
 \begin{lstlisting}
-3.0000005410641766 ; pass
+3.0000005410641766      ; pass
 4.9406564584124654e-324 ; pass
--3.000000005383821 ; pass
-1.0000009808132022e-3 ; pass
-1.0000000016216367e90 ; pass
+-3.000000005383821      ; pass
+1.0000009808132022e-3   ; pass
+1.0000000016216367e90   ; pass
 \end{lstlisting}
 
 \section{Exercise 1.9}
@@ -664,8 +664,8 @@ Code:
 Tests:
 
 \begin{lstlisting}
-(fast-exp 1 10) ; 1 expected
-(fast-exp 2 10) ; 1024 expected
+(fast-exp 1 10)  ; 1 expected
+(fast-exp 2 10)  ; 1024 expected
 (fast-exp -2 10) ; 1024 expected
 (fast-exp -2 11) ; -2048 expected
 \end{lstlisting}
@@ -673,9 +673,9 @@ Tests:
 Result:
 
 \begin{lstlisting}
-1 ; pass
-1024 ; pass
-1024 ; pass
+1     ; pass
+1024  ; pass
+1024  ; pass
 -2048 ; pass
 \end{lstlisting}
 
@@ -683,6 +683,11 @@ Result:
 
 \begin{lstlisting}
 (define (fast-mul a b)
+  (define (fast-mul-recur a b)
+    (cond ((= a 0) 0)
+          ((= a 1) b)
+          ((even a) (fast-mul-recur (halve a) (double b)))
+          (else (+ b (fast-mul-recur (- a 1) b)))))
   (if (> a b)
       (fast-mul-recur b a)
       (fast-mul-recur a b)))
@@ -699,7 +704,17 @@ Result:
   (/ n 2))
 \end{lstlisting}
 
+Tests:
+
+\begin{lstlisting}
+(fast-mul 3 3)     ; 9 expected
+(fast-mul 30 30)   ; 900 expected
+(fast-mul 300 300) ; 90000 expected
+\end{lstlisting}
+
 \section{Exercise 1.18}
+
+Code:
 
 \begin{lstlisting}
 (define (fast-mul a b)
@@ -716,6 +731,22 @@ Result:
   (* n 2))
 (define (halve n)
   (/ n 2))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(fast-mul 3 3)     ; 9 expected
+(fast-mul 30 30)   ; 900 expected
+(fast-mul 300 300) ; 90000 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+9 ; pass
+900 ; pass
+90000 ; pass
 \end{lstlisting}
 
 \section{Exercise 1.19}
