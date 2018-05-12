@@ -425,7 +425,7 @@ Implicit local state version:
   |     +------------------+
   |              ^
   |              |
-  |        +-----------+
+  v        +-----------+
   [+][+]-->|balance:100|
   |        +-----------+
   v
@@ -446,7 +446,7 @@ Implicit local state version:
   |     +------------------+
   |              ^
   |              |
-  |        +----------+
+  v        +----------+
   [+][+]-->|balance:50|
   |        +----------+
   v              ^
@@ -506,7 +506,7 @@ Explicit local state version:
 +-+--------------+
   |              ^
   |              |
-  |        +----------+
+  v        +----------+
   [+][+]-->|balance:50|
   |        +----------+
   v
@@ -532,6 +532,102 @@ Explicit local state version:
 They act similarly except that in the former one
  redundant frame is created and never used
  by each account.
+ 
+\section{Exercise 3.11}
+
+\begin{lstlisting}
+(define acc (make-account 50))
+
++-----------------+
+| make-account:.. |
+| acc             |<- global env
+| |               |
++-+---------------+
+  |              ^
+  |              |
+  |     +--------------+
+  |     | balance:50   |
+  |     | withdraw:... |
+  |     | deposit:...  |
+  |  +--+ dispatch     |
+  |  |  +--------------+
+  |  |           ^
+  v  v           |
+  [+][+]---------+
+  |
+  v
+  code of dispatch
+
+((acc 'deposit) 40)
+
++-----------------+
+| make-account:.. |
+| acc             |<- global env
+| |               |
++-+---------------+
+  |              ^
+  |              |
+  |     +--------------+. +----------+
+  |     | balance:90   |<-|m:'deposit|
+  |     | withdraw:... |  +----------+
+  |     | deposit:...  |  +---------+
+  |  +--+ dispatch     |<-|amount:40|
+  |  |  +--------------+  +---------+
+  |  |           ^
+  v  v           |
+  [+][+]---------+
+  |
+  v
+  code of dispatch
+
+((acc 'withdraw) 60)
+
++-----------------+
+| make-account:.. |
+| acc             |<- global env
+| |               |
++-+---------------+
+  |              ^
+  |              |
+  |     +--------------+. +-----------+
+  |     | balance:30   |<-|m:'withdraw|
+  |     | withdraw:... |  +-----------+
+  |     | deposit:...  |  +---------+
+  |  +--+ dispatch     |<-|amount:60|
+  |  |  +--------------+  +---------+
+  |  |           ^
+  v  v           |
+  [+][+]---------+
+  |
+  v
+  code of dispatch
+
+(define acc2 (make-account 100))
+
++-----------------+
+| make-account:.. |<- global env
+| acc2 -----------+------+
+| acc             |      |
+| |               |<-----+--+
++-+---------------+      |  |
+  |              ^       |  |
+  |              |       |  |
+  |     +--------------+ | +--------------+
+  |     | balance:30   | | | balance:100  |
+  |     | withdraw:... | | | withdraw:... |
+  |     | deposit:...  | | | deposit:...  |
+  |  +--+ dispatch     | | | dispatch     |
+  |  |  +--------------+ | +---+----------+
+  |  |           ^       |     | ^
+  v  v           |       v<----+ |
+  [+][+]---------+  [+][+]-------+
+  |                  |
+  v                  |
+  code of dispatch <-+
+\end{lstlisting}
+
+\lstinline{acc} and \lstinline{acc2} share code of
+ procedure definitions (implementation dependent).
 
 \end{document}
 
