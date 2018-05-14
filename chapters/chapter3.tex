@@ -535,6 +535,8 @@ They act similarly except that in the former one
  
 \section{Exercise 3.11}
 
+The process is as follows:
+
 \begin{lstlisting}
 (define acc (make-account 50))
 
@@ -628,6 +630,90 @@ They act similarly except that in the former one
 
 \lstinline{acc} and \lstinline{acc2} share code of
  procedure definitions (implementation dependent).
+ 
+\section{Exercise 3.12}
+
+The process is as follows:
+
+\begin{lstlisting}
+(define x (list 'a 'b))
+(define y (list 'c 'd))
+(define z (append x y))
+
+x -> [+][+]->[+][x]
+      |       |
+      v       v
+      a       b
+
+y -> [+][+]->[+][x]
+      |       |
+      v       v
+      c       d
+
+z -> [+][+]->[+][+]->[+][+]->[+][x]
+      |       |       |       |
+      v       v       v       v
+      a       b       c       d
+
+(cdr x) ; returns (b)
+(define w (append! x y))
+
+      w
+      |
+      v
+x -> [+][+]->[+][+]
+      |       |  |
+      v       v  |
+      a       b  |
+                 |
+      +----------+
+      |
+      v
+y -> [+][+]->[+][x]
+      |       |
+      v       v
+      c       d
+
+(cdr x) ; returns (b c d)
+\end{lstlisting}
+
+\section{Exercise 3.13}
+
+The structure is as follows:
+
+\begin{lstlisting}
+      +------------------+
+      |                  |
+      v                  |
+z -> [+][+]->[+][+]->[+][+]
+      |       |       |
+      v       v       v
+      a       b       c
+\end{lstlisting}
+
+Evaluating \lstinline{(last-pair z)}
+ creates an infinite loop.
+
+\section{Exercise 3.14}
+
+\lstinline{mystery} reverses the given list
+ \lstinline{x} and returns the reversed list.
+
+The structures of \lstinline{v} and \lstinline{w}
+ are as follows:
+
+\begin{lstlisting}
+                              v
+                              |
+                              v
+w -> [+][+]->[+][+]->[+][+]->[+][x]
+      |       |       |       |
+      v       v       v       v
+      d       c       b       a
+\end{lstlisting}
+
+The value of \lstinline{w} is \lstinline{(d c b a)},
+ and the value of \lstinline{v} is \lstinline{(a)}.
 
 \end{document}
 
