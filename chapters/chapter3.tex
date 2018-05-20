@@ -738,8 +738,72 @@ z2 -> [+][+]->[+][+]->[+][x]
                wow
 \end{lstlisting}
 
-\end{document}
+\section{Exercise 3.16}
 
+\begin{lstlisting}
+x1 -> [x][+]->[x][+]->[+][x]
+
+x2 -> [+][+]->[+][x]
+       |       |
+       +--+  +-+
+          |  |
+          v  v
+         [x][x]
+
+x3 -> [+][+]->[+][+]->[x][x]
+       |     ^ |     ^
+       |     | |     |
+       +-----+ +-----+
+
+x4 -> [+][+]->[x][+]->[+][x]
+     ^ |
+     | |
+     +-+
+\end{lstlisting}
+
+Code:
+
+\begin{lstlisting}
+(define (count-pairs x)
+  (if (not (pair? x))
+      0
+      (+ (count-pairs (car x))
+         (count-pairs (cdr x))
+         1)))
+(define x1 '(() () ()))
+(define x2
+  (let ((common-pair (cons () ())))
+   (list common-pair common-pair)))
+(define x3
+  (let ((inner-pair (cons () ())))
+    (let ((middle-pair (cons inner-pair inner-pair)))
+      (let ((outer-pair (cons middle-pair middle-pair)))
+        outer-pair))))
+(define x4
+  (let ((l '(() () ())))
+    (set-car! l l)
+    l))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(count-pairs x1) ; 3 expected
+(count-pairs x2) ; 4 expected
+(count-pairs x3) ; 7 expected
+(count-pairs x4) ; infinite recursive calls expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+3 ; pass
+4 ; pass
+7 ; pass
+;; maximum recursion depth exceeded, pass
+\end{lstlisting}
+
+\end{document}
 
 
 
