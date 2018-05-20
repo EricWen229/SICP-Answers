@@ -770,6 +770,7 @@ Code:
       (+ (count-pairs (car x))
          (count-pairs (cdr x))
          1)))
+
 (define x1 '(() () ()))
 (define x2
   (let ((common-pair (cons () ())))
@@ -801,6 +802,66 @@ Result:
 4 ; pass
 7 ; pass
 ;; maximum recursion depth exceeded, pass
+\end{lstlisting}
+
+\section{Exercise 3.17}
+
+Code:
+
+\begin{lstlisting}
+(define (count-pairs x)
+  (let ((seen-pair-list '()))
+    (define (has-seen pair)
+      (define (is-in-list pair pair-list)
+        (if (null? pair-list)
+            #f
+            (if (eq? pair (car pair-list))
+                #t
+                (is-in-list pair (cdr pair-list)))))
+      (is-in-list pair seen-pair-list))
+    (define (mark-as-seen pair)
+      (set! seen-pair-list (cons pair seen-pair-list)))
+    (define (count-pairs-recur x)
+      (cond ((not (pair? x)) 0)
+            ((has-seen x) 0)
+            (else
+              (begin (mark-as-seen x)
+                     (+ (count-pairs-recur (car x))
+                        (count-pairs-recur (cdr x))
+                        1)))))
+    (count-pairs-recur x)))
+
+(define x1 '(() () ()))
+(define x2
+  (let ((common-pair (cons () ())))
+   (list common-pair common-pair)))
+(define x3
+  (let ((inner-pair (cons () ())))
+    (let ((middle-pair (cons inner-pair inner-pair)))
+      (let ((outer-pair (cons middle-pair middle-pair)))
+        outer-pair))))
+(define x4
+  (let ((l '(() () ())))
+    (set-car! l l)
+    l))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(count-pairs x1) ; 3 expected
+(count-pairs x2) ; 3 expected
+(count-pairs x3) ; 3 expected
+(count-pairs x4) ; 3 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+3 ; pass
+3 ; pass
+3 ; pass
+3 ; pass
 \end{lstlisting}
 
 \end{document}
