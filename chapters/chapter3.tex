@@ -715,6 +715,29 @@ w -> [+][+]->[+][+]->[+][+]->[+][x]
 The value of \lstinline{w} is \lstinline{(d c b a)},
  and the value of \lstinline{v} is \lstinline{(a)}.
 
+\section{Exercise 3.15}
+
+\begin{lstlisting}
+z1 -> [+][+]
+       |  |
+       v  v
+x  -> [+][+]->[+][x]
+       |       |
+       v       v
+       wow     b
+
+z2 -> [+][+]->[+][+]->[+][x]
+       |       |       |
+       |       v       v
+       |       a       b
+       |               ^
+       |               |
+       +------[+][+]->[+][x]
+               |
+               v
+               wow
+\end{lstlisting}
+
 \end{document}
 
 
