@@ -717,6 +717,8 @@ The value of \lstinline{w} is \lstinline{(d c b a)},
 
 \section{Exercise 3.15}
 
+The structures are as follows:
+
 \begin{lstlisting}
 z1 -> [+][+]
        |  |
@@ -739,6 +741,8 @@ z2 -> [+][+]->[+][+]->[+][x]
 \end{lstlisting}
 
 \section{Exercise 3.16}
+
+The structures are as follows:
 
 \begin{lstlisting}
 x1 -> [x][+]->[x][+]->[+][x]
@@ -893,10 +897,14 @@ Code:
 Tests:
 
 \begin{lstlisting}
-(define x
-  (let ((x (cons '() '())))
-    (begin (set-cdr! x x)
-           x)))
+(define (make-cycle x)
+  (define (last-pair x)
+    (if (null? (cdr x))
+        x
+        (last-pair (cdr x))))
+  (set-cdr! (last-pair x) x)
+  x)
+(define x (make-cycle '(1 2 3)))
 
 (is-contain-cycle '(1 2 3)) ; #f expected
 (is-contain-cycle '())      ; #f expected
@@ -909,6 +917,14 @@ Result:
 #f ; pass
 #f ; pass
 #t ; pass
+\end{lstlisting}
+
+\section{Exercise 3.19}
+
+Code:
+
+\begin{lstlisting}
+(define (is-contain-cycle l)
 \end{lstlisting}
 
 \end{document}
