@@ -751,23 +751,41 @@ Result:
 
 \section{Exercise 1.19}
 
+Code:
+
 \begin{lstlisting}
 (define (fib n)
+  (define (even n)
+    (= (remainder n 2) 0))
+  (define (fib-iter a b p q count)
+    (cond ((= count 0) b)
+          ((even count) (fib-iter a
+                                  b
+                                  (+ (* p p) (* q q))
+                                  (+ (* q q) (* 2 (* p q)))
+                                  (/ count 2)))
+          (else (fib-iter (+ (* b q) (* a q) (* a p))
+                          (+ (* b p) (* a q))
+                          p
+                          q
+                          (- count 1)))))
   (fib-iter 1 0 0 1 n))
-(define (fib-iter a b p q count)
-  (cond ((= count 0) b)
-        ((even count) (fib-iter a
-                                b
-                                (+ (* p p) (* q q))
-                                (+ (* q q) (* 2 (* p q)))
-                                (/ count 2)))
-        (else (fib-iter (+ (* b q) (* a q) (* a p))
-                        (+ (* b p) (* a q))
-                        p
-                        q
-                        (- count 1)))))
-(define (even n)
-  (= (remainder n 2) 0))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(fib 10) ; 55 expected
+(fib 13) ; 233 expected
+(fib 17) ; 1597 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+55   ; pass
+233  ; pass
+1597 ; pass
 \end{lstlisting}
 
 \section{Exercise 1.20}
