@@ -875,7 +875,7 @@ Since computers have become much faster than before so that
  can hardly be distinguished from each other. To get observable
  results, bigger numbers such as 1e10 are needed.
 
-Code used for testing:
+Tests:
 
 \begin{lstlisting}
 (search-for-primes (+ 1 1e10) 3)
@@ -898,7 +898,7 @@ Result:
 \end{lstlisting}
 
 As the number scales up by 10, the primality
- test takes roughly 3 times as before, which is
+ test takes roughly as 3 times as before, which is
  quite close to $\sqrt{10}$
 
 \section{Exercise 1.23}
@@ -914,7 +914,7 @@ Code after modification:
   (if (= divisor 2) 3 (+ divisor 2)))
 \end{lstlisting}
 
-The code used for testing:
+Tests:
 
 \begin{lstlisting}
 (search-for-primes (+ 1 1e10) 3)
@@ -942,7 +942,7 @@ It's roughly 1.75 times as faster. The number of test steps
 
 \section{Exercise 1.24}
 
-Code used for testing (given that \lstinline{n=100} in \lstinline{fast-prime?}):
+Tests (given that \lstinline{n=100} in \lstinline{fast-prime?}):
 
 \begin{lstlisting}
 (search-for-primes 10000000001 3)
