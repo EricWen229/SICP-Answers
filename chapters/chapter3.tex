@@ -774,7 +774,11 @@ Code:
       (+ (count-pairs (car x))
          (count-pairs (cdr x))
          1)))
+\end{lstlisting}
 
+Tests:
+
+\begin{lstlisting}
 (define x1 '(() () ()))
 (define x2
   (let ((common-pair (cons () ())))
@@ -788,11 +792,7 @@ Code:
   (let ((l '(() () ())))
     (set-car! l l)
     l))
-\end{lstlisting}
 
-Tests:
-
-\begin{lstlisting}
 (count-pairs x1) ; 3 expected
 (count-pairs x2) ; 4 expected
 (count-pairs x3) ; 7 expected
@@ -834,7 +834,11 @@ Code:
                         (count-pairs-recur (cdr x))
                         1)))))
     (count-pairs-recur x)))
+\end{lstlisting}
 
+Tests:
+
+\begin{lstlisting}
 (define x1 '(() () ()))
 (define x2
   (let ((common-pair (cons () ())))
@@ -848,11 +852,7 @@ Code:
   (let ((l '(() () ())))
     (set-car! l l)
     l))
-\end{lstlisting}
 
-Tests:
-
-\begin{lstlisting}
 (count-pairs x1) ; 3 expected
 (count-pairs x2) ; 3 expected
 (count-pairs x3) ; 3 expected
@@ -925,6 +925,47 @@ Code:
 
 \begin{lstlisting}
 (define (is-contain-cycle l)
+  (define (proceed l)
+    (if (null? l)
+        l
+        (cdr l)))
+  (define (tortoise-proceed tortoise)
+    (proceed tortoise))
+  (define (hare-proceed hare)
+    (proceed (proceed hare)))
+  (define (is-contain-cycle-iter tortoise hare)
+    (cond ((or (null? tortoise)
+               (null? hare))
+           #f)
+          ((eq? tortoise hare)
+           #t)
+          (else
+           (is-contain-cycle-iter (tortoise-proceed tortoise)
+                                  (hare-proceed hare)))))
+  (is-contain-cycle-iter (tortoise-proceed l)
+                         (hare-proceed l)))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define (make-cycle x)
+  (define (last-pair x)
+    (if (null? (cdr x))
+        x
+        (last-pair (cdr x))))
+  (set-cdr! (last-pair x) x)
+  x)
+
+(is-contain-cycle '(1 2 3)) ; #f expected
+(is-contain-cycle (make-cycle '(1 2 3))) ; #t expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+#f ; pass
+#t ; pass
 \end{lstlisting}
 
 \end{document}
