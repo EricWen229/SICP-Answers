@@ -864,6 +864,53 @@ Result:
 3 ; pass
 \end{lstlisting}
 
+\section{Exercise 3.18}
+
+Code:
+
+\begin{lstlisting}
+(define (is-contain-cycle l)
+  (let ((seen-pair-list '()))
+    (define (has-seen pair)
+      (define (is-in-list pair pair-list)
+        (if (null? pair-list)
+            #f
+            (if (eq? pair (car pair-list))
+                #t
+                (is-in-list pair (cdr pair-list)))))
+      (is-in-list pair seen-pair-list))
+    (define (mark-as-seen pair)
+      (set! seen-pair-list (cons pair seen-pair-list)))
+    (define (is-contain-cycle-iter l)
+      (cond ((not (pair? l)) #f)
+            ((has-seen l) #t)
+            (else
+              (begin (mark-as-seen l)
+                     (is-contain-cycle-iter (cdr l))))))
+    (is-contain-cycle-iter l)))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define x
+  (let ((x (cons '() '())))
+    (begin (set-cdr! x x)
+           x)))
+
+(is-contain-cycle '(1 2 3)) ; #f expected
+(is-contain-cycle '())      ; #f expected
+(is-contain-cycle x)        ; #t expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+#f ; pass
+#f ; pass
+#t ; pass
+\end{lstlisting}
+
 \end{document}
 
 
