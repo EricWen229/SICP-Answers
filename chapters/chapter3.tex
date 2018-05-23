@@ -1112,6 +1112,71 @@ Result:
 (0 1 2 3)    ; pass
 \end{lstlisting}
 
+\section{Exercise 3.22}
+
+Code:
+
+\begin{lstlisting}
+(define (make-queue)
+  (let ((front-ptr '())
+        (rear-ptr '())
+        (queue '()))
+  (define (empty?)
+    (null? front-ptr))
+  (define (front)
+    (if (empty?)
+        (error "FRONT called with an empty queue")
+        (car front-ptr)))
+  (define (insert! item)
+    (let ((new-pair (cons item '())))
+      (if (empty?)
+          (begin (set! front-ptr new-pair)
+                 (set! rear-ptr new-pair))
+          (begin (set-cdr! rear-ptr new-pair)
+                 (set! rear-ptr new-pair)))
+      'ok))
+  (define (delete!)
+    (if (empty?)
+        (error "DELETE called with an empty queue")
+        (begin (set! front-ptr (cdr front-ptr))
+               'ok)))
+  (define (print)
+    (display front-ptr))
+  (define (dispatch m)
+    (cond ((eq? m 'empty?) empty?)
+          ((eq? m 'front) front)
+          ((eq? m 'insert!) insert!)
+          ((eq? m 'delete!) delete!)
+          ((eq? m 'print) print)
+          (else (error "UNKNOWN METHOD" m))))
+  dispatch))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define q (make-queue))
+((q 'print)) ; () expected
+((q 'insert!) -1)
+((q 'insert!) 0)
+((q 'insert!) 1)
+((q 'insert!) 2)
+((q 'insert!) 3)
+((q 'print)) ; (-1 0 1 2 3) expected
+((q 'front)) ; -1 expected
+((q 'delete!))
+((q 'print)) ; (0 1 2 3) expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+() ; pass
+(-1 0 1 2 3) ; pass
+-1 ; pass
+(0 1 2 3)    ; pass
+\end{lstlisting}
+
 \end{document}
 
 
