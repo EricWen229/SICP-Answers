@@ -1082,9 +1082,7 @@ Code:
              queue)))
 
 (define (print-queue q)
-  (if (empty-queue? q)
-      (display '())
-      (display (front-ptr q))))
+  (display (front-ptr q)))
 \end{lstlisting}
 
 Tests:
