@@ -1175,6 +1175,146 @@ Result:
 (0 1 2 3)    ; pass
 \end{lstlisting}
 
+\section{Exercise 3.23}
+
+Code:
+
+\begin{lstlisting}
+;; doubly linked list node definition
+(define (make-dlink-node prev item next)
+  (cons prev (cons item next)))
+(define (get-prev dlink-node)
+  (car dlink-node))
+(define (get-item dlink-node)
+  (car (cdr dlink-node)))
+(define (get-next dlink-node)
+  (cdr (cdr dlink-node)))
+(define (set-prev! dlink-node new-prev)
+  (set-car! dlink-node new-prev))
+(define (set-item! dlink-node new-item)
+  (set-car! (cdr dlink-node) new-item))
+(define (set-next! dlink-node new-next)
+  (set-cdr! (cdr dlink-node) new-next))
+
+;; deque definition
+(define (make-deque)
+  (cons '() '()))
+(define (get-front-ptr deque)
+  (car deque))
+(define (get-rear-ptr deque)
+  (cdr deque))
+(define (set-front-ptr! deque new-front-ptr)
+  (set-car! deque new-front-ptr))
+(define (set-rear-ptr! deque new-rear-ptr)
+  (set-cdr! deque new-rear-ptr))
+(define (empty-deque? deque)
+  (null? (get-front-ptr deque)))
+(define (front-deque deque)
+  (if (empty-deque? deque)
+      (error "FRONT called with an empty deque")
+      (get-item (get-front-ptr deque))))
+(define (rear-deque deque)
+  (if (empty-deque? deque)
+      (error "REAR called with an empty deque")
+      (get-item (get-rear-ptr deque))))
+(define (insert-deque! deque item from-rear)
+  (let ((new-node (make-dlink-node '() item '())))
+    (if (empty-deque? deque)
+        (begin (set-front-ptr! deque new-node)
+               (set-rear-ptr! deque new-node))
+        (if from-rear
+            (begin (set-next! (get-rear-ptr deque)
+                              new-node)
+                   (set-prev! new-node
+                              (get-rear-ptr deque))
+                   (set-rear-ptr! deque new-node))
+            (begin (set-prev! (get-front-ptr deque)
+                              new-node)
+                   (set-next! new-node
+                              (get-front-ptr deque))
+                   (set-front-ptr! deque new-node))))
+    'ok))
+(define (front-insert-deque! deque item)
+  (insert-deque! deque item #f))
+(define (rear-insert-deque! deque item)
+  (insert-deque! deque item #t))
+(define (delete-deque! deque from-rear)
+  (if (empty-deque? deque)
+      (error "DELETE called with an empty deque")
+      (if from-rear
+          (begin
+            (set-rear-ptr! deque
+                           (get-prev (get-rear-ptr deque)))
+            (if (not (null? (get-rear-ptr deque)))
+                (set-next! (get-rear-ptr deque)
+                           '())
+                (set-front-ptr! deque '()))
+            'ok)
+          (begin
+            (set-front-ptr! deque
+                            (get-next (get-front-ptr deque)))
+            (if (not (null? (get-front-ptr deque)))
+                (set-prev! (get-front-ptr deque)
+                           '())
+                '())
+            'ok))))
+(define (front-delete-deque! deque)
+  (delete-deque! deque #f))
+(define (rear-delete-deque! deque)
+  (delete-deque! deque #t))
+(define (print-deque deque)
+  (define (print-dlist-iter dlist is-start)
+    (cond ((null? dlist) '())
+          (is-start
+            (begin (display (get-item dlist))
+                   (print-dlist-iter (get-next dlist)
+                                     #f)))
+          (else
+            (begin (display " ")
+                   (display (get-item dlist))
+                   (print-dlist-iter (get-next dlist)
+                                     #f)))))
+  (display "(")
+  (print-dlist-iter (get-front-ptr deque) #t)
+  (display ")"))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define q (make-deque))
+(print-deque q) ; () expected
+(front-insert-deque! q 1)
+(print-deque q) ; (1) expected
+(rear-deque q)  ; 1 expected
+(rear-delete-deque! q)
+(print-deque q) ; () expected
+(rear-insert-deque! q 1)
+(rear-insert-deque! q 2)
+(rear-insert-deque! q 3)
+(print-deque q) ; (1 2 3) expected
+(front-insert-deque! q 0)
+(front-insert-deque! q -1)
+(front-insert-deque! q -2)
+(front-insert-deque! q -3)
+(print-deque q) ; (-3 -2 -1 0 1 2 3) expected
+(front-deque q) ; -3 expected
+(rear-deque q)  ; 3 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+()      ; pass
+(1)     ; pass
+1       ; pass
+()      ; pass
+(1 2 3) ; pass
+(-3 -2 -1 0 1 2 3) ; pass
+-3      ; pass
+3       ; pass
+\end{lstlisting}
+
 \end{document}
 
 
