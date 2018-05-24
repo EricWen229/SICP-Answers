@@ -1315,6 +1315,75 @@ Result:
 3       ; pass
 \end{lstlisting}
 
+\section{Exercise 3.24}
+
+In order to focus on the aspect of how
+ \lstinline{same-key} operator can be adopted,
+ here we simplify the problem by implementing
+ a table with just one dimension. Implementation
+ of table with arbitary dimension can be found
+ later in solution to exercise 3.25.
+
+Well basically it's just about using
+ \lstinline{same-key?} instead of \lstinline{equal?}
+ in \lstinline{assoc}.
+
+Code:
+
+\begin{lstlisting}
+(define (make-table same-key?)
+  (let ((local-table (list 'table)))
+    (define (assoc key pairs)
+      (cond ((null? pairs) '())
+            ((same-key? key (car (car pairs)))
+              (car pairs))
+            (else (assoc key (cdr pairs)))))
+    (define (lookup key)
+      (let ((k-v (assoc key (cdr local-table))))
+        (if (null? k-v)
+            '()
+            (cdr k-v))))
+    (define (insert! key value)
+      (let ((k-v (assoc key (cdr local-table))))
+        (if (null? k-v)
+            (set-cdr! local-table
+                      (cons (cons key value)
+                            (cdr local-table)))
+            (set-cdr! k-v value))))
+    (define (dispatch m)
+      (cond ((eq? m 'lookup) lookup)
+            ((eq? m 'insert!) insert!)
+            (else (error "UNKNOWN METHOD" m))))
+  dispatch))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define t (make-table (lambda (k1 k2)
+                        (< (abs (- k1 k2))
+                           0.5))))
+((t 'insert!) 1 'one)
+((t 'insert!) 2 'two)
+((t 'insert!) 3 'three)
+((t 'insert!) 4 'four)
+((t 'lookup) 4.6) ; () expected
+((t 'lookup) 4.4) ; four expected
+((t 'lookup) 4)   ; four expected
+((t 'lookup) 3.6) ; four expected
+((t 'lookup) 3.4) ; three expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+()    ; pass
+four  ; pass
+four  ; pass
+four  ; pass
+three ; pass
+\end{lstlisting}
+
 \end{document}
 
 
