@@ -1119,35 +1119,35 @@ Code:
   (let ((front-ptr '())
         (rear-ptr '())
         (queue '()))
-  (define (empty?)
-    (null? front-ptr))
-  (define (front)
-    (if (empty?)
-        (error "FRONT called with an empty queue")
-        (car front-ptr)))
-  (define (insert! item)
-    (let ((new-pair (cons item '())))
+    (define (empty?)
+      (null? front-ptr))
+    (define (front)
       (if (empty?)
-          (begin (set! front-ptr new-pair)
-                 (set! rear-ptr new-pair))
-          (begin (set-cdr! rear-ptr new-pair)
-                 (set! rear-ptr new-pair)))
-      'ok))
-  (define (delete!)
-    (if (empty?)
-        (error "DELETE called with an empty queue")
-        (begin (set! front-ptr (cdr front-ptr))
-               'ok)))
-  (define (print)
-    (display front-ptr))
-  (define (dispatch m)
-    (cond ((eq? m 'empty?) empty?)
-          ((eq? m 'front) front)
-          ((eq? m 'insert!) insert!)
-          ((eq? m 'delete!) delete!)
-          ((eq? m 'print) print)
-          (else (error "UNKNOWN METHOD" m))))
-  dispatch))
+          (error "FRONT called with an empty queue")
+          (car front-ptr)))
+    (define (insert! item)
+      (let ((new-pair (cons item '())))
+        (if (empty?)
+            (begin (set! front-ptr new-pair)
+                   (set! rear-ptr new-pair))
+            (begin (set-cdr! rear-ptr new-pair)
+                   (set! rear-ptr new-pair)))
+        'ok))
+    (define (delete!)
+      (if (empty?)
+          (error "DELETE called with an empty queue")
+          (begin (set! front-ptr (cdr front-ptr))
+                 'ok)))
+    (define (print)
+      (display front-ptr))
+    (define (dispatch m)
+      (cond ((eq? m 'empty?) empty?)
+            ((eq? m 'front) front)
+            ((eq? m 'insert!) insert!)
+            ((eq? m 'delete!) delete!)
+            ((eq? m 'print) print)
+            (else (error "UNKNOWN METHOD" m))))
+    dispatch))
 \end{lstlisting}
 
 Tests:
@@ -1354,7 +1354,7 @@ Code:
       (cond ((eq? m 'lookup) lookup)
             ((eq? m 'insert!) insert!)
             (else (error "UNKNOWN METHOD" m))))
-  dispatch))
+    dispatch))
 \end{lstlisting}
 
 Tests:
@@ -1382,6 +1382,100 @@ four  ; pass
 four  ; pass
 four  ; pass
 three ; pass
+\end{lstlisting}
+
+\section{Exercise 3.25}
+
+Basically it can be seen as an implementation
+ of trie.
+
+Code:
+
+\begin{lstlisting}
+(define (make-table)
+  (let ((local-table (list 'table)))
+    (define (assoc key pairs)
+      (cond ((null? pairs) '())
+            ((equal? key (car (car pairs)))
+              (cdr (car pairs)))
+              ;; here we return a pair
+              ;; containing the value
+              ;; and the table
+              ;; associated with the key
+              ;; they can be seen as
+              ;; the content and the childs
+              ;; of the tree node
+            (else (assoc key (cdr pairs)))))
+    (define (lookup keys)
+      (define (lookup-iter table keys)
+        ;; paramater table expects a pair
+        ;; whose car contains value
+        ;; and cdr contains subtable (pairs)
+        (if (null? keys)
+            (car table)
+            (let ((v-t-pair (assoc (car keys)
+                                   (cdr table))))
+              (if (null? v-t-pair)
+                  '()
+                  (lookup-iter v-t-pair
+                               (cdr keys))))))
+      (lookup-iter local-table keys))
+    (define (insert! keys value)
+      (define (create-table keys value)
+        (if (null? (cdr keys))
+            (cons (car keys)
+                  (cons value '()))
+            (cons (car keys)
+                  (cons '()
+                        (list (create-table (cdr keys)
+                                            value))))))
+      (define (insert-iter! table keys value)
+        ;; paramater table expects a pair
+        ;; whose car contains value
+        ;; and cdr contains subtable (pairs)
+        (if (null? keys)
+            (set-car! table value)
+            (let ((v-t-pair (assoc (car keys)
+                                   (cdr table))))
+              (if (null? v-t-pair)
+                  ;; entry not in table
+                  ;; then create the entry
+                  ;; and insert into table
+                  (set-cdr! table
+                            (cons (create-table keys
+                                                value)
+                                  (cdr table)))
+                  (insert-iter! v-t-pair (cdr keys) value)))))
+      (insert-iter! local-table keys value)
+      'ok)
+    (define (dispatch m)
+      (cond ((eq? m 'lookup) lookup)
+            ((eq? m 'insert!) insert!)
+            (else (error "UNKNOWN METHOD" m))))
+    dispatch))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define t (make-table))
+((t 'insert!) '(1) 1)
+((t 'insert!) '(1 2) 12)
+((t 'insert!) '(1 2 3) 123)
+((t 'insert!) '(1 2 3 4) 1234)
+((t 'lookup) '(1))       ; 1 expected
+((t 'lookup) '(1 2))     ; 12 expected
+((t 'lookup) '(1 2 3))   ; 123 expected
+((t 'lookup) '(1 2 3 4)) ; 1234 expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+1    ; pass
+12   ; pass
+123  ; pass
+1234 ; pass
 \end{lstlisting}
 
 \end{document}
