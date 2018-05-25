@@ -1478,6 +1478,108 @@ Result:
 1234 ; pass
 \end{lstlisting}
 
+\section{Exercise 3.26}
+
+Just like exercise 3.24, we implement a simple table
+ with just one dimension to focus on how binary
+ search tree is implemented.
+
+Code:
+
+\begin{lstlisting}
+(define (make-bst-table)
+  (define (make-bst-node item)
+    (cons '() (cons item '())))
+  (define (get-left bst-node)
+    (car bst-node))
+  (define (get-right bst-node)
+    (cdr (cdr bst-node)))
+  (define (get-item bst-node)
+    (car (cdr bst-node)))
+  (define (set-left! bst-node left-node)
+    (set-car! bst-node left-node))
+  (define (set-right! bst-node right-node)
+    (set-cdr! (cdr bst-node) right-node))
+  (define (set-item! bst-node new-item)
+    (set-car! (cdr bst-node) new-item))
+  (let ((bst-root '()))
+    (define (lookup key)
+      (define (lookup-iter curr-node)
+        (if (null? curr-node)
+            '()
+            (let ((k-v (get-item curr-node)))
+              (cond ((= key
+                        (car k-v))
+                      (cdr k-v))
+                    ((< key
+                        (car k-v))
+                      (lookup-iter (get-left curr-node)))
+                    (else
+                      (lookup-iter (get-right curr-node)))))))
+      (lookup-iter bst-root))
+    (define (insert! key value)
+      (define (insert-iter! curr-node)
+        (let ((k-v (get-item curr-node)))
+          (cond ((= key (car k-v))
+                  (set-cdr! k-v value))
+                ((< key (car k-v))
+                  (try-insert-left! curr-node))
+                (else
+                  (try-insert-right! curr-node)))))
+      (define (try-insert-next! curr-node
+                                next-getter
+                                next-setter)
+        (if (null? (next-getter curr-node))
+            (next-setter curr-node
+                         (make-bst-node (cons key 
+                                              value)))
+            (insert-iter! (next-getter curr-node))))
+      (define (try-insert-left! curr-node)
+        (try-insert-next! curr-node
+                          get-left
+                          set-left!))
+      (define (try-insert-right! curr-node)
+        (try-insert-next! curr-node
+                          get-right
+                          set-right!))
+      (if (null? bst-root)
+          (set! bst-root (make-bst-node (cons key
+                                              value)))
+          (insert-iter! bst-root))
+      'ok)
+    (define (dispatch m)
+      (cond ((eq? m 'lookup) lookup)
+            ((eq? m 'insert!) insert!)
+            (else (error "UNKNOWN METHOD" m))))
+    dispatch))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define t (make-bst-table))
+((t 'insert!) 3 'three)
+((t 'insert!) 1 'one)
+((t 'insert!) 4 'four)
+((t 'insert!) 5 'five)
+((t 'insert!) 9 'nine)
+((t 'lookup) 1) ; one expected
+((t 'lookup) 3) ; three expected
+((t 'lookup) 4) ; four expected
+((t 'lookup) 5) ; five expected
+((t 'lookup) 9) ; nine expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+one   ; pass
+three ; pass
+four  ; pass
+five  ; pass
+nine  ; pass
+\end{lstlisting}
+
 \end{document}
 
 
