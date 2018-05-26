@@ -1580,6 +1580,162 @@ five  ; pass
 nine  ; pass
 \end{lstlisting}
 
+\section{Exercise 3.27}
+
+The environment is as follows:
+
+\begin{lstlisting}
+global env
+     |
+     v
++----------+
+| memo-fib |<-----------+
+|    |     |<-+         |
++----+-----+  |         |
+     |     +-----+      |
+     |     |f----+---+  |
+     |     +-----+   |  |
+     |        ^      v  |
+     |        |      [+][+]
+     |   +---------+ |
+     |   |table:...| v
+     |   +---------+ code (compute fib)
+     |        ^
+     v        |
+     [+][+]---+
+     |
+     v
+     code (table lookup)
+\end{lstlisting}
+
+From the fact that computing the $k$th
+ Fibonacci number requires only the $(k-1)$th and the
+ $(k-2)$th Fibonacci number, we know that computing
+ the $n$th Fibonacci number requires nothing more
+ than the $n$ numbers from the $0$th Fibonacci
+ number to the $(n-1)$th Fibonacci number.
+
+From the fact that the $k$th Fibonacci number
+ can be found in the table after it's been computed
+ for the first time, we know that each of the $n$
+ Fibonacci numbers mentioned above only gets
+ computed once at most when computing the $n$th
+ Fibonacci number.
+
+Therefore, computing the $n$th Fibonacci number
+ takes $\Theta(n)$ steps (provided that the table
+ is implemented as hash table and each insertion
+ and lookup takes $O(1)$ steps).
+
+The scheme won't work if we simply define
+ \lstinline{memo-fib} to be
+ \lstinline{(memoize fib)}, since invocation
+ of \lstinline{fib} inside the body won't
+ look up in the table.
+
+In addition, I saw an interesting solution on
+ the Internet, saying that
+
+\begin{lstlisting}
+(set! fib (memoize fib))
+\end{lstlisting}
+
+will do the trick. Let's find out whether it's
+ true.
+
+When we first define \lstinline{fib}, the
+ environment is as follows:
+ 
+\begin{lstlisting}
+global env
+   |
+   v
++-----+
+| fib |
+|  |  |<--+
++--+--+   |
+   |      |
+   v      |
+   [+][+]-+
+   |
+   v
+   code (compute fib)
+\end{lstlisting}
+
+After doing the magic, the environment becomes
+ as follows:
+ 
+\begin{lstlisting}
+global env
+    |
+    v
++---------+
+| fib     |<-----------+
+|   |     |<-+         |
++---+-----+  |         |
+    |     +-----+      |
+    |     |f----+---+  |
+    |     +-----+   |  |
+    |        ^      v  |
+    |        |      [+][+]
+    |   +---------+ |
+    |   |table:...| v
+    |   +---------+ code (compute fib)
+    |        ^
+    v        |
+    [+][+]---+
+    |
+    v
+    code (table lookup)
+\end{lstlisting}
+
+Looks like everything's fine! How about some tests?
+
+Basically we want to ensure that every invocation
+ of \lstinline{fib} is decorated by
+ \lstinline{memoize}, so we can just display
+ a message when \lstinline{memoize} is invoked.
+ To make the code executable and also to avoid
+ introducing a great bunch of code implementing
+ table, here we just use a pseudo
+ \lstinline{memoize} instead of a real one.
+
+Code:
+
+\begin{lstlisting}
+(define (fib n)
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (else (+ (fib (- n 1))
+                 (fib (- n 2))))))
+(define (memoize f)
+  (let ((count 0))
+    (lambda (x)
+      (set! count (+ count 1))
+      (display "I've been invoked for ")
+      (display count)
+      (display " times!\n")
+      (f x))))
+(set! fib (memoize fib))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(fib 3) ;; 5 memoize invocations expected
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+I've been invoked for 1 times!
+I've been invoked for 2 times!
+I've been invoked for 3 times!
+I've been invoked for 4 times!
+I've been invoked for 5 times!
+2 ; pass
+\end{lstlisting}
+
 \end{document}
 
 
