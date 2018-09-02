@@ -1020,7 +1020,7 @@ Code:
         (else false)))
 \end{lstlisting}
 
-Code used for testing:
+Tests:
 
 \begin{lstlisting}
 (carmichael-test 561)
@@ -1032,8 +1032,8 @@ Code used for testing:
 \end{lstlisting}
 
 A Carmichael number should pass every Fermat test, while
- itself is actually not a prime. All procedure calls above
- return true, while none of the numbers are prime, shown
+ itself is actually not a prime. Every procedure call above
+ returns true, while none of the numbers are prime, shown
  as follows:
 
 \begin{align*}
@@ -1078,7 +1078,7 @@ Code:
   (fast-prime? n 100))
 \end{lstlisting}
 
-Code used for testing:
+Tests:
 
 \begin{lstlisting}
 ;; some prime numbers
@@ -1137,7 +1137,7 @@ Code:
 (define (cube x) (* x x x))
 \end{lstlisting}
 
-Code used for testing:
+Tests:
 
 \begin{lstlisting}
 (simpson cube 0 1 10)
@@ -1341,7 +1341,7 @@ Now assume that $x_n$ converges to $a$ as $n$ approaches infinity.
 
 Given that $0<|x_{n+1}-\phi|<\left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - \phi|$ and $\lim_{n\to\infty}\left(\frac{2}{1+\sqrt{5}}\right)^n\cdot|x_1 - \phi|=0$, by using squeeze rule we have $\lim_{n\to\infty}|x_{n+1}-\phi|=0$, i.e., $\lim_{n\to\infty}x_n=\phi$.
 
-Code used for testing:
+Tests:
 
 \begin{lstlisting}
 (fixed-point (lambda (x) (+ 1 (/ 1.0 x))) 1.0)
@@ -1372,7 +1372,7 @@ Code:
   (try first-guess))
 \end{lstlisting}
 
-Code used for testing:
+Tests:
 
 \begin{lstlisting}
 (fixed-point (lambda (x) (/ (log 1000) (log x))) 2.0)
@@ -1397,7 +1397,7 @@ Code:
   (cont-frac-recur 1))
 \end{lstlisting}
 
-Code used for testing:
+Tests:
 
 \begin{lstlisting}
 (cont-frac (lambda (i) 1.0)
@@ -1606,7 +1606,7 @@ Code:
   (apply-range count-average-damp-needed a b))
 \end{lstlisting}
 
-Code used for testing:
+Tests:
 
 \begin{lstlisting}
 (count-average-damp-needed-range 2 128)
