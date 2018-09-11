@@ -1,4 +1,5 @@
 # SICP-Solutions
+
 Solutions to exercises in SICP
 
 This is my personal collection of solutions to exercises in SICP.
@@ -13,3 +14,14 @@ the schedule. Later (after I've finished reading this book and
 completed all the exercises) I might go through this book again
 for multiple times and refine these solutions based on my latest
 reflection.
+
+## Update: 2018-9-11
+
+I've been thinking about whether to thoroughly test each piece of code
+and I've added tests for some of the solutions. But in the end I decide
+to stop doing so. There're a couple of reasons for this. First of all
+the main purpose of reading this book and doing exercises is to understand
+the ideas, not to write industrial-level code. Also, it takes too much time
+and effort to write supporting code in order for the core part to run, and
+to be tested. Nevertheless, I will still include some test cases in the
+solutions.
