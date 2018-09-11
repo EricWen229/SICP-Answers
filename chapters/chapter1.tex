@@ -14,7 +14,7 @@
     \item a (with value 3)
     \item b (with value 4)
     \item 19
-    \item \#f (true)
+    \item \#f
     \item 4
     \item 16
     \item 6
@@ -30,7 +30,7 @@
       (- 2
          (- 3
             (+ 6
-               (/ 4 3)))))
+               (/ 4 5)))))
    (* 3
       (- 6 2)
       (- 2 7)))
@@ -75,8 +75,9 @@ Result:
 
 \section{Exercise 1.4}
 
-If b is positive, evaluate and return \lstinline{(- a b)} (i.e. a - b).
- Otherwise, evaluate and return \lstinline{(+ a b)} (i.e. a + b).
+If b is positive, evaluate and return \lstinline{(- a b)} (i.e. $a - b$).
+ Otherwise, evaluate and return \lstinline{(+ a b)} (i.e. $a + b$).
+ The overall result is $a + |b|$.
 
 \section{Exercise 1.5}
 
@@ -90,10 +91,10 @@ If b is positive, evaluate and return \lstinline{(- a b)} (i.e. a - b).
 ......
 \end{lstlisting}
 
-In applicative-order evaluation, a procedure is not reduced until
- all its arguments are evaluated. Thus the expression \lstinline{(p)}
-  is constantly being expanded into itself over and over again while
-   the procedure \lstinline{test} can never get the chance to be reduced.
+In applicative-order evaluation, the expression \lstinline{(p)}
+ is constantly being evaluated into itself over and over again while
+ the procedure \lstinline{test} can never get the chance to be reduced.
+ The program runs infinitely.
 
 \subsection*{Normal-order Evaluation}
 
@@ -103,13 +104,8 @@ In applicative-order evaluation, a procedure is not reduced until
 0
 \end{lstlisting}
 
-In normal-order evaluation, a procedure's arguments are not evaluated
- until they're needed, which means the procedure is always reduced
- until it only involves primitive operators before its arguments are
- evaluated. Due to the special evaluation rule of \lstinline{if}
- where the alternative expression is not evaluated if the predicate
- expression is evaluated to be true, the function \lstinline{test}
- returns 0 before \lstinline{(p)} gets the chance to be evaluated.
+In normal-order evaluation, 0 is returned before \lstinline{(p)} gets
+ the chance to be evaluated.
 
 \section{Exercise 1.6}
 
