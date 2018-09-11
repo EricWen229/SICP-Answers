@@ -174,6 +174,17 @@ Code:
   (lambda (f) (lambda (x) ((a f) ((b f) x)))))
 \end{lstlisting}
 
+Tests:
+
+\begin{lstlisting}
+(define (incre x) (+ x 1))
+((one incre) 0)            ; 1 expected
+((two incre) 0)            ; 2 expected
+(define four (add two two))
+((four incre) 0)           ; 4 expected
+(((add four two) incre) 0) ; 6 expected
+\end{lstlisting}
+
 \section{Exercise 2.7}
 
 Code:
