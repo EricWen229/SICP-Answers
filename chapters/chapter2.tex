@@ -63,6 +63,15 @@ Code:
                          (y-point end)))))
 \end{lstlisting}
 
+Tests:
+
+\begin{lstlisting}
+(midpoint-segment (make-segment (make-point 1.0 2.0)
+                                (make-point 4.0 3.0))) ; (2.5 . 2.5) expected
+(midpoint-segment (make-segment (make-point 1.0 2.0)
+                                (make-point 3.0 4.0))) ; (2.0 . 3.0) expected
+\end{lstlisting}
+
 \section{Exercise 2.3}
 
 Code:
