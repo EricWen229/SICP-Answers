@@ -199,8 +199,8 @@ Code:
 \section{Exercise 2.8}
 
 The difference of two intervals is the
- sum of the first and the opposite interval
- of the second.
+ sum of the first interval and the opposite
+ of the second interval.
 
 Code:
 
@@ -257,7 +257,8 @@ Code:
   (if (exclude-zero? y)
     (mul-interval x
                   (make-interval (/ 1.0 (upper-bound y))
-                                 (/ 1.0 (lower-bound y))))))
+                                 (/ 1.0 (lower-bound y))))
+    (error "interval as divisor spans zero")))
 \end{lstlisting}
 
 \section{Exercise 2.11}
@@ -336,7 +337,7 @@ $\frac{1}{1/R_1 + 1/R_2} = (\frac{2}{3}, \frac{5}{6})$
 
 \section{Exercise 2.15}
 
-\lstinline{par2} is indeed better, but for a different reason.
+\lstinline{par2} is indeed better.
 
 In $\frac{R_1 R_2}{R_1 + R_2}$, we want to refer to the same variable
  when referring to $R_1$ in numerator and demonimator. However, we are
@@ -351,7 +352,7 @@ Because the operands are random variables instead of real values. This
  or an interval divided by another with the same distribution. For the former
  result should be 1 (or written as $(1, 1)$ in interval format), for the latter
  result should be $(\frac{1}{2}, 2)$. This kind of ambiguity determines that
- it's impossible to devise such arithmetic package for intervals.
+ it's really hard to devise such arithmetic package for intervals.
 
 \section{Exercise 2.17}
 
@@ -409,11 +410,18 @@ Code:
       (= (remainder x 2) parity))
     (define (filter lst)
       (if (null? lst)
-          (list)
+          '()
           (if (same? (car lst))
               (cons (car lst) (filter (cdr lst)))
               (filter (cdr lst)))))
     (cons i (filter lst))))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(same-parity 1 2 3 4 5 6 7) ; (1 3 5 7) expected
+(same-parity 0 1 2 3 4 5 6) ; (0 2 4 6) expected
 \end{lstlisting}
 
 \section{Exercise 2.21}
