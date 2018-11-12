@@ -449,7 +449,7 @@ In the first version, the procedure inserts
 In the second version, applying \lstinline{cons}
  to a list and a number produces a new list with
  the given list be the first element and the given
- number be the second element instead of the result
+ number be the second element, instead of the result
  of appending the given number to the given list.
 
 \section{Exercise 2.23}
@@ -459,8 +459,15 @@ Code:
 \begin{lstlisting}
 (define (for-each fn lst)
   (if (null? lst)
-      lst
-      ((lambda (lst) (fn (car lst)) (for-each fn (cdr lst))) lst)))
+      '()
+      (begin (fn (car lst))
+             (for-each fn (cdr lst)))))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(for-each (lambda (x) (display x)) '(1 2 3 4))
 \end{lstlisting}
 
 \section{Exercise 2.24}
@@ -474,11 +481,11 @@ Interpreter output:
 Box-n-pointer structure:
 
 \begin{lstlisting}
-* -> */
+* -> *
 |    |
-1    * -> */
+1    * -> *
      |    |
-     2    * -> */
+     2    * -> *
           |    |
           3    4
 \end{lstlisting}
@@ -797,18 +804,16 @@ Code:
   (define (get-row positions row)
     (list-ref positions (- (length positions) row)))
   (define (safe? k positions) ; is the last position (the kth) safe?
-    (define (safe?-recur row1 row2)
-      (define (safe?-test row1 row2)
-        (let ((col1 (get-row positions row1))
-              (col2 (get-row positions row2)))
-          (if (or (= col1 col2)
-                  (= (- col2 col1) (- row2 row1))
-                  (= (- col1 col2) (- row2 row1)))
-              #f
-              (safe?-recur (+ row1 1) row2))))
-      (if (= row1 row2)
-          #t
-          (safe?-test row1 row2)))
+    (define (safe?-recur col1 col2)
+      (define (safe?-test col1 col2)
+        (let ((row1 (get-row positions col1))
+              (row2 (get-row positions col2)))
+          (not (or (= row1 row2)
+                   (= (- col2 col1) (- row2 row1))
+                   (= (- col1 col2) (- row2 row1))))))
+      (cond ((= col1 col2) #t)
+            ((safe?-test col1 col2) (safe?-recur (+ col1 1) col2))
+            (else #f)))
     (safe?-recur 1 k))
   (define (adjoin-position new-row k rest-of-queens)
     (cons new-row rest-of-queens))
@@ -870,7 +875,7 @@ T'(k) &= d \cdot \left[T'(k-1) + S(k-1) \cdot Q(k)\right] \\
 &= d \cdot T'(k-1) + S(k-1) \cdot d \cdot Q(k) \\
 &= d^2 \cdot T'(k-2) + S(k-2) \cdot d^2 \cdot Q(k-1) + S(k-1) \cdot d \cdot Q(k) \\
 &\vdots \\
-&= d^k \cdot T'(0) + \sum_{i=0}^{k-1} S(i) \cdot d^{k-i} \cdot Q(i + 1)
+&= d^k \cdot T'(0) + \sum_{i=0}^{k-1} d^{k-i} \cdot S(i) \cdot Q(i + 1)
 \end{align*}
 
 From which we have roughly
