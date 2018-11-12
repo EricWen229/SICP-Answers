@@ -1740,8 +1740,6 @@ I've been invoked for 5 times!
 
 Code:
 
-TODO: code completion
-
 \begin{lstlisting}
 (define (or-gate a1 a2 output)
   (define (or-action-procedure)
@@ -1755,7 +1753,80 @@ TODO: code completion
   (add-action! a1 or-action-procedure)
   (add-action! a2 or-action-procedure)
   'ok)
+
+(define (logical-or signal1 signal2)
+  (if (or (= signal1 1)
+          (= signal2 1))
+      1
+      0))
 \end{lstlisting}
+
+\section{Exercise 3.29}
+
+Code:
+
+\begin{lstlisting}
+(define (or-gate a1 a2 output)
+  (let ((c (make-wire))
+        (d (make-wire))
+        (e (make-wire)))
+    (inverter a1 c)
+    (inverter a2 d)
+    (and-gate c d e)
+    (inverter e output)
+    'ok))
+\end{lstlisting}
+
+The delay time is
+
+$$
+\text{inverter-delay} * 2 + \text{and-gate-delay}
+$$
+
+\section{Exercise 3.30}
+
+Code:
+
+\begin{lstlisting}
+(define (ripple-carry-adder a-lst b-lst s-lst c)
+  (if (null? a-lst)
+      'ok
+      (let ((cout (make-wire)))
+        (begin (full-adder (car a-lst)
+                           (car b-lst)
+                           c
+                           (car s-lst)
+                           cout)
+               (ripple-carry-adder (cdr a-lst)
+                                   (cdr b-lst)
+                                   (cdr s-lst)
+                                   cout)))))
+\end{lstlisting}
+
+The delay times of a half adder are
+
+\begin{align*}
+\text{delay}_{S} &= \max \{ \text{and-gate-delay} + \text{inverter-delay}, \text{or-gate-delay} \} + \text{and-gate-delay} \\
+\text{delay}_{C} &= \text{and-gate-delay}
+\end{align*}
+
+Thus the delay times of a full adder are
+
+\begin{align*}
+\text{delay}_{SUM} &= \text{delay}_{S} * 2 \\
+&= \max \{ \text{and-gate-delay} + \text{inverter-delay}, \text{or-gate-delay} \} * 2 + \text{and-gate-delay} * 2 \\
+\text{delay}_{COUT} &= \text{delay}_{S} + \text{delay}_{C} + \text{or-gate-delay} \\
+&= \max \{ \text{and-gate-delay} + \text{inverter-delay}, \text{or-gate-delay} \} + \text{and-gate-delay} * 2 + \text{or-gate-delay}
+\end{align*}
+
+Thus the delay times of a full ripple-carry adder are
+
+\begin{align*}
+\text{delay}_{S1} &= \text{delay}_{S} \\
+\text{delay}_{S2} &= \text{delay}_{COUT} + \text{delay}_{S} \\
+&\vdots \\
+\text{delay}_{SN} &= \text{delay}_{COUT} * (n - 1) + \text{delay}_{S}
+\end{align*}
 
 \end{document}
 
