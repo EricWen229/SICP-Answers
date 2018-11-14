@@ -1928,6 +1928,29 @@ Environment (it's just so painful to draw such gragh in \LaTeX):
    (code of me)
 \end{lstlisting}
 
+\section{Exercise 3.37}
+
+Code:
+
+\begin{lstlisting}
+(define (c- x y)
+  (let ((z (make-connector)))
+    (adder y z x)
+    z))
+(define (c* x y)
+  (let ((z (make-connector)))
+    (multiplier x y z)
+    z))
+(define (c/ x y)
+  (let ((z (make-connector)))
+    (multiplier y z x)
+    z))
+(define (cv v)
+  (let ((z (make-connector)))
+    (constant v z)
+    z))
+\end{lstlisting}
+
 \end{document}
 
 
