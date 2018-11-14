@@ -1893,6 +1893,41 @@ Code:
   me)
 \end{lstlisting}
 
+\section{Exercise 3.36}
+
+Environment (it's just so painful to draw such gragh in \LaTeX):
+
+\begin{lstlisting}
+  +---------------------+
+  | global env          |
+  |                     |
+  | make-connector: ... |
++-+-a                   |
+| + b: ...              |
+| +---------------------+<+
+|                         |
+| +---------------------+-+
+| | (empty environment) |
+| +---------------------+<-+
+|                          |
+| +----------------------+-+
+| | value: 10            |
+| | informant: 'user     |
+| | constraints: '()     |
+| +----------------------+
+| | set-my-value: ...    |
+| | forget-my-value: ... |
+| | connect: ...         |
+| | me--+                |
+| +-----+----------------+
+|       | ^
+|       v |
++------>#.#
+        |
+        v
+   (code of me)
+\end{lstlisting}
+
 \end{document}
 
 
