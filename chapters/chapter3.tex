@@ -1848,6 +1848,51 @@ from 0 to 1, the procedure setting output to 1 is put onto stack.
 After some delay when these two procedures are invoked, the output
 signal first get set to 1 then get set to 0, which produces the wrong result.
 
+\section{Exercise 3.33}
+
+Code:
+
+\begin{lstlisting}
+(define (averager a b c)
+  (let ((p (make-connector))
+        (q (make-connector)))
+    (adder a b p)
+    (multiplier c q p)
+    (constant 2 q)
+    'ok))
+\end{lstlisting}
+
+\section{Exercise 3.34}
+
+Setting the value of \lstinline{b} won't
+produce value for \lstinline{a} since the multiplier
+is still expecting another value from connector.
+
+\section{Exercise 3.35}
+
+Code:
+
+\begin{lstlisting}
+(define (squarer a b)
+  (define (process-new-value)
+    (if (has-value? b)
+        (if (< (get-value b) 0)
+            (error "square less than 0 -- SQUARER" (get-value b))
+            (set-value! a (sqrt (get-value b)) me))
+        (set-value! b (square (get-value a)) me)))
+  (define (process-forget-value)
+    (forget-value! a me)
+    (forget-value! b me)
+    (process-new-value))
+  (define (me request)
+    (cond ((eq? request 'I-have-a-value) (process-new-value))
+          ((eq? request 'I-lost-my-value) (process-forget-value))
+          (else (error "Unknown request -- SQUARER" request))))
+  (connect a me)
+  (connect b me)
+  me)
+\end{lstlisting}
+
 \end{document}
 
 
