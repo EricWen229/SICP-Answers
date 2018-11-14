@@ -1814,9 +1814,7 @@ Thus the delay times of a full adder are
 
 \begin{align*}
 \text{delay}_{SUM} &= \text{delay}_{S} * 2 \\
-&= \max \{ \text{and-gate-delay} + \text{inverter-delay}, \text{or-gate-delay} \} * 2 + \text{and-gate-delay} * 2 \\
-\text{delay}_{COUT} &= \text{delay}_{S} + \text{delay}_{C} + \text{or-gate-delay} \\
-&= \max \{ \text{and-gate-delay} + \text{inverter-delay}, \text{or-gate-delay} \} + \text{and-gate-delay} * 2 + \text{or-gate-delay}
+\text{delay}_{COUT} &= \text{delay}_{S} + \text{delay}_{C} + \text{or-gate-delay}
 \end{align*}
 
 Thus the delay times of a full ripple-carry adder are
@@ -1827,6 +1825,28 @@ Thus the delay times of a full ripple-carry adder are
 &\vdots \\
 \text{delay}_{SN} &= \text{delay}_{COUT} * (n - 1) + \text{delay}_{S}
 \end{align*}
+
+\section{Exercise 3.31}
+
+Calling \lstinline{propagate} may not trigger the probe if we
+had defined \lstinline{accept-action-procedure!} the other way.
+The initialization guarantees the consistency of the whole
+digital circuit (as long as the actions of one wire don't conflict
+with each other).
+
+\section{Exercise 3.32}
+
+This order must be used to ensure the final state of digital
+circuits is determined by the last change (which is quite natural).
+
+Suppose the procedures are stored in a LIFO queue (i.e. a stack).
+And suppose we first change one of the input signals from 1 to 0, and then
+the other from 0 to 1. After changing the first signal from 1 to 0,
+current signals of two inputs are both 0, thus the procedure setting
+output to 0 is put onto stack. Then after changing the second signal
+from 0 to 1, the procedure setting output to 1 is put onto stack.
+After some delay when these two procedures are invoked, the output
+signal first get set to 1 then get set to 0, which produces the wrong result.
 
 \end{document}
 
