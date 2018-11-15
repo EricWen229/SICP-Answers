@@ -1972,6 +1972,73 @@ $$
 \frac{11!}{3!\,3!\,5!} = 9240
 $$
 
+\section{Exercise 3.39}
+
+The first thunk contains the following "atomic" operations:
+
+\begin{itemize}
+\item[a)] get x, compute x * x and let t1 be the result
+\item[b)] set x with t1
+\end{itemize}
+
+The second thunk contains the following "atomic"
+operation:
+
+\begin{itemize}
+\item[c)] get x, compute x + 1 and set x with the result
+\end{itemize}
+
+Each of the following sequences of execution gives corresponding result:
+
+\begin{itemize}
+\item a-b-c: 101
+\item a-c-b: 100
+\item c-a-b: 121
+\end{itemize}
+
+\section{Exercise 3.40}
+
+The first thunk contains the following "atomic" operations:
+
+\begin{itemize}
+\item[a)] get x and let t1 be the result
+\item[b)] get x and let t2 be the result
+\item[c)] compute t1 * t2 and let t3 be the result
+\item[d)] set x with t3
+\end{itemize}
+
+The second thunk contains the following "atomic"
+operation:
+
+\begin{itemize}
+\item[e)] get x and let t4 be the result
+\item[f)] get x and let t5 be the result
+\item[g)] get x and let t6 be the result
+\item[h)] compute t4 * t5 * t6 and let t7 be the result
+\item[i)] set x with t7
+\end{itemize}
+
+Each of the following sequences of execution gives corresponding result. Note that not every permutation is listed since what actually matters is when the variable is set with new value.
+
+(i is invoked before d)
+
+\begin{itemize}
+\item e-f-g-h-i-a-b-c-d: 1000000
+\item e-f-g-h-a-i-b-c-d: 10000
+\item e-f-g-h-a-b-c-i-d: 100
+\end{itemize}
+
+(i is invoked after d)
+
+\begin{itemize}
+\item a-b-c-d-e-f-g-h-i: 1000000
+\item a-b-c-e-d-f-g-h-i: 100000
+\item a-b-c-e-f-d-g-h-i: 10000
+\item a-b-c-e-f-g-h-d-i: 1000
+\end{itemize}
+
+If serialized procedures are used, then there're only one possibility left, which is 1000000.
+
 \end{document}
 
 
