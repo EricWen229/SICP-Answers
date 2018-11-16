@@ -2082,6 +2082,14 @@ Consider the case we discussed in the last question. After all exchanges we have
 
 It's obvious and has been discussed in previous segments.
 
+\section{Exercise 3.44}
+
+Louis is not right.
+
+In the exchange procedure, the amount transferred DEPENDS on the balance of each account. Therefore any change to any of the account during that transfer makes the amount of transfer invalid.
+
+In the transfer procedure, the amount transferred is INDEPENDENT of the balance of each account. Besides, given the balance is always adequate for withdraw, serialized operations on one account can be performed in arbitary order, and the result is unique.
+
 \end{document}
 
 
