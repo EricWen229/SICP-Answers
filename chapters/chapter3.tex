@@ -2039,6 +2039,49 @@ Each of the following sequences of execution gives corresponding result. Note th
 
 If serialized procedures are used, then there're only one possibility left, which is 1000000.
 
+\section{Exercise 3.41}
+
+That really depends on implementation. If accessing variable and setting variable are not interleavable, indicating that one cannot access a variable and get a partially set value, then the protection is not necessary.
+
+\section{Exercise 3.42}
+
+Depends on the implementation of serialization. If serialization doesn't allow one serialized method to interleave with itself (the exact same object), then there's no difference between these two different versions.
+
+\section{Exercise 3.43}
+
+\subsection{a.}
+
+To prove that after any number of sequential exchanges the account balances should be \$10, \$20 and \$30 in some order, we use induction as follows:
+
+\begin{itemize}
+\item \textbf{Base case}: Before any exchange get made, the account balances are \$10, \$20 and \$30.
+\item \textbf{Induction step}: If the account balances are \$10, \$20 and \$30 in some order before one exchange, they are still \$10, \$20 and \$30 in some other order after the exchange.
+\end{itemize}
+
+The proof is valid thanks to the fact that no exchange can be interleaved with another.
+
+\subsection{b.}
+
+Suppose account A, B and C have \$10, \$20 and \$30 respectively. Suppose Peter is trying to exchange account A with account B, while Paul is trying to exchange account A with account C.
+
+The execution order could be as follows:
+
+\begin{enumerate}
+\item Peter finishes computing the difference between account A and account B, and is ready to deposit \$10 to account A and withdraw from account B.
+\item Paul suddenly comes in and finishes exchanging account A and account C, leaving \$30 in account A and \$10 in account C.
+\item Peter continues his exchange, leaving \$40 in account A and \$10 in account B.
+\end{enumerate}
+
+\subsection{c.}
+
+The sum will be perserved ONLY IF none of the operations fail, while in the actual case, they might.
+
+Consider the case we discussed in the last question. After all exchanges we have \$40 in account A, \$10 in account B and \$10 in account C. If we do it again---exchange between account A and account C right away after Peter computes the difference between account A and account B, then Peter would try to withdraw \$30 from account A. This would cause a failure but in a such a silent way that Peter would still deposit \$30 into account C. In the end there're \$10, \$40 and \$40 in three accounts respectively.
+
+\subsection{d.}
+
+It's obvious and has been discussed in previous segments.
+
 \end{document}
 
 
