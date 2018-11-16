@@ -2155,6 +2155,14 @@ Code:
 
 Isn't that just expanding the code of mutex?
 
+\section{Exercise 3.48}
+
+Deadlock happens when there are $n$ processes ($n \ge 2$), in which process $p_i (i < n)$ holds lock $l_i$ and asks for lock $l_{i+1}$, and process $p_n$ holds lock $l_n$ and asks for lock $l_1$.
+
+After giving an order to accounts (i.e. locks) and specify the order of locking in exchange procedure, assume that deadlock still happens, then we have $l_i < l_{i+1} (i < n)$, from which we have $l_1 < l_n$. However, we also have $l_n < l_1$, which produces a contradiction. Using proof of contradiction, we know that such deadlock won't happen.
+
+Code is ommited.
+
 \end{document}
 
 
