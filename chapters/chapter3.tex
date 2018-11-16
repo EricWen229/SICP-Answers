@@ -2090,6 +2090,38 @@ In the exchange procedure, the amount transferred DEPENDS on the balance of each
 
 In the transfer procedure, the amount transferred is INDEPENDENT of the balance of each account. Besides, given the balance is always adequate for withdraw, serialized operations on one account can be performed in arbitary order, and the result is unique.
 
+\section{Exercise 3.45}
+
+Serialized exchange can't either withdraw or deposit since the three of them are serialized by the same serializer.
+
+\section{Exercise 3.46}
+
+Timing diagram showing how both processes can aquire one mutex at the same time:
+
+\begin{lstlisting}
+ Process A     Process B
+     |             .
+     v             .
+ (car cell)        .
+ returns false     .
+     |             .
+     +-(interrupt)-+
+     .             |
+     .             v
+     .         (car cell)
+     .         returns false
+     .             |
+     .             v
+     .      set cell content
+     .  to true and return false
+     .             |
+     +-(interrupt)-+
+     |
+     v
+set cell content
+to true and return false
+\end{lstlisting}
+
 \end{document}
 
 
