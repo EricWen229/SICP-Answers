@@ -2122,6 +2122,39 @@ set cell content
 to true and return false
 \end{lstlisting}
 
+\section{Exercise 3.47}
+
+\subsection{a.}
+
+Code:
+
+\begin{lstlisting}
+(define (make-semaphore n)
+  (let ((value n)
+        (mutex (make-mutex)))
+    (define (p)
+      (mutex 'acquire)
+      (if (> value 0)
+          (begin (set! value (- value 1))
+                 (mutex 'release))
+          (begin (mutex 'release)
+                 (p))))
+    (define (v)
+      (mutex 'acquire)
+      (if (>= value n)
+          (mutex 'release)
+          (begin (set! value (+ value 1))
+                 (mutex 'release))))
+    (define (dispatch m)
+      (cond ((eq? m 'P) (p))
+            ((eq? m 'V) (v))))
+    dispatch))
+\end{lstlisting}
+
+\subsection{b.}
+
+Isn't that just expanding the code of mutex?
+
 \end{document}
 
 
