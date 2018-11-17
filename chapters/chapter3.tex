@@ -2167,6 +2167,54 @@ Code is ommited.
 
 Cancel latest transaction from one account. One need to lock this account, query whom the last transaction was to and then lock that account.
 
+\section{Exercise 3.50}
+
+Code:
+
+\begin{lstlisting}
+(define (stream-map proc . argstreams)
+  (if (stream-null? (car argstreams))
+      the-empty-stream
+      (cons-stream
+       (apply proc (map stream-car argstreams))
+       (apply stream-map
+              (cons proc (map stream-cdr argstreams))))))
+\end{lstlisting}
+
+\section{Exercise 3.51}
+
+\begin{itemize}
+\item 0
+\item 1 2 3 4 5
+\item 6 7
+\end{itemize}
+
+When evaluating \lstinline{(stream-ref x 7)}, numbers from 1 to 5 are not printed due to memoization.
+
+\section{Exercise 3.52}
+
+Value of \lstinline{sum} after evaluating each expression:
+
+\begin{lstlisting}
+(define sum 0) ; sum : 0
+(define (accum x)
+  (set! sum (+ x sum))
+  sum) ; sum : 0
+(define seq (stream-map accum (stream-enumerate-interval 1 20))) ; sum : 1
+(define y (stream-filter even? seq)) ; sum : 6
+(define z
+        (stream-filter (lambda (x)
+                               (= (remainder x 5)
+                                  0))
+                       seq)) ; sum : 10
+(stream-ref y 7) ; sum : 136
+(display-stream z) ; sum : 210
+\end{lstlisting}
+
+Evaluating \lstinline{(stream-ref y 7)} returns 136. Evaluating \lstinline{(display-stream z)} prints 10, 15, 45, 55, 105, 120, 190, 210.
+
+The responses would differ. With memoization, after each element in \lstinline{seq} is computed (i.e. added to \lstinline{sum}), the element is stored and is never computed again, which ensures that every number between 1 and 20 is added to \lstinline{sum} only once. Without memoization, a number is added to \lstinline{sum} every time one element in \lstinline{seq} is visited.
+
 \end{document}
 
 
