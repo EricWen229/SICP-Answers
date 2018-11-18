@@ -2215,6 +2215,23 @@ Evaluating \lstinline{(stream-ref y 7)} returns 136. Evaluating \lstinline{(disp
 
 The responses would differ. With memoization, after each element in \lstinline{seq} is computed (i.e. added to \lstinline{sum}), the element is stored and is never computed again, which ensures that every number between 1 and 20 is added to \lstinline{sum} only once. Without memoization, a number is added to \lstinline{sum} every time one element in \lstinline{seq} is visited.
 
+\section{Exercise 3.53}
+
+Power of two (1, 2, 4, 8, ...).
+
+\section{Exercise 3.54}
+
+Code:
+
+\begin{lstlisting}
+(define (mul-streams s1 s2)
+  (stream-map * s1 s2))
+(define factorials
+        (cons-stream 1
+                     (mul-streams integers
+                                  factorials)))
+\end{lstlisting}
+
 \end{document}
 
 
