@@ -2231,12 +2231,23 @@ Code:
     (cons-stream (transform curr)
                  (helper (next curr))))
   (helper start))
+(define (make-ns n)
+  (make-stream n
+               (lambda (x) x)
+               (lambda (x) x)))
 (define (stream-add . argstreams)
   (apply stream-map (cons + argstreams)))
+(define (stream-mul . argstreams)
+  (apply stream-map (cons * argstreams)))
+(define (stream-scale s k)
+  (stream-map (lambda (x) (* k x))
+              s))
 
 (define ones
         (cons-stream 1 ones))
 \end{lstlisting}
+
+Solutions involving streams uses definitions above, among which some may be differently named with those on book.
 
 \section{Exercise 3.53}
 
@@ -2247,12 +2258,61 @@ Power of two (1, 2, 4, 8, ...).
 Code:
 
 \begin{lstlisting}
-(define (mul-streams s1 s2)
-  (stream-map * s1 s2))
 (define factorials
         (cons-stream 1
-                     (mul-streams integers
-                                  factorials)))
+                     (stream-mul integers
+                                 factorials)))
+\end{lstlisting}
+
+\section{Exercise 3.55}
+
+Code:
+
+\begin{lstlisting}
+;; version 1
+(define (partial-sums s)
+  (cons-stream (stream-car s)
+               (stream-add (make-ns (stream-car s))
+                           (partial-sums (stream-cdr s)))))
+
+;; version 2
+(define (partial-sums s)
+  (make-stream (cons (stream-car s)
+                     (stream-cdr s))
+               (lambda (p)
+                       (cons (+ (car p)
+                                (stream-car (cdr p)))
+                             (stream-cdr (cdr p))))
+               car))
+\end{lstlisting}
+
+\section{Exercise 3.56}
+
+Code:
+
+\begin{lstlisting}
+(define (stream-merge s1 s2)
+  (cond ((stream-null? s1) s2)
+        ((stream-null? s2) s1)
+        (else
+         (let ((s1car (stream-car s1))
+               (s2car (stream-car s2)))
+           (cond ((< s1car s2car)
+                  (cons-stream s1car
+                               (stream-merge (stream-cdr s1) s2)))
+                 ((> s1car s2car)
+                  (cons-stream s2car
+                               (stream-merge s1 (stream-cdr s2))))
+                 (else
+                  (cons-stream s1car
+                               (stream-merge (stream-cdr s1)
+                                             (stream-cdr s2)))))))))
+
+(define s
+        (cons-stream 1
+                     (stream-merge (stream-merge (stream-scale s 2)
+                                                 (stream-scale s 3))
+                                   (stream-scale s 5))))
 \end{lstlisting}
 
 \end{document}
