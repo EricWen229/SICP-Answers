@@ -2420,6 +2420,46 @@ a_n &= pa_{n-1} + q^{n-1} - q\\
 
 It's really hard to tell the complexity, but by plotting we can actually tell that $a_n$ grows exponetially. To really prove the complexity, we need cleverer methods.
 
+\section{Exercise 3.58}
+
+\lstinline{Expand} generates decimal part of $\frac{num}{den}$ with $radix$ as base, given that $num \neq 0 \mod den$ and $radix > 1$.
+
+Evaluating \lstinline{(expand 1 7 10)} produces the stream of $1, 4, 2, 8, 5, 7, 1, 4, 2, 8 \dots$
+
+Evaluating \lstinline{(expand 3 8 10)} produces the stream of $3, 7, 5, 0, 0, 0, 0 \dots$
+
+\section{Exercise 3.59}
+
+\subsection{a.}
+
+Code:
+
+\begin{lstlisting}
+(define (integrate-series coefstream)
+  (define (integrate-helper coefs power)
+    (if (stream-null? coefs)
+        '()
+        (cons-stream (/ (stream-car coefs)
+                        power)
+                     (integrate-helper (stream-cdr coefs)
+                                       (+ power 1)))))
+  (integrate-helper coefstream 1))
+\end{lstlisting}
+
+\subsection{b.}
+
+Code:
+
+\begin{lstlisting}
+(define cosine-series
+  (cons-stream 1
+               (stream-map (lambda (x) (- x))
+                           (integrate-series sine-series))))
+
+(define sine-series
+  (cons-stream 0 (integrate-series cosine-series)))
+\end{lstlisting}
+
 \end{document}
 
 
