@@ -2237,6 +2237,8 @@ Code:
                (lambda (x) x)))
 (define (stream-add . argstreams)
   (apply stream-map (cons + argstreams)))
+(define (stream-sub s1 s2)
+  (stream-map - s1 s2))
 (define (stream-mul . argstreams)
   (apply stream-map (cons * argstreams)))
 (define (stream-scale s k)
@@ -2453,11 +2455,72 @@ Code:
 \begin{lstlisting}
 (define cosine-series
   (cons-stream 1
-               (stream-map (lambda (x) (- x))
-                           (integrate-series sine-series))))
+               (stream-scale
+                (integrate-series sine-series)
+                -1)))
 
 (define sine-series
   (cons-stream 0 (integrate-series cosine-series)))
+\end{lstlisting}
+
+\section{Exercise 3.60}
+
+Let $a$ be $\sum_{i=0}a_ix^i$ and $b$ be $\sum_{j=0}b_jx^j$, then $ab$ is
+
+\begin{align*}
+& (a_0b_0)x^0\\
++& (a_0b_1 + a_1b_0)x^1\\
++& (a_0b_2 + a_1b_1 + a_2b_0)x^2\\
++& (a_0b_3 + a_1b_2 + a_2b_1 + a_2b_0)x^3\\
+\vdots
+\end{align*}
+
+Thus the code is as follows:
+
+\begin{lstlisting}
+(define (mul-series a b)
+  (cons-stream
+   (* (stream-car a)
+      (stream-car b))
+   (stream-add (stream-scale (stream-cdr b)
+                             (stream-car a))
+               (mul-series (stream-cdr a) b))))
+\end{lstlisting}
+
+\section{Exercise 3.61}
+
+Code:
+
+\begin{lstlisting}
+(define (invert-unit-series s)
+  (define x
+    (cons-stream 1
+                 (stream-scale
+                  (mul-series (stream-cdr s)
+                              x)
+                  -1)))
+  x)
+\end{lstlisting}
+
+\section{Exercise 3.62}
+
+Code:
+
+\begin{lstlisting}
+(define (div-series a b)
+  (let ((head (/ (stream-car a)
+                 (stream-car b))))
+    (cons-stream head
+                 (div-series
+                  (stream-sub (stream-cdr a)
+                              (stream-scale
+                               (stream-cdr b)
+                               head))
+                  b))))
+
+(define tangent-series
+        (div-series sine-series
+                    cosine-series))
 \end{lstlisting}
 
 \end{document}
