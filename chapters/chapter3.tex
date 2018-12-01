@@ -2523,6 +2523,216 @@ Code:
                     cosine-series))
 \end{lstlisting}
 
+\section*{Some more analysis}
+
+Here are one of the crazy streams \lstinline{integers} mentioned in previous section:
+
+\begin{lstlisting}
+(define ones (cons-stream 1 ones))
+(define integers
+  (cons-stream 1
+               (stream-add ones
+                           integers)
+\end{lstlisting}
+
+Analyzing the time and space complexity becomes not so trivial. Specifically, after some careful thought we can see that \lstinline{integer} is corrent, but its efficiency remains quite mysterious. Does it keep track of lots of streams? How much computation does it need to compute the next term? The following section will be discussing the above two matters using the environment model mentioned earlier in the book.
+
+Here's the environment with \lstinline{ones} and \lstinline{integers} defined:
+
+\begin{lstlisting}
++--------------+
+| global env   |
+| ------------ |
+| ones: #0     |
+| integers: #1 |
++--------------+
+
+objects:
+#0: [1 | ones @ global env]
+#1: [1 | (stream-add ones integers) @ global env]
+\end{lstlisting}
+
+After we define \lstinline{integers1} as \lstinline{(stream-cdr integers)}, the environment is as follows:
+
+\begin{lstlisting}
++---------------+
+| global env    |
+| ------------- |
+| ones: #0      |
+| integers: #1  |
+| integers1: #2 |
++---------------+
+       ^
+       |
++--------------+
+| stream-add#0 |
+| ------------ |
+| s1: #0       |
+| s2: #1       |
++--------------+
+
+objects:
+#0: [1 | ones @ global env]
+#1: [1 | #2]
+#2: [2 | (stream-add (stream-cdr s1)
+                     (stream-cdr s2)) @ stream-add#0]
+\end{lstlisting}
+
+After we define \lstinline{integers2} as \lstinline{(stream-cdr integers1)}, the environment is as follows:
+
+\begin{lstlisting}
++---------------+
+| global env    |
+| ------------- |
+| ones: #0      |
+| integers: #1  |
+| integers1: #2 |
+| integers2: #3 |
++---------------+
+       ^
+       +---------+
+       |         |
++--------------+ +--------------+
+| stream-add#0 | | stream-add#1 |
+| ------------ | | ------------ |
+| s1: #0       | | s1: #0       |
+| s2: #1       | | s2: #2       |
++--------------+ +--------------+
+
+objects:
+#0: [1 | #0]
+#1: [1 | #2]
+#2: [2 | #3]
+#3: [3 | (stream-add (stream-cdr s1)
+                     (stream-cdr s2)) @ stream-add#1]
+\end{lstlisting}
+
+Similarly, after we define \lstinline{integers3} as \lstinline{(stream-cdr integers2)}, the environment is as follows:
+
+\begin{lstlisting}
++---------------+
+| global env    |
+| ------------- |
+| ones: #0      |
+| integers: #1  |
+| integers1: #2 |
+| integers2: #3 |
+| integers3: #4 |
++---------------+
+       ^
+       +---------+----------------+
+       |         |                |
++--------------+ +--------------+ +--------------+
+| stream-add#0 | | stream-add#1 | | stream-add#2 |
+| ------------ | | ------------ | | ------------ |
+| s1: #0       | | s1: #0       | | s1: #0       |
+| s2: #1       | | s2: #2       | | s2: #3       |
++--------------+ +--------------+ +--------------+
+
+objects:
+#0: [1 | #0]
+#1: [1 | #2]
+#2: [2 | #3]
+#3: [3 | #4]
+#4: [4 | (stream-add (stream-cdr s1)
+                     (stream-cdr s2)) @ stream-add#2]
+\end{lstlisting}
+
+Things worthy to notice:
+
+\begin{itemize}
+\item There's only a single instance of \lstinline{one} stream through out the process.
+\item Only one addition is needed each time \lstinline{stream-cdr} is invoked, thanks to the fact that previous results of \lstinline{stream-cdr} are memorized.
+\item Another benefit of memoization is that old frames \lstinline{stream-add#0} and \lstinline{stream-add#1} are no longer needed. Frame \lstinline{stream-add#2} is still needed because the promise of object \lstinline{#4} has yet to be forced.
+\end{itemize}
+
+If we only include \lstinline{integers3} (not \lstinline{integers1} and \lstinline{integers2}) in the global environment, then the environment would be like (after garbage collection):
+
+\begin{lstlisting}
++---------------+
+| global env    |
+| ------------- |
+| ones: #0      |
+| integers: #1  |
+| integers3: #4 |
++---------------+
+       ^
+       |
++--------------+
+| stream-add#2 |
+| ------------ |
+| s1: #0       |
+| s2: #3       |
++--------------+
+
+objects:
+#0: [1 | #0]
+#1: [1 | #2]
+#2: [2 | #3]
+#3: [3 | #4]
+#4: [4 | (stream-add (stream-cdr s1)
+                     (stream-cdr s2)) @ stream-add#2]
+\end{lstlisting}
+
+The environment is all nice and clean, but the entire "chain" is preserved due to memoization. This may not be the preferred behaviour in particular cases, where every element is only used once. What if memoization is removed?
+
+Here's the environment with \lstinline{ones} and \lstinline{integers} defined:
+
+\begin{lstlisting}
++--------------+
+| global env   |
+| ------------ |
+| ones: #0     |
+| integers: #1 |
++--------------+
+
+objects:
+#0: [1 | ones @ global env]
+#1: [1 | (stream-add ones integers) @ global env]
+\end{lstlisting}
+
+After we define \lstinline{integers3} to be \lstinline{(stream-cdr (stream-cdr (stream-cdr integers)))}, the environment is as follows:
+
+\begin{lstlisting}
++--------------+
+| global env   |
+| ------------ |
+| ones: #0     |
+| integers: #1 |
++--------------+
+       ^
+       +---------+----------------+
+       |         |                |
++--------------+ +--------------+ +--------------+ 
+| stream-add#0 | | stream-add#1 | | stream-add#2 |
+| ------------ | | ------------ | | ------------ |
+| s1: #0       | | s1: #0       | | s1: #0       |
+| s2: #1       | | s2: #1       | | s2: #3       |
++--------------+ +--------------+ +--------------+
+
+objects:
+#0: [1 | ones @ global env]
+#1: [1 | (stream-add ones integers) @ global env]
+#2: [2 | (stream-add (stream-cdr s1)
+                     (stream-cdr s2)) @ stream-add#0]
+#3: [2 | (stream-add (stream-cdr s1)
+                     (stream-cdr s2)) @ stream-add#1]
+#4: [3 | (stream-add (stream-cdr s1)
+                     (stream-cdr s2)) @ stream-add#2]
+\end{lstlisting}
+
+The environment is not complete (actually we've just computed \lstinline{(stream-cdr (stream-cdr integers))}), but it's obvious that the process is growing exponentially. If we continue to perform \lstinline{stream-cdr} on object \lstinline{#4}, we'll need to compute:
+
+\begin{lstlisting}
+- (stream-cdr #4) as #7
+  - (stream-cdr #0) returns #0
+  - (stream-cdr #3) as #6
+    - (stream-cdr #0) returns #0
+    - (stream-cdr #1) as #5
+\end{lstlisting}
+
+How can we exploit streams as if there's a local state? That seems to remain unsolved for now...
+
 \end{document}
 
 
