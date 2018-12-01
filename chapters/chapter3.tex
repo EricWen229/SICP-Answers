@@ -2731,7 +2731,7 @@ The environment is not complete (actually we've just computed \lstinline{(stream
     - (stream-cdr #1) as #5
 \end{lstlisting}
 
-How can we exploit streams as if there's a local state? That seems to remain unsolved for now...
+When we look back, it appears that what we're looking for is just local state. This can be a perfect example illustrating that how obscure it can get to simulate local state without assignment, and one should use assignment when it's the most direct and intuitive option.
 
 \end{document}
 
