@@ -2731,7 +2731,7 @@ The environment is not complete (actually we've just computed \lstinline{(stream
     - (stream-cdr #1) as #5
 \end{lstlisting}
 
-When we look back, it appears that what we're looking for is just local state. This can be a perfect example illustrating that how obscure it can get to simulate local state without assignment, and one should use assignment when it's the most direct and intuitive option.
+When we look back, it turns out that what we're looking for is just local state. This can be a perfect example illustrating that how obscure it can get trying to simulate local state without assignment, and one should use assignment when it's the most direct and intuitive option. When using streams, on the other hand, if each element is only used once and the entire "chain" is preferred not to be preserved, one should make sure that there's no references to the head to stream after using it by means such as creating a function that creates a new head of stream when invoked.
 
 \end{document}
 
