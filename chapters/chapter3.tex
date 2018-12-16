@@ -3035,7 +3035,7 @@ Evaluating \lstinline{((stream-limit ln2-stream-transformed 1e-3))} takes a bit 
 
 Evaluating \lstinline{(stream-limit ln2-stream-transformed 1e-4)} takes just a blink of an eye. Actually it handles \lstinline{1e-12} very well, while \lstinline{1e-13} causes maximum recursion depth error.
 
-\lstinline{(stream-limit ln2-stream-transformed 1e-4)} can be evaluated in an instant. Compared to \lstinline{ln2-stream} where accuracy of just 3 decimal places takes noticable time, this is very impressive.
+\lstinline{(stream-limit ln2-stream-accelerated 1e-14)} can be evaluated in an instant. Compared to \lstinline{ln2-stream} where accuracy of just 3 decimal places takes noticable time, this is very impressive.
 
 \end{document}
 
