@@ -3037,6 +3037,123 @@ Evaluating \lstinline{(stream-limit ln2-stream-transformed 1e-4)} takes just a b
 
 \lstinline{(stream-limit ln2-stream-accelerated 1e-14)} can be evaluated in an instant. Compared to \lstinline{ln2-stream} where accuracy of just 3 decimal places takes noticable time, this is very impressive.
 
+\section{Exercise 3.66}
+
+First introduce some notations for convenience:
+
+\begin{itemize}
+\item $rowIndex(e)$ gives the index of row where $e$ is. It's quite obvious that we have $rowIndex((S_i, T_j)) = i$.
+\item $posInRow(e)$ gives the position of element $e$ in its row (row of upper triangular). We have $posInRow((S_i, T_i)) = 0$ for every legal $i$ and $posInRow((S_i, T_j)) = 1 + posInRow((S_i, T_{j-1}))$ given all indices are legal. Notice that actually we have $posInRow((S_i, T_j)) = j - i$.
+\item $posInTriangle(e, i)$ gives the position of element $e$ in the upper triangular starting from the $i$th row, provided that $rowIndex(e) \ge i$.
+\end{itemize}
+
+Now, to find the final position of element $e$ in the stream, all we have to do is to calculate $posInTriangle(e, 0)$.
+
+Notice that for element $e = (S_i, T_j)$:
+
+$$
+posInTriangle(e, k) =
+\begin{cases}
+	\begin{cases}
+		0 & posInRow(e) = 0\\
+		2 \times posInRow(e) - 1 & posInRow(e) > 0
+	\end{cases} & k = rowIndex(e)\\
+	2 \times posInTriangle(e, k + 1) + 2 & k < rowIndex(e)
+\end{cases}
+$$
+
+Which is equivalent to:
+
+$$
+posInTriangle(e, k) =
+\begin{cases}
+	\begin{cases}
+		0 & j = i\\
+		2 \times (j - i) - 1 & j > i
+	\end{cases} & k = i\\
+	2 \times posInTriangle(e, k + 1) + 2 & k < i
+\end{cases}
+$$
+
+Using this we can write a program to compute the position of one element in the stream. For the stream \lstinline{(pairs integers integers)}, $(i, j)$ corresponds to element $(S_{i-1}, T_{j-1})$. We can implement this function with $i$ and $j$ as arguments:
+
+\begin{lstlisting}
+(define (pos-in-triangle-actual i j)
+  (define (iter-helper k)
+    (cond ((< k i)
+           (+ (* (iter-helper (+ k 1))
+                 2)
+              2))
+          ((> k i) (error "k > i"))
+          ((= j i) 0)
+          ((> j i) (- (* (- j i)
+                         2)
+                      1))
+          (else (error "j < i"))))
+  (iter-helper 0))
+(define (pos-in-triangle-wrapper i j)
+  (pos-in-triangle-actual (- i 1) (- j 1)))
+\end{lstlisting}
+
+Alse we will use the following procedure for verification:
+
+\begin{lstlisting}
+(define (count-before-equal s e)
+  (define (iter-helper s count)
+    (if (equal? e (stream-car s))
+        count
+        (iter-helper (stream-cdr s) (+ count 1))))
+  (iter-helper s 0))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(define s (pairs integers integers))
+
+(pos-in-triangle-wrapper 1 100)
+(count-before-equal s '(1 100))
+
+(pos-in-triangle-wrapper 2 100)
+(count-before-equal s '(2 100))
+
+(pos-in-triangle-wrapper 3 100)
+(count-before-equal s '(3 100))
+\end{lstlisting}
+
+Output
+
+\begin{lstlisting}
+197
+197
+392
+392
+778
+778
+\end{lstlisting}
+
+Looks good. Only small numbers are used for testing because large numbers would take forever (evaluating \lstinline{(pos-in-triangle-wrapper 100 100)} returns 1267650600228229401496703205374).
+
+Can we go a step further and simplify this recursive formula?
+
+\begin{align*}
+posInTriangle(e, k) &= 2 \times posInTriangle(e, k + 1) + 2\\
+\implies posInTriangle(e, k) + 2 &= 2 \times posInTriangle(e, k + 1) + 4\\
+\implies posInTriangle(e, k) + 2 &= 2 \times (posInTriangle(e, k + 1) + 2)\\
+\implies posInTriangle(e, 0) + 2 &= 2 ^ i \times (posInTriangle(e, i) + 2)\\
+\implies posInTriangle(e, 0) &= 2 ^ i \times posInTriangle(e, i) + 2 ^ {i + 1} - 2
+\end{align*}
+
+At the end we have:
+
+$$
+posInTriangle((S_i, T_j), 0) =
+\begin{cases}
+2^{i+1} - 2 & i = j\\
+2^{i+1}\times (j - i) + 2^i - 2 & i < j
+\end{cases}
+$$
+
 \end{document}
 
 
