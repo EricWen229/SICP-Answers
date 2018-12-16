@@ -3172,7 +3172,178 @@ Code:
 
 \section{Exercise 3.68}
 
-Theoretically it is correct but pratically it'll cause infinite recursion.
+Theoretically it is correct but pratically it'll cause infinite recursion. Manually delaying the evaluation is needed.
+
+\section{Exercise 3.69}
+
+Complete code:
+
+\begin{lstlisting}
+(define (interleave s1 s2)
+  (if (stream-null? s1)
+      s2
+      (cons-stream (stream-car s1)
+                   (interleave s2 (stream-cdr s1)))))
+
+(define (interleave-delayed ds1 ds2)
+  (if (stream-null? (force ds1))
+      (force ds2)
+      (cons-stream (stream-car (force ds1))
+                   (interleave-delayed ds2
+                                       (delay (stream-cdr (force ds1)))))))
+
+(define (pairs s t)
+  (cons-stream
+    (list (stream-car s) (stream-car t))
+    (interleave
+      (stream-map (lambda (x) (list (stream-car s) x))
+                  (stream-cdr t))
+      (pairs (stream-cdr s) (stream-cdr t)))))
+
+(define (triples s t u)
+  (interleave-delayed
+    (delay (stream-map (lambda (x) (cons (stream-car s) x))
+                       (pairs t u)))
+    (delay (triples (stream-cdr s)
+                    (stream-cdr t)
+                    (stream-cdr u)))))
+
+(define (stream-to-list n stream)
+  (if (> n 0)
+      (cons (stream-car stream)
+            (stream-to-list (- n 1)
+                            (stream-cdr stream)))
+      '()))
+
+(define (make-stream start next transform)
+  (define (helper curr)
+    (cons-stream (transform curr)
+                 (helper (next curr))))
+  (helper start))
+
+(define integers
+  (make-stream 1
+               (lambda (x) (+ x 1))
+               (lambda (x) x)))
+
+(define (is-pythagorean triple)
+  (let ((first (car triple))
+        (second (cadr triple))
+        (third (caddr triple)))
+    (= (+ (* first first)
+          (* second second))
+       (* third third))))
+
+(stream-to-list 3
+                (stream-filter is-pythagorean
+                               (triples integers
+                                        integers
+                                        integers)))
+\end{lstlisting}
+
+It turns out that the triple stream returned is super imbalanced and even searching for 3 Pythagorean triples takes considerable time.
+
+\section{Exercise 3.70}
+
+Complete code:
+
+\begin{lstlisting}
+(define (merge-weighted s1 s2 weight)
+  (cond ((stream-null? s1) s2)
+        ((stream-null? s2) s1)
+        (else
+         (let* ((s1car (stream-car s1))
+                (s2car (stream-car s2))
+                (s1carweight (weight s1car))
+                (s2carweight (weight s2car)))
+           (if (< s1carweight s2carweight)
+               (cons-stream s1car
+                            (merge-weighted (stream-cdr s1) s2 weight))
+               (cons-stream s2car
+                            (merge-weighted s1 (stream-cdr s2) weight)))))))
+
+(define (weighted-pairs s t weight)
+  (cons-stream
+    (list (stream-car s) (stream-car t))
+    (merge-weighted
+      (stream-map (lambda (x) (list (stream-car s) x))
+                  (stream-cdr t))
+      (weighted-pairs (stream-cdr s) (stream-cdr t) weight)
+      weight)))
+
+(define (make-stream start next transform)
+  (define (helper curr)
+    (cons-stream (transform curr)
+                 (helper (next curr))))
+  (helper start))
+
+(define integers
+  (make-stream 1
+               (lambda (x) (+ x 1))
+               (lambda (x) x)))
+
+(define a
+  (weighted-pairs integers
+                  integers
+                  (lambda (x) (+ (car x)
+                                 (cadr x)))))
+
+(define b
+  (let* ((divisible-by? (lambda (x i) (= (remainder x i) 0)))
+         (divisible? (lambda (x) (or (divisible-by? x 2)
+                                    (divisible-by? x 3)
+                                    (divisible-by? x 5))))
+         (legal-integer? (lambda (x) (not (divisible? x))))
+         (legal-pair? (lambda (x) (and (legal-integer? (car x))
+                                       (legal-integer? (cadr x)))))
+         (weight (lambda (x) (+ (* 2 (car x))
+                                (* 3 (cadr x))
+                                (* 5 (car x) (cadr x))))))
+    (stream-filter legal-pair?
+                   (weighted-pairs integers
+                                   integers
+                                   weight))))
+\end{lstlisting}
+
+\section{Exercise 3.71}
+
+Code:
+
+\begin{lstlisting}
+(define (repetitive-elements s)
+  (define (repetitive-elements last s has-repetition)
+    (cond ((stream-null? s) '())
+          ((= last
+              (stream-car s))
+           (repetitive-elements (stream-car s)
+                                (stream-cdr s)
+                                #t))
+          (has-repetition (cons-stream last
+                                       (repetitive-elements (stream-car s)
+                                                            (stream-cdr s)
+                                                            #f)))
+          (else (repetitive-elements (stream-car s)
+                                     (stream-cdr s)
+                                     #f))))
+  (repetitive-elements (- (stream-car s))
+                       s
+                       #f))
+
+(define cube (lambda (x) (* x x x)))
+(define sum-cube
+  (lambda (x)
+    (+ (cube (car x))
+       (cube (cadr x)))))
+
+(define ramanujan
+  (repetitive-elements
+    (stream-map sum-cube
+                (weighted-pairs integers
+                                integers
+                                sum-cube))))
+\end{lstlisting}
+
+Evaluating \lstinline{(stream-to-list 10 ramanujan)} returns \lstinline{(1729 4104 13832 20683 32832 39312 40033 46683 64232 65728)}.
 
 \end{document}
 
