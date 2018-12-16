@@ -3154,6 +3154,26 @@ posInTriangle((S_i, T_j), 0) =
 \end{cases}
 $$
 
+\section{Exercise 3.67}
+
+Code:
+
+\begin{lstlisting}
+(define (pairs s t)
+  (cons-stream
+    (list (stream-car s) (stream-car t))
+    (interleave-three
+      (stream-map (lambda (x) (list (stream-car s) x))
+                  (stream-cdr t))
+      (pairs (stream-cdr s) (stream-cdr t))
+      (stream-map (lambda (x) (list (stream-car t) x))
+                  (stream-cdr s)))))
+\end{lstlisting}
+
+\section{Exercise 3.68}
+
+Theoretically it is correct but pratically it'll cause infinite recursion.
+
 \end{document}
 
 
