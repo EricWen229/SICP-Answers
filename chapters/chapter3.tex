@@ -3391,6 +3391,34 @@ Code:
               square-sum))))
 \end{lstlisting}
 
+\section{Exercise 3.73}
+
+Code:
+
+\begin{lstlisting}
+(define (stream-scale s i)
+  (stream-map (lambda (x) (* x i))
+              s))
+
+(define (RC r c dt)
+  (lambda (istream v0)
+    (stream-add (stream-scale istream r)
+                (integral (stream-scale istream (/ 1 c))
+                          v0
+                          dt))))
+\end{lstlisting}
+
+\section{Exercise 3.74}
+
+Code:
+
+\begin{lstlisting}
+(define zero-crossings
+  (stream-map sign-change-detector
+              sense-data
+              (cons-stream 0 sense-data)))
+\end{lstlisting}
+
 \end{document}
 
 
