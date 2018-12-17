@@ -3330,20 +3330,66 @@ Code:
                        #f))
 
 (define cube (lambda (x) (* x x x)))
-(define sum-cube
-  (lambda (x)
-    (+ (cube (car x))
-       (cube (cadr x)))))
+(define (cube-sum x)
+  (reduce-left + 0 (map cube x)))
 
 (define ramanujan
   (repetitive-elements
-    (stream-map sum-cube
+    (stream-map cube-sum
                 (weighted-pairs integers
                                 integers
-                                sum-cube))))
+                                cube-sum))))
 \end{lstlisting}
 
 Evaluating \lstinline{(stream-to-list 10 ramanujan)} returns \lstinline{(1729 4104 13832 20683 32832 39312 40033 46683 64232 65728)}.
+
+\section{Exercise 3.72}
+
+Code:
+
+\begin{lstlisting}
+(define (list-to-stream l) ; used for testing
+  (if (null? l)
+      '()
+      (cons-stream (car l)
+                   (list-to-stream (cdr l)))))
+
+(define (gather stream key)
+  (define (gather-helper last stream last-set)
+    (cond ((stream-null? stream)
+           (cons-stream last-set '()))
+          ((equal? (key last)
+                   (key (stream-car stream)))
+           (gather-helper last
+                          (stream-cdr stream)
+                          (cons (stream-car stream)
+                                last-set)))
+          (else (cons-stream last-set
+                             (gather-helper (stream-car stream)
+                                            (stream-cdr stream)
+                                            (list (stream-car stream)))))))
+  (stream-cdr (gather-helper (if (stream-null? stream)
+                                 0
+                                 (cons 0 (stream-car stream)))
+                             stream
+                             '())))
+
+(define (square-sum x)
+  (reduce-left + 0 (map square x)))
+
+(define foo
+  (stream-map
+    (lambda (x)
+      (cons (square-sum (car x))
+            x))
+    (stream-filter
+      (lambda (x)
+        (> (length x) 2))
+      (gather (weighted-pairs integers
+                              integers
+                              square-sum)
+              square-sum))))
+\end{lstlisting}
 
 \end{document}
 
