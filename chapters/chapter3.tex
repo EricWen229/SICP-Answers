@@ -3419,6 +3419,36 @@ Code:
               (cons-stream 0 sense-data)))
 \end{lstlisting}
 
+\section{Exercise 3.75}
+
+Code:
+
+\begin{lstlisting}
+(define (make-zero-crossings input-stream last-value last-avpt)
+  (let ((avpt (/ (+ (stream-car input-stream) last-value) 2)))
+    (cons-stream (sign-change-detector avpt last-avpt)
+                 (make-zero-crossings (stream-cdr input-stream)
+                                      (stream-car input-stream)
+                                      avpt))))
+\end{lstlisting}
+
+\section{Exercise 3.76}
+
+Code:
+
+\begin{lstlisting}
+(define (smooth stream)
+  (define (smooth-helper stream last)
+    (if (stream-null? stream)
+        '()
+        (cons-stream (/ (+ (stream-car stream) last) 2)
+                     (smooth-helper (stream-cdr stream)
+                                    (stream-car stream)))))
+  (if (stream-null? stream)
+      '()
+      (stream-cdr (smooth-helper stream (stream-car stream)))))
+\end{lstlisting}
+
 \end{document}
 
 
