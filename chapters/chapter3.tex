@@ -3513,6 +3513,27 @@ Code:
     (cons vc il)))
 \end{lstlisting}
 
+\textbf{Notice that code snippets above involving maths and circuits is untested and is highly error-prone.}
+
+\section{Exercise 3.81}
+
+Code:
+
+\begin{lstlisting}
+(define (new-rand init)
+  (let ((s (cons-stream init
+                        (stream-map rand-update s))))
+    (cons s s)))
+
+(define (generate rand)
+  (cons (stream-car (car rand))
+        (cons (stream-cdr (car rand))
+              (cdr rand))))
+
+(define (reset rand)
+  (cons (cdr rand) (cdr rand))) 
+\end{lstlisting}
+
 \end{document}
 
 
