@@ -3494,6 +3494,25 @@ Code:
   y)
 \end{lstlisting}
 
+\section{Exercise 3.80}
+
+Code:
+
+\begin{lstlisting}
+(define (rlc r l c dt)
+  (lambda (vc0 il0)
+    (define vc (integral (delay dvc) vc0 dt))
+    (define il (integral (delay dil) il0 dt))
+    (define dvc (stream-map (lambda (x) (- (/ x c)))
+                            il))
+    (define dil
+      (stream-add (stream-map (lambda (x) (/ x l))
+                              vc)
+                  (stream-map (lambda (x) (- (/ (* x r) l)))
+                              il)))
+    (cons vc il)))
+\end{lstlisting}
+
 \end{document}
 
 
