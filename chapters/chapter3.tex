@@ -3534,6 +3534,84 @@ Code:
   (cons (cdr rand) (cdr rand))) 
 \end{lstlisting}
 
+\section{Exercise 3.82}
+
+Complete code:
+
+\begin{lstlisting}
+(define (stream-to-list n stream)
+  (if (> n 0)
+      (cons (stream-car stream)
+            (stream-to-list (- n 1)
+                            (stream-cdr stream)))
+      '()))
+
+(define (make-stream start next transform)
+  (define (helper curr)
+    (cons-stream (transform curr)
+                 (helper (next curr))))
+  (helper start))
+
+(define (create-rand seed)
+  (define (rand-next x)
+    (modulo (* x 16807) 2147483647))
+  (stream-map (lambda (x) (/ x 2147483647.0))
+              (make-stream (rand-next seed)
+                           rand-next
+                           (lambda (x) x))))
+
+(define (monte-carlo experiments passed failed)
+  (cons-stream (/ passed (+ passed failed))
+               (if (stream-car experiments)
+                   (monte-carlo (stream-cdr experiments)
+                                (+ passed 1)
+                                failed)
+                   (monte-carlo (stream-cdr experiments)
+                                passed
+                                (+ failed 1)))))
+
+(define (estimate-integral predicate xlow xup ylow yup)
+  (define (rand-range lower upper seed)
+    (stream-map (lambda (x) (+ (* (- upper lower)
+                                  x)
+                               lower))
+                (create-rand seed)))
+  (define experiments
+    (stream-map predicate
+                (rand-range xlow xup 233)
+                (rand-range ylow yup 2333)))
+  (monte-carlo experiments 1 0))
+
+(define pi-estimate
+  (stream-map (lambda (x) (* x 4.0))
+              (estimate-integral
+                (lambda (x y)
+                  (< (+ (* x x) (* y y)) 1))
+                -1.0 1.0 -1.0 1.0)))
+\end{lstlisting}
+
+Tests:
+
+\begin{lstlisting}
+(stream-ref pi-estimate 10)
+(stream-ref pi-estimate 100)
+(stream-ref pi-estimate 1000)
+(stream-ref pi-estimate 10000)
+(stream-ref pi-estimate 100000)
+(stream-ref pi-estimate 1000000)
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+1.81818
+3.16832
+3.12488
+3.14609
+3.14345
+3.13796
+\end{lstlisting}
+
 \end{document}
 
 
