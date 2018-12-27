@@ -25,3 +25,10 @@ the ideas, not to write industrial-level code. Also, it takes too much time
 and effort to write supporting code in order for the core part to run, and
 to be tested. Nevertheless, I will still include some test cases in the
 solutions.
+
+## Update: 2018-12-27
+
+Finally finished chapter 3 before 2019 comes. To me this is by far the most
+mind-bending part of the book, and I still haven't been able to find out an
+intuitive way of think about streams with my mind tangled up with closures,
+lazy evaluation and memoization.
