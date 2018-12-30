@@ -131,7 +131,7 @@ Code:
 
 \section{Exercise 4.5}
 
-One thing worthy of noticing is that the recipient
+One thing noteworthy is that the recipient
 procedure is invoked on the value of the expression
 (result of evaluating it), not the expression itself.
 The expression is only evaluated once, after which
@@ -246,6 +246,64 @@ Thus the transformation can be implemented as follows:
 
 (define (named-let->combination named-let-exp)
   (let->combination (named-let->let named-let-exp)))
+\end{lstlisting}
+
+\section{Exercise 4.9}
+
+Basically we're defining a syntactic sugar. Let's define a
+\lstinline{while} construct. First the syntax:
+
+\begin{lstlisting}
+(while #condition #exp)
+\end{lstlisting}
+
+It's equivalent to:
+
+\begin{lstlisting}
+(if #condition
+    (begin #exp
+           (while #condition #exp))
+    'ok)
+\end{lstlisting}
+
+It's quite noteworthy that it's a recursive definition. We
+can actually define this as a macro (tested in Racket):
+
+\begin{lstlisting}
+(define-syntax-rule (while condition exp)
+  (letrec ((loop
+            (lambda ()
+              (if condition
+                  (begin exp
+                         (loop))
+                  'ok))))
+    (loop)))
+\end{lstlisting}
+
+Some simple test:
+
+\begin{lstlisting}
+(let ((x 10))
+  (while (> x 0)
+         (begin (display x)
+                (newline)
+                (set! x (- x 1)))))
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+'ok
 \end{lstlisting}
 
 \end{document}
