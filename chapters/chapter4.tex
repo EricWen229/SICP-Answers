@@ -157,11 +157,95 @@ isn't supposed to leak into other branches and possibly
 let expressions in other branches refer to it, which should've
 caused an unbound variable error.
 
-The problem seems inevitable. One way to tackle it is to use the
-same technique as macros to avoid name conflict. Another way is
-to treat \lstinline{cond} expressions as a special form and
+The problem seems inevitable for now. One way to tackle it is to use
+the same technique as macros do to avoid name conflict. Another way
+is to treat \lstinline{cond} expressions as a special form and
 make the intermediate variable \lstinline{exp-value} only exist
 at runtime (during the evaluation of the \lstinline{cond}
 expression).
+
+\section{Exercise 4.6}
+
+Code:
+
+\begin{lstlisting}
+;; let expression format:
+;; (let bindings body)
+;;
+;; bindings format:
+;; (binding0 binding1 binding2 ...)
+;;
+;; binding format:
+;; (var . exp)
+
+(define (let? exp) (tagged-list? exp 'let))
+(define let-bindings cadr)
+(define let-body caddr)
+(define no-bindings? null?)
+(define first-binding car)
+(define rest-bindings cdr)
+(define binding-var car)
+(define binding-exp cdr)
+
+(define (let->combination let-exp)
+  (let* ((bindings (let-bindings let-exp))
+         (body (let-body let-exp))
+         (parameters (map binding-var bindings))
+         (arguments (map binding-exp bindings)))
+    (cons (make-lambda parameters body)
+          arguments)))
+\end{lstlisting}
+
+\section{Exercise 4.7}
+
+Code:
+
+\begin{lstlisting}
+(define (let*->nested-lets let*-exp)
+  (define (transform-bindings bindings)
+    (if (no-bindings? bindings)
+        (let*-body let*-exp)
+        (make-let (list (first-binding bindings))
+                  (transform-bindings (rest-bindings bindings)))))
+  (transform-bindings (let*-bindings let*-exp)))
+\end{lstlisting}
+
+It is sufficient since the second call to \lstinline{eval} will
+perform another dispatch to handle \lstinline{let} expression, where
+the \lstinline{let} expression will be transformed to combination
+and evaluated.
+
+\section{Exercise 4.8}
+
+We already know that a \lstinline{let} expression is equivalent
+to function application. Named \lstinline{let} is no different, where
+the function being applied can be recursive now. The expression
+\lstinline{(let #var #bindings #body)} is equivalent to:
+
+\begin{lstlisting}
+(let ((#var (lambda (#parameters) #body)))
+  (#var #arguments))
+\end{lstlisting}
+
+Thus the transformation can be implemented as follows:
+
+\begin{lstlisting}
+;; here I'll just leave out the dispatch and implement transformation
+;; from named let to combination
+
+(define (named-let->let named-let-exp)
+  (let* ((var (named-let-var named-let-exp))
+         (bindings (named-let-bindings named-let-exp))
+         (body (named-let-body named-let-exp))
+         (parameters (map binding-var bindings))
+         (arguments (map binding-exp bindings)))
+    (make-let (list (cons var
+                          (make-lambda parameters
+                                       body)))
+              (cons var arguments))))
+
+(define (named-let->combination named-let-exp)
+  (let->combination (named-let->let named-let-exp)))
+\end{lstlisting}
 
 \end{document}
