@@ -129,4 +129,39 @@ Code:
   (expand-clauses (or-clauses exp)))
 \end{lstlisting}
 
+\section{Exercise 4.5}
+
+One thing worthy of noticing is that the recipient
+procedure is invoked on the value of the expression
+(result of evaluating it), not the expression itself.
+The expression is only evaluated once, after which
+its value is used for both branching and possibly
+recipient. Thus the condition branch
+\lstinline{(#test-exp => #recipient)} should be
+transformed to the following expression:
+
+\begin{lstlisting}
+(let ((exp-value #test-exp))
+  (if exp-value
+      (#recipient exp-value)
+      ;; other branches
+))
+\end{lstlisting}
+
+This introduces the same problem as macros do. The local
+variable \lstinline{exp-value} could introduce name conflict
+with another variable named \lstinline{exp-value} in other branches,
+therefore shadow the previous definition of that variable.
+And, the variable binding of \lstinline{exp-value}
+isn't supposed to leak into other branches and possibly
+let expressions in other branches refer to it, which should've
+caused an unbound variable error.
+
+The problem seems inevitable. One way to tackle it is to use the
+same technique as macros to avoid name conflict. Another way is
+to treat \lstinline{cond} expressions as a special form and
+make the intermediate variable \lstinline{exp-value} only exist
+at runtime (during the evaluation of the \lstinline{cond}
+expression).
+
 \end{document}
