@@ -475,4 +475,13 @@ print(i)
 del i
 \end{lstlisting}
 
+\section{Exercise 4.14}
+
+The system version of \lstinline{map} expects the procedure to be
+defined in the environment of the evaluator, not that of user program.
+This is confusing since we're implementing a Scheme evaluator using
+Scheme itself. Considering the situation where we're implementing a Python
+interpreter using Scheme helps to understand the problem. Given the
+procedure argument (as a symbol), Louis's \lstinline{map} will look for a Scheme procedure in the environment of the interpreter instead of a Python procedure in the environment of the user program.
+
 \end{document}
