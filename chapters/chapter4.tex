@@ -1,0 +1,132 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+\section{Exercise 4.1}
+
+Code:
+
+\begin{lstlisting}
+;; left to right version
+(define (list-of-values exps env)
+  (if (no-operands? exps)
+      '()
+      (let ((first (eval (first-operand exps) env)))
+        (cons first
+              (list-of-values (rest-operands exps) env)))))
+
+;; right to left version
+(define (list-of-value exps env)
+  (if (no-operands? exps)
+      '()
+      (let ((rest (list-of-values (rest-operands exps) env)))
+        (cons (eval (first-operand exps) env)
+              rest))))
+\end{lstlisting}
+
+\section{Exercise 4.2}
+
+\subsection{a.}
+
+The evaluator will regard \lstinline{(define x 3)} as procedure
+application instead of variable definition. Essentially this is
+because there lacks a robust way of distinguish different types
+of expressions.
+
+\subsection{b.}
+
+Feel sorry for you Louis, really. I understand your feeling.
+
+Code:
+
+\begin{lstlisting}
+(define (application? exp) (tagged-list? exp 'call))
+(define (operator exp) (cadr exp))
+(define (operands exp) (cddr exp))
+\end{lstlisting}
+
+\section{Exercise 4.3}
+
+Code:
+
+\begin{lstlisting}
+(define (eval exp env)
+  ((get 'eval (type exp)) exp env))
+(define type car)
+(define content cdr)
+
+;; sample evaluation rule
+(let ((eval-if
+       (lambda (exp env)
+               (if (true? (eval (if-predicate exp) env))
+                   (eval (if-consequent exp) env)
+                   (eval (if-alternative exp) env)))))
+  (put 'eval 'if eval-if))                
+\end{lstlisting}
+
+\section{Exercise 4.4}
+
+\subsection{Syntax definition}
+
+Code:
+
+\begin{lstlisting}
+(define (and? exp) (tagged-list? exp 'and))
+(define and-clauses cdr)
+
+(define (or? exp) (tagged-list? exp 'or))
+(define or-clauses cdr)
+
+(define no-clauses? null?)
+(define first-clause car)
+(define rest-clauses cdr)
+\end{lstlisting}
+
+\subsection{Special form evaluation}
+
+Code:
+
+\begin{lstlisting}
+(define (eval-and exp env)
+  (define (eval-and-clauses clauses)
+    (cond ((no-clauses? clauses) #t)
+          ((true? (eval (first-clause clauses) env))
+           (eval-and-clauses (rest-clauses clauses)))
+          (else #f)))
+  (eval-and-clauses (and-clauses exp)))
+
+(define (eval-or exp env)
+  (define (eval-or-clauses clauses)
+    (cond ((no-clauses? clauses #f))
+          ((true? (eval (first-clause clauses) env)) #t)
+          (else (eval (rest-clauses clauses env)))))
+  (eval-or-clauses (or-clauses exp)))
+\end{lstlisting}
+
+\subsection{Derived form evaluation}
+
+Code:
+
+\begin{lstlisting}
+;; transform AST-and to AST-if
+(define (and-to-if exp)
+  (define (expand-clauses clauses)
+    (if (no-clauses? clauses)
+        'true
+        (make-if (first-clause clauses)
+                 (expand-clauses (rest-clauses clauses))
+                 'false)))
+  (expand-clauses (and-clauses exp)))
+
+;; transform AST-or to AST-if
+(define (or-to-if exp)
+  (define (expand-clauses clauses)
+    (if (no-clauses? clauses)
+        'false
+        (make-if (first-clause clauses)
+                 'true
+                 (expand-clauses (rest-clauses clauses)))))
+  (expand-clauses (or-clauses exp)))
+\end{lstlisting}
+
+\end{document}
