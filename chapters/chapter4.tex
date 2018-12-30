@@ -422,4 +422,57 @@ Code:
         (add-binding-to-frame! var val frame))))
 \end{lstlisting}
 
+\section{Exercise 4.13}
+
+There are several cases to consider:
+
+\begin{enumerate}
+\item the binding is only in the first frame
+\item the binding is only in the enclosing environment
+\item the binding is in both the first frame and the enclosing environment
+\item the binding is in neither the first frame nor the enclosing
+environment
+\end{enumerate}
+
+Except for the fourth case where nothing can be done, the other three
+need careful consideration.
+
+But why does anyone want to get rid of bindings?
+
+It turns out that this could be useful for imperative style programming,
+where there could be something like:
+
+\begin{lstlisting}
+(define (square-sum a b)
+  (define sum 0)
+  (define term-squared 0)
+  (set! term-squared (* a a))
+  (set! sum (+ sum term-squared))
+  (set! term-squared (* b b))
+  (set! sum (+ sum term-squared))
+  (make-unbound! term-squared)
+  ; get rid of this binding
+  ; so that some other careless guy
+  ; can never carelessly refer to it later
+  sum)
+\end{lstlisting}
+
+This is stupid. What is supposed to be done easily and safely with
+scope now requires programmers to manually intervene. While in Python
+this does make some sense, where they can't even implement the scope
+of loops correctly:
+
+\begin{lstlisting}[language=Python]
+for i in range(10):
+  print(i)
+
+# loops don't create new scope
+# so you can still access it
+# amazing
+print(i)
+
+# get rid of it
+del i
+\end{lstlisting}
+
 \end{document}
