@@ -482,6 +482,39 @@ defined in the environment of the evaluator, not that of user program.
 This is confusing since we're implementing a Scheme evaluator using
 Scheme itself. Considering the situation where we're implementing a Python
 interpreter using Scheme helps to understand the problem. Given the
-procedure argument (as a symbol), Louis's \lstinline{map} will look for a Scheme procedure in the environment of the interpreter instead of a Python procedure in the environment of the user program.
+procedure argument (as a symbol), Louis's \lstinline{map} will look for
+a Scheme procedure in the environment of the interpreter instead of a
+Python procedure in the environment of the user program.
+
+\section{Exercise 4.15}
+
+If evaluating \lstinline{(try try)} halts, it indicates that evaluating
+\lstinline{(halts? try try)} returns \lstinline{#f}. Thus, from the
+definition of \lstinline{halts?} we know that \lstinline{try} doesn't
+halt on \lstinline{try}, which leads to a contradiction with the fact
+that \lstinline{(try try)} halts at the very beginning.
+
+If evaluating \lstinline{(try try)} runs forever, it indicates that
+evaluating \lstinline{(halts? try try)} returns \lstinline{#t}, from
+which we know that \lstinline{try} does halt on \lstinline{try}.
+Contradiction again. Any possible outcome of evaluating
+\lstinline{(try try)} violates the intended behaviour of
+\lstinline{halts?}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \end{document}
