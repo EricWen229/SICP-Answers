@@ -314,4 +314,112 @@ and \lstinline{apply} access and manipulate the program, thest two
 methods won't need any modification. The specific code is left as
 an exercise to the readers ;)
 
+\section{Exercise 4.11}
+
+Code:
+
+\begin{lstlisting}
+(define (make-frame variables values)
+  (list (map cons variables values)))
+
+(define (frame-variables frame)
+  (map car (car frame)))
+
+(define (frame-values frame)
+  (map cdr (car frame)))
+
+(define (add-binding-to-frame! var val frame)
+  (set-car! frame (cons (cons var val) (car frame))))
+\end{lstlisting}
+
+\section{Exercise 4.12}
+
+The lookup procedure is as follows:
+
+\begin{itemize}
+\item traverse all frames
+\item for every frame, traverse its bindings
+\item if binding matched, return value of it
+\end{itemize}
+
+The set procedure is as follows:
+
+\begin{itemize}
+\item traverse all frames
+\item for every frame, traverse its bindings
+\item if binding matched, set value of it
+\end{itemize}
+
+The define procedure is as follows:
+
+\begin{itemize}
+\item for the first frame, traverse its bindings
+\item if binding matched, set value of it
+\item if none matched, insert new binding
+\end{itemize}
+
+These operations can be extracted from above:
+
+\begin{itemize}
+\item frame traversal
+\item binding traversal
+\end{itemize}
+
+Code:
+
+\begin{lstlisting}
+(define (frame-traversal env operation)
+  (if (eq? env the-empty-environment)
+      (error "nothing found during frame traversal")
+      (let ((first-frame-result (operation (first-frame env))))
+        (if first-frame-result
+            first-frame-result
+            (frame-traversal (enclosing-environment env)
+                             operation)))))
+
+;; binding defined as list of pairs
+(define (binding-traversal frame operation)
+  (define (helper bindings)
+    (if (null? bindings)
+        #f
+        (let ((first-binding-result (operation (car bindings))))
+          (if first-binding-result
+              first-binding-result
+              (helper (cdr bindings))))))
+  (helper (car frame)))
+
+(define (lookup-variable-value var env)
+  (frame-traversal env
+                   (lambda (frame)
+                     (binding-traversal frame
+                                        (lambda (binding)
+                                          (if (eq? var (car binding))
+                                              (cdr binding)
+                                              #f))))))
+
+(define (set-variable-value! var val env)
+  (frame-traversal env
+                   (lambda (frame)
+                     (binding-traversal frame
+                                        (lambda (binding)
+                                          (if (eq? var
+                                                   (car binding))
+                                              (begin (set-cdr! binding
+                                                               val)
+                                                     'ok)
+                                              #f))))))
+
+(define (define-variable! var val env)
+  (let ((frame (first-frame env)))
+    (if (binding-traversal frame
+                           (lambda (binding)
+                             (if (eq? var
+                                      (car binding))
+                                 (begin (set-cdr! binding val)
+                                        'ok)
+                                 #f)))
+        'ok
+        (add-binding-to-frame! var val frame))))
+\end{lstlisting}
+
 \end{document}
