@@ -501,6 +501,85 @@ Contradiction again. Any possible outcome of evaluating
 \lstinline{(try try)} violates the intended behaviour of
 \lstinline{halts?}.
 
+\section{Exercise 4.16}
+
+\subsection{a.}
+
+Code:
+
+\begin{lstlisting}
+(define (lookup-variable-value var env)
+  (frame-traversal
+    env
+    (lambda (frame)
+            (binding-traversal
+              frame
+              (lambda (binding)
+                      (if (eq? var
+                               (car binding))
+                          (if (eq? (cdr binding)
+                                   '*unassigned)
+                              (error "Unsigned variable"
+                                     var)
+                              (cdr binding))
+                          #f))))))
+\end{lstlisting}
+
+\subsection{b.}
+
+Code:
+
+\begin{lstlisting}
+;; (lambda (...) (define u #e1) (define v #e2) ...)
+;; to
+;; (lambda (...) (let ((u ...) (v ...)) (set! u ...) (set! v ...) ...)
+
+(define (scan-out-defines exp)
+  (define (extract-defines exp)
+    (cond ((definition? exp)
+           (list (cons (definition-variable exp)
+                       (definition-value exp))))
+          ((begin? exp)
+           (let ((exps (begin-actions exp)))
+             (foldr append
+                    '()
+                    (map extract-defines
+                         exps))))
+          (else '())))
+  (define (remove-defines exp)
+    (if (begin? exp)
+        (make-begin (map remove-defines
+                         (filter (lambda (exp)
+                                   (not (definition? exp)))
+                                 (begin-actions exp))))
+        exp))
+  (define (create-empty-bindings variables)
+    (map (lambda (var) (cons (var '*unassigned*)))
+         variables))
+  (define (insert-assignments definitions exp)
+    (define (insert-helper definitions exp)
+      (if (null? definitions)
+          (list exp)
+          (cons (make-assignment (caar definitions)
+                                 (cdar definitions))
+                (insert-helper (cdr definitions)
+                               exp))))
+    (make-begin (insert-helper definitions exp)))
+  (let ((local-definitions (extract-defines exp)))
+    (if (null? local-definitions)
+        exp
+        (let ((variables (map car
+                              local-definitions)))
+          (make-let (create-empty-bindings variables)
+                    (insert-assignments local-definitions exp))))))
+\end{lstlisting}
+
+\subsection{c.}
+
+Installing in \lstinline{make-procedure} is better, ensuring \lstinline{scan-out-defines} is only invoked once.
+
+\section{Exercise 4.17}
+
 
 
 
