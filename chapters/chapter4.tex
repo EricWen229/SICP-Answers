@@ -620,9 +620,39 @@ The difference in environment can never make a difference in the behaviour of a 
 
 To implement the simultaneous scope rule for internal definitions without any extra frames, one can make the evaluator evaluate a block structure in two passes, in the first of which the evaluator evaluates every internal definition before evaluating any other expressions.
 
+\section{Exercise 4.18}
 
+Expanding the procedure produces code like this:
 
+\begin{lstlisting}
+(define solve
+  (lambda (f y0 dt)
+    (let ((y '*unassigned*)
+          (dy '*unassigned*))
+      (let ((a (integral (delay dy) y0 dt))
+            (b (stream-map f y)))
+        (set! u a)
+        (set! v b))
+      y)))
+\end{lstlisting}
 
+This won't work. When evaluating the inner \lstinline{let} expression, \lstinline{(stream-map f y)} is eagerly evaluated while \lstinline{y} is bound to nothing.
+
+If expanded as shown in the text:
+
+\begin{lstlisting}
+(define solve
+  (lambda (f y0 dt)
+    (let ((y '*unassigned*)
+          (dy '*unassigned*))
+      (set! y (integral (delay dy) y0 dt))
+      (set! dy (stream-map f y))
+      y)))
+\end{lstlisting}
+
+The second version works correctly, as \lstinline{y} is already assigned with valid value before \lstinline{(stream-map f y)} is evaluated.
+
+To accommodate the first approach to this problem, delayed evaluation is needed (i.e. \lstinline{y} must not be eagerly evaluated).
 
 
 
