@@ -618,7 +618,8 @@ The extra frame is created by the \lstinline{let} expression.
 
 The difference in environment can never make a difference in the behaviour of a correct program, since the evaluation of $e3$ can access the exact same set of bindings (\lstinline{u}, \lstinline{v}, arguments and those in enclosing environment) whether it's evaluated in \lstinline{env0} or \lstinline{env2}.
 
-To implement the simultaneous scope rule for internal definitions without any extra frames, one can make the evaluator evaluate a block structure in two passes, in the first of which the evaluator evaluates every internal definition before evaluating any other expressions.
+To implement the simultaneous scope rule for internal definitions without any extra frames, one can make the evaluator evaluate a block structure in two passes, in the first of which the evaluator evaluates every internal definition before evaluating any other expressions. Also one
+can perform a transform on the AST to move all internal definitions to block structures' beginning.
 
 \section{Exercise 4.18}
 
@@ -653,6 +654,41 @@ If expanded as shown in the text:
 The second version works correctly, as \lstinline{y} is already assigned with valid value before \lstinline{(stream-map f y)} is evaluated.
 
 To accommodate the first approach to this problem, delayed evaluation is needed (i.e. \lstinline{y} must not be eagerly evaluated).
+
+\section{Exercise 4.19}
+
+Now there are three opinions on the table:
+
+\begin{itemize}
+\item Ben: binding created and variable assigned after definition expression is evaluated
+\item Alyssa: binding created when enter scope, but variable assigned after definition expression is evaluted
+\item Eva: binding created and variable assigned when enter scope
+\end{itemize}
+
+Ben's suggestion appears quite "dynamic" to me. This is pretty straightforward and easy to implement, as the semantic here corresponds well to the evaluation process. But what makes it much less appealing is that it requires knowing the entire history to determine its current state, which would make the program way harder to reason about.
+The most common intention behind defining a local variable possibly is to shadow any other outer variables, where such semantic would be quite counterintuitive.
+
+Eva's suggestion, on the other hand, looks far more "lexical". And this is the most graceful one as I see it. The problem, however, arises from the reality. Firstly we have the efficiency issue, which is very little likely to be solvable. Also, it may seem confusing when the local variables are assigned at the very beginning, as if it happens before definition expressions are evaluated. Instead of the entire history, now it requires knowing its entire scope to determine its current state.
+
+I personally favor Alyssa's suggestion most. Externally, the definitions are shadowed by internal definitions, allowing the programmer to think fully "locally". Internally, the definitions are processed in a quite "dynamic" way, letting the programmer to track internal definitions in a quite nature and straightforward way.
+
+Now, before implementing the semantic as Eva suggests, notice that moving internal definitions to the beginning is no longer adequate. The order also matters, as shown in the example. \lstinline{a} should be already holding the value 5 before \lstinline{(+ a x)} is evaluated.
+
+If there is a valid order, say, we can process definitions once at a time in some order, where each definition being processed doesn't need any other definitions that aren't processed yet, then we can use topological sort on dependency graph of definitions to discover such an order and rearrange internal definitions.
+
+What if there's no valid orders? Take this expression for example:
+
+\begin{lstlisting}
+(define (some-function x)
+  (define foo (+ x bar))
+  (define bar (* x foo))
+  (+ foo bar))
+\end{lstlisting}
+
+There's no way we can devise a valid semantic for this. What's worse is that such situation could be much harder to detect in real world scenarios, as the cycle could get much larger. Of course, we can run cycle detection on the dependency graph of definitions before performing topological sort, but now the whole process is going to be really complex and inefficient.
+
+
+
 
 
 
