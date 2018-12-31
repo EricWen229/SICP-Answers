@@ -580,9 +580,45 @@ Installing in \lstinline{make-procedure} is better, ensuring \lstinline{scan-out
 
 \section{Exercise 4.17}
 
+Sequentially interpreted environment:
 
+\begin{lstlisting}
+  environment
+  where lambda
+  got evaluated
+        ^
+        |
++---------------------+
+| (argument bindings) |
+| u: value of e1      | env0
+| v: value of e2      |
++---------------------+
+\end{lstlisting}
 
+Scanned out environment:
 
+\begin{lstlisting}
+  environment
+  where lambda
+  got evaluated
+        ^
+        |
++---------------------+
+| (argument bindings) | env1
++---------------------+
+        ^
+        |
++----------------+
+| u: value of e1 | env2
+| v: value of e2 |
++----------------+
+\end{lstlisting}
+
+The extra frame is created by the \lstinline{let} expression.
+
+The difference in environment can never make a difference in the behaviour of a correct program, since the evaluation of $e3$ can access the exact same set of bindings (\lstinline{u}, \lstinline{v}, arguments and those in enclosing environment) whether it's evaluated in \lstinline{env0} or \lstinline{env2}.
+
+To implement the simultaneous scope rule for internal definitions without any extra frames, one can make the evaluator evaluate a block structure in two passes, in the first of which the evaluator evaluates every internal definition before evaluating any other expressions.
 
 
 
