@@ -863,6 +863,7 @@ Code:
          (eval-sequence (begin-actions exp) env))
         ((cond? exp) (eval (cond->if exp) env))
         ((let? exp) (eval (let->application exp) env))
+        ((let*? exp) (eval (let*->let exp) env))
         ((application? exp)
          (apply (eval (operator exp) env)
                 (list-of-values (operands exp) env)))
@@ -965,6 +966,7 @@ Code:
   (cond ((no-exps? seq) seq)
         ((last-exp? seq) (first-exp seq))
         (else (make-begin seq))))
+(define (make-begin seq) (cons 'begin seq))
 (define (eval-sequence exps env)
   (cond ((no-exps? exps)
          (error "Empty sequence -- eval-sequence"))
@@ -1014,6 +1016,22 @@ Code:
    (cons (make-lambda variables
                       body)
          values)))
+(define (make-let bindings body)
+  (cons 'let (cons bindings body)))
+
+;; let*
+;; (let* bindings body)
+(define (let*? exp) (tagged-list? exp 'let*))
+(define (let*->let exp)
+  (define (transform-bindings bindings)
+    (if (let-no-bindings? (let-rest-bindings bindings))
+        (make-let (list (let-first-binding bindings))
+                  (let-body exp))
+        (make-let (list (let-first-binding bindings))
+                  (list (transform-bindings (let-rest-bindings bindings))))))
+  (if (let-no-bindings? (let-bindings exp))
+      (sequence->exp (let-body exp))
+      (transform-bindings (let-bindings exp))))
 
 ;; application
 ;; (op arg0 arg1 ... argn)
