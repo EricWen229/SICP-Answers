@@ -623,7 +623,7 @@ can perform a transform on the AST to move all internal definitions to block str
 
 \section{Exercise 4.18}
 
-Expanding the procedure produces code like this:
+Expanding the procedure produces code as following:
 
 \begin{lstlisting}
 (define solve
@@ -767,6 +767,74 @@ Environment with \lstinline{let}:
 \end{lstlisting}
 
 Notice that this time, the two lambda expressions are evaluated in the frame \lstinline{f#0}. When any of the procedures get invoked now, it'll no longer be able to find binding of the other.
+
+\section{Exercise 4.21}
+
+\subsection{a.}
+
+It might be clearer to write the procedure as following:
+
+\begin{lstlisting}
+(define fact-helper
+  (lambda (f k)
+    (if (= k 1)
+        1
+        (* k (f f (- k 1))))))
+(define fact
+  (lambda (n)
+    (fact-helper fact-helper n)))
+\end{lstlisting}
+
+Notice that the usage of \lstinline{define} here is just for clarity. One can replace all identifiers with corresponding values and still get a working procedure. The basic idea here is to pass the procedure itself in as an extra argument so that it can refer to itself and make recursive calls (of course it also needs to pass itself in when making recursive calls).
+
+The Fibonacci number procedure can be implemented as follows:
+
+\begin{lstlisting}
+;; simple, plain version
+(define (fib n)
+  (if (< n 2)
+      0
+      (+ (fib (- n 1))
+         (fib (- n 2)))))
+
+;; special version
+(define fib-helper
+  (lambda (f n)
+    (if (< n 2)
+        0
+        (+ (f f (- n 1))
+           (f f (- n 2))))))
+(define fib
+  (lambda (n)
+    (fib-helper fib-helper n)))
+\end{lstlisting}
+
+\subsection{b.}
+
+Code:
+
+\begin{lstlisting}
+(define (f x)
+  ((lambda (even? odd?)
+     (even? even? odd? x))
+    (lambda (ev? od? n)
+      (if (= n 0) #t (od? ev? od? (- n 1))))
+    (lambda (ev? od? n)
+      (if (= n 0) #f (ev? ev? od? (- n 1))))))
+\end{lstlisting}
+
+Test:
+
+\begin{lstlisting}
+(map f '(1 2 3 4 5 6 7 8 9))
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+(#f #t #f #t #f #t #f #t #f)
+\end{lstlisting}
+
 
 
 
