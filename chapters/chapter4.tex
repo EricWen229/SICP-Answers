@@ -687,7 +687,86 @@ What if there's no valid orders? Take this expression for example:
 
 There's no way we can devise a valid semantic for this. What's worse is that such situation could be much harder to detect in real world scenarios, as the cycle could get much larger. Of course, we can run cycle detection on the dependency graph of definitions before performing topological sort, but now the whole process is going to be really complex and inefficient.
 
+\section{Exercise 4.20}
 
+\subsection{a.}
+
+Code:
+
+\begin{lstlisting}
+;; transform
+;; (letrec ((v0 e0) (v1 e1) ... (vn en)) body)
+;; to
+;; (let ((v0 'unassigned)
+;;       (v1 'unassigned)
+;;       ...
+;;       (vn 'unassigned))
+;;   (set! v0 e0)
+;;   (set! v1 e1)
+;;   ...
+;;   (set! vn en)
+;;   body)
+
+;; definition of letrec
+;; format: (letrec bindings body)
+(define (letrec? exp) (tagged-list? exp 'letrec))
+(define letrec-bindings cdar)
+(define letrec-body cddar)
+(define no-bindings? null?)
+(define first-binding car)
+(define rest-binding cdr)
+(define binding-var car)
+(define binding-exp cdr)
+
+(define (letrec->let exp)
+  (let ((bindings (letrec-bindings exp))
+        (body (let-rec-body exp)))
+    (make-let (create-empty-bindings (map binding-var
+                                          bindings))
+              (insert-assignments bindings body))))
+\end{lstlisting}
+
+\subsection{b.}
+
+Environment with \lstinline{letrec}:
+
+\begin{lstlisting}
++------+
+| f#0  |
+| ---- |
+| x: 5 |
++------+
+    ^
+    |
++---------------------------------------------+
+| letrec#0                                    |
+| ------------------------------------------- |
+| even?: (lambda (n) (...odd?...)) @ letrec#0 |
+| odd?: (lambda (n) (...even?...)) @ letrec#0 |
++---------------------------------------------+
+\end{lstlisting}
+
+Notice that the lambda expressions of \lstinline{even?} and \lstinline{odd?} are both evaluated in the frame \lstinline{letrec#0}, thus their environments are both \lstinline{letrec#0}. When any of the procedures, like \lstinline{even?}, get invoked, the body will be evaluated in a new frame whose enclosing environment points to \lstinline{letrec#0}. Therefore, when it looks for \lstinline{odd?} in the environment, it'll find the binding in frame \lstinline{letrec#0}
+
+Environment with \lstinline{let}:
+
+\begin{lstlisting}
++------+
+| f#0  |
+| ---- |
+| x: 5 |
++------+
+    ^
+    |
++----------------------------------------+
+| let#0                                  |
+| -------------------------------------- |
+| even?: (lambda (n) (...odd?...)) @ f#0 |
+| odd?: (lambda (n) (...even?...)) @ f#0 |
++----------------------------------------+
+\end{lstlisting}
+
+Notice that this time, the two lambda expressions are evaluated in the frame \lstinline{f#0}. When any of the procedures get invoked now, it'll no longer be able to find binding of the other.
 
 
 
