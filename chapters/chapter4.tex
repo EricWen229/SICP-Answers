@@ -1,5 +1,9 @@
 \documentclass[../main.tex]{subfiles}
 
+\makeatletter
+\ifx\codedir\@undefined\def\codedir{../code}\fi
+\makeatother
+
 \begin{document}
 
 \section{Exercise 4.1}
@@ -843,6 +847,6 @@ Before moving on, I think it's necessary to gather the code of the evaluator so 
 
 Code:
 
-\lstinputlisting[language=Lisp]{../code/chapter4/evaluatorbase.scm}
+\lstinputlisting[language=Lisp]{\codedir/chapter4/evaluatorbase.scm}
 
 \end{document}
