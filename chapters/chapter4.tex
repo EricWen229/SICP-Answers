@@ -864,6 +864,7 @@ Code:
         ((cond? exp) (eval (cond->if exp) env))
         ((let? exp) (eval (let->application exp) env))
         ((let*? exp) (eval (let*->let exp) env))
+        ((letrec? exp) (eval (letrec->let exp) env))
         ((application? exp)
          (apply (eval (operator exp) env)
                 (list-of-values (operands exp) env)))
@@ -907,6 +908,8 @@ Code:
   (set-variable-value! (assignment-variable exp)
                        (eval (assignment-value exp) env)
                        env))
+(define (make-assignment variable value)
+  (list 'set! variable value))
 
 ;; definition
 ;; (define variable value)
@@ -1032,6 +1035,29 @@ Code:
   (if (let-no-bindings? (let-bindings exp))
       (sequence->exp (let-body exp))
       (transform-bindings (let-bindings exp))))
+
+;; letrec
+;; (letrec bindings body)
+(define (letrec? exp) (tagged-list? exp 'letrec))
+(define (letrec->let exp)
+  (define (create-empty-bindings vars)
+    (map (lambda (var) (list var (list 'quote 'unassigned)))
+         vars))
+  (define (insert-assignments bindings exps)
+    (define (insert-helper bindings)
+      (if (null? bindings)
+          exps
+          (cons (make-assignment (caar bindings)
+                                 (cadar bindings))
+                (insert-helper (cdr bindings)))))
+    (insert-helper bindings))
+  (let ((bindings (let-bindings exp))
+        (body (let-body exp)))
+    (if (let-no-bindings? bindings)
+        (sequence->exp body)
+        (make-let (create-empty-bindings (map let-binding-var
+                                              bindings))
+                  (insert-assignments bindings body)))))
 
 ;; application
 ;; (op arg0 arg1 ... argn)
