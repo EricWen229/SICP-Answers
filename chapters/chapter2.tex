@@ -731,12 +731,55 @@ Result:
 (((() 1) 2) 3)
 \end{lstlisting}
 
-The binary operation(procedure) \lstinline{op}
- should satisfy the commutative property for
- \lstinline{fold-left} and \lstinline{fold-right}
- to produce the same values for any sequence. Such
- operations include \lstinline{+}, \lstinline{*},
- etc.
+Here we're going to prove that \lstinline{fold-right} and \lstinline{fold-left} always produce the same result if and only if \lstinline{op} is associative and commutative.
+
+Denote \lstinline{op} as $\circ$ and \lstinline{sequence} as $\{a_i\}$, \lstinline{fold-right} and \lstinline{fold-left} producing the same result can be expressed in the following way:
+
+$$
+(a_1 \circ (a_2 \cdots (a_n \circ init))) = (a_n \circ (a_2 \cdots (a_1 \circ init)))
+$$
+
+\subsection{Sufficiency}
+
+This is quite obvious. Specifically, given \lstinline{op} is associative and commutative, we can "swap" two adjacent terms without changing the expression's value in the following way:
+
+\begin{align*}
+a_m \circ (a_n \circ e) &= (a_m \circ a_n) \circ \cdots & (associativity) \\
+&= (a_n \circ a_m) \circ e & (commutativity) \\
+&= a_n \circ (a_m \circ e) & (associativity)
+\end{align*}
+
+By performing a series of "swapping" operations, we can transform $(a_1 \circ (a_2 \cdots (a_n \circ init)))$ into $(a_n \circ (a_2 \cdots (a_1 \circ init)))$ without changing its value, and in this way we've proved their equality.
+
+Therefore, \lstinline{op} being both associative and commutative is the sufficent condition for \lstinline{fold-right} and \lstinline{fold-left} to always produce the same result.
+
+\subsection{Necessity}
+
+Let's take a look at the case where $n=2$ if \lstinline{op} isn't both associative and commutative, where there's supposed to be:
+
+$$
+a_1 \circ (a_2 \circ init) = a_2 \circ (a_1 \circ init)
+$$
+
+If \lstinline{op} is associative but not commutative, then $\exists a_1, a_2$ where:
+
+$$
+a_1 \circ (a_2 \circ init) = (a_1 \circ a_2) \circ init \neq (a_2 \circ a_1) \circ init = a_2 \circ (a_1 \circ init)
+$$
+
+If \lstinline{op} is commutative but not associative, then $\exists a_1, a_2, init$ where:
+
+$$
+a_1 \circ (a_2 \circ init) = (a_2 \circ init) \circ a_1 \neq a_2 \circ (init \circ a_1) = a_2 \circ (a_1 \circ init)
+$$
+
+If \lstinline{op} is neither commutative nor associative, well, we have:
+
+$$
+3 - (2 - 1) \neq 2 - (3 - 1)
+$$
+
+Therefore, \lstinline{op} being both associative and commutative is the necessary condition for \lstinline{fold-right} and \lstinline{fold-left} to always produce the same result.
 
 \section{Exercise 2.39}
 
