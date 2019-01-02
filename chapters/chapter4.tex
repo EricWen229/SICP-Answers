@@ -841,9 +841,73 @@ Result:
 (#f #t #f #t #f #t #f #t #f)
 \end{lstlisting}
 
-\section*{Complete code of evaluator}
+\section{Exercise 4.22}
 
-Before moving on, I think it's necessary to gather the code of the evaluator so that further code can be run and tested.
+Code:
+
+\begin{lstlisting}
+;; one of the branches in analyze
+((let? exp) (analyze (let->application exp)))
+\end{lstlisting}
+
+\section{Exercise 4.23}
+
+For a sequence with only one expression, the version in the text would just evaluate that expression by invoking the procedure with current environment, while Alyssa's version would first check if there's a second expression before evaluating the first one.
+
+Things are similar for sequences with two expressions. The version in the text is informed of when to stop during analysis, which Alyssa's version determines when to stop at runtime.
+
+\section{Exercise 4.24}
+
+Benchmark code:
+
+\begin{lstlisting}
+(define (benchmark thunk)
+  (with-timings
+    thunk
+    (lambda (runtime gctime realtime)
+      (display "runtime: ")
+      (display (internal-time/ticks->seconds runtime))
+      (newline)
+      (display "gctime: ")
+      (display (internal-time/ticks->seconds gctime))
+      (newline)
+      (display "realtime: ")
+      (display (internal-time/ticks->seconds realtime))
+      (newline))))
+(define (create-benchmark-thunk eval-to-use code)
+  (let ((env (setup-environment)))
+    (lambda () (eval-to-use code env))))
+;; here I use the slow version on purpose
+;; to increate number of recursive calls
+(define samplecode
+  (quote
+    (letrec ((fib (lambda (n)
+                    (if (< n 2)
+                        1
+                        (+ (fib (- n 1))
+                           (fib (- n 2)))))))
+      (fib 23))))
+(benchmark (create-benchmark-thunk eval samplecode))
+(benchmark (create-benchmark-thunk eval-with-analysis samplecode))
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+1 ]=> (benchmark (create-benchmark-thunk eval samplecode))
+runtime: 18.07
+gctime: .14
+realtime: 20.863
+;Value: 46368
+
+1 ]=> (benchmark (create-benchmark-thunk eval-with-analysis samplecode))
+runtime: 9.1
+gctime: .09
+realtime: 10.078
+;Value: 46368
+\end{lstlisting}
+
+\section*{Complete code of evaluator}
 
 Code:
 
@@ -852,11 +916,5 @@ Code:
 Tests:
 
 \lstinputlisting[language=Lisp]{\codedir/test/chapter4/evaluator.scm}
-
-\section{Exercise 4.22}
-
-See previous section.
-
-% TODO: use tested evaluator code to refine previous solutions
 
 \end{document}

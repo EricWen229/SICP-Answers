@@ -222,7 +222,7 @@
     (if (null? rest-procs)
         first-proc
         (loop (sequentially first-proc (car rest-procs))
-              (rest-procs))))
+              (cdr rest-procs))))
   (let ((analyzed-exps (map analyze exps)))
     (if (null? analyzed-exps)
         (error "Empty sequence -- analyze-sequence")
