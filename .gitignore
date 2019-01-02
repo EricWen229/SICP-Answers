@@ -3,6 +3,7 @@
 *.pdf
 *.gz
 *.toc
+*.out
 
 .DS_Store
 
