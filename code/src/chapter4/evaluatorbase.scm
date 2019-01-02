@@ -26,6 +26,29 @@
                 (list-of-values (operands exp) env)))
         (else
          (error "Unknown expression type -- eval" exp))))
+(define (eval-with-analysis exp env)
+  ((analyze exp) env))
+
+;; analyze
+(define (analyze exp)
+  (cond ((self-evaluating? exp)
+         (analyze-self-evaluating exp))
+        ((variable? exp) (analyze-variable exp))
+        ((quoted? exp) (analyze-quoted exp))
+        ((assignment? exp) (analyze-assignment exp))
+        ((definition? exp) (analyze-definition exp))
+        ((if? exp) (analyze-if exp))
+        ((and? exp) (analyze (and->if exp)))
+        ((or? exp) (analyze (or->if exp)))
+        ((lambda? exp) (analyze-lambda exp))
+        ((begin? exp) (analyze-sequence (begin-actions exp)))
+        ((cond? exp) (analyze (cond->if exp)))
+        ((let? exp) (analyze (let->application exp)))
+        ((let*? exp) (analyze (let*->let exp)))
+        ((letrec? exp) (analyze (letrec->let exp)))
+        ((application? exp) (analyze-application exp))
+        (else
+         (error "Unknown expression type -- analyze " exp))))
 
 ;; apply
 (define (apply procedure arguments)
@@ -46,14 +69,21 @@
   (or (number? exp)
       (string? exp)
       (null? exp)))
+(define (analyze-self-evaluating exp)
+  (lambda (env) exp))
 
 ;; variable
 (define (variable? exp) (symbol? exp))
+(define (analyze-variable exp)
+  (lambda (env) (lookup-variable-value exp env)))
 
 ;; quotation
-;; (quote text)
+;; (quote content)
 (define (quoted? exp) (tagged-list? exp 'quote))
 (define (quote-content exp) (cadr exp))
+(define (analyze-quoted exp)
+  (let ((content (quote-content exp)))
+    (lambda (env) content)))
 
 ;; assignment
 ;; (set! variable value)
@@ -66,6 +96,13 @@
                        env))
 (define (make-assignment variable value)
   (list 'set! variable value))
+(define (analyze-assignment exp)
+  (let ((var (assignment-variable exp))
+        (analyzed-value (analyze (assignment-value exp))))
+    (lambda (env)
+      (set-variable-value! var
+                           (analyzed-value env)
+                           env))))
 
 ;; definition
 ;; (define variable value)
@@ -86,6 +123,13 @@
   (define-variable! (definition-variable exp)
                     (eval (definition-value exp) env)
                     env))
+(define (analyze-definition exp)
+  (let ((var (definition-variable exp))
+        (analyzed-value (analyze (definition-value exp))))
+    (lambda (env)
+      (define-variable! var
+                        (analyzed-value env)
+                        env))))
 
 ;; conditional
 ;; (if predicate consequent alternative)
@@ -104,6 +148,14 @@
   (if (true? (eval (if-predicate exp) env))
       (eval (if-consequent exp) env)
       (eval (if-alternative exp) env)))
+(define (analyze-if exp)
+  (let ((analyzed-predicate (analyze (if-predicate exp)))
+        (analyzed-consequent (analyze (if-consequent exp)))
+        (analyzed-alternative (analyze (if-alternative exp))))
+    (lambda (env)
+      (if (true? (analyzed-predicate env))
+          (analyzed-consequent env)
+          (analyzed-alternative env)))))
 
 ;; and & or
 (define (and? exp) (tagged-list? exp 'and))
@@ -136,6 +188,12 @@
 (define (lambda-body exp) (cddr exp))
 (define (make-lambda parameters body)
   (cons 'lambda (cons parameters body)))
+(define (analyze-lambda exp)
+  (let ((parameters (lambda-parameters exp))
+        (analyzed-body (analyze-sequence (lambda-body exp))))
+    (lambda (env) (make-procedure parameters
+                                  analyzed-body
+                                  env))))
 
 ;; sequence
 ;; (begin exp0 exp1 ... expn)
@@ -157,6 +215,18 @@
          (eval (first-exp exps) env))
         (else (eval (first-exp exps) env)
               (eval-sequence (rest-exps exps) env))))
+(define (analyze-sequence exps)
+  (define (sequentially proc1 proc2)
+    (lambda (env) (proc1 env) (proc2 env)))
+  (define (loop first-proc rest-procs)
+    (if (null? rest-procs)
+        first-proc
+        (loop (sequentially first-proc (car rest-procs))
+              (rest-procs))))
+  (let ((analyzed-exps (map analyze exps)))
+    (if (null? analyzed-exps)
+        (error "Empty sequence -- analyze-sequence")
+        (loop (car analyzed-exps) (cdr analyzed-exps)))))
 
 ;; cond
 ;; (cond ((p0 e00 e01 ... e0n) (p1 e10 e11 ... e1n) ...))
@@ -257,6 +327,23 @@
       (let ((first-value (eval (first-exp exps) env)))
         (cons first-value
               (list-of-values (rest-exps exps) env)))))
+(define (analyze-application exp)
+  (let ((analyzed-operator (analyze (operator exp)))
+        (analyzed-operands (map analyze (operands exp))))
+    (lambda (env)
+      (execute-application (analyzed-operator env)
+                           (map (lambda (op) (op env))
+                                analyzed-operands)))))
+(define (execute-application procedure arguments)
+  (cond ((primitive-procedure? procedure)
+         (apply-primitive-procedure procedure arguments))
+        ((compound-procedure? procedure)
+         ((procedure-body procedure)
+          (extend-environment (procedure-parameters procedure)
+                              arguments
+                              (procedure-environment procedure))))
+        (else
+         (error "Unknown procedure type -- execute-application" procedure))))
 
 ;; procedure (value)
 ;; (procedure parameters body env)
@@ -280,7 +367,7 @@
   (map cdr (car frame)))
 (define (add-binding-to-frame! var val frame)
   (set-car! frame (cons (cons var val) (car frame)))
-  'undefined)
+  var)
 (define (extend-environment vars vals base-env)
   (let ((var-num (length vars))
         (val-num (length vals)))
@@ -326,7 +413,7 @@
         (lambda (binding)
           (if (eq? var (car binding))
               (begin (set-cdr! binding val)
-                     'ok)
+                     'undefined)
               #f))))))
 (define (define-variable! var val env)
   (let ((frame (first-frame env)))
@@ -335,9 +422,9 @@
                              (if (eq? var
                                       (car binding))
                                  (begin (set-cdr! binding val)
-                                        'ok)
+                                        var)
                                  #f)))
-        'undefined
+        var
         (add-binding-to-frame! var val frame))))
 
 ;; primitive
@@ -389,7 +476,11 @@
     (define-variable! 'undefined 'undefined initial-env)
     initial-env))
 (define the-global-environment (setup-environment))
-(define (driver-loop)
+(define (driver-loop use-analysis)
+  (define eval-to-use
+    (if use-analysis
+        eval-with-analysis
+        eval))
   (define (prompt-for-input)
     (define input-prompt ">>> ")
     (newline)
@@ -405,8 +496,8 @@
         (display object)))
    (prompt-for-input)
    (let ((input (read)))
-     (let ((output (eval input the-global-environment)))
+     (let ((output (eval-to-use input the-global-environment)))
        (announce-output)
        (user-print output)
        (newline)))
-   (driver-loop))
+   (driver-loop use-analysis))
