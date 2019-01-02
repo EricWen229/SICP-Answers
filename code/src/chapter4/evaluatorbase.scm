@@ -358,6 +358,7 @@
         (list 'car car)
         (list 'cdr cdr)
         (list 'cons cons)
+        (list 'append append)
         (list 'null? null?)))
 (define (primitive-procedure-names)
   (map car primitive-procedures))
