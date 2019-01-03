@@ -948,7 +948,108 @@ The code is a little bit longer than before, but is much clearer to whoever's re
 
 \section{Exercise 4.27}
 
+Keep in mind that lazy evaluation:
 
+\begin{itemize}
+\item create thunks when procedures are applied
+\item force thunks when needed by primitives
+\item memoize result of forcing after the first time
+\end{itemize}
+
+Now let's take a look at the sequence:
+
+\begin{lstlisting}
+(define count 0)
+
+(define (id x)
+  (set! count (+ count 1))
+  x)
+
+(define w (id (id 10)))
+
+;; when (id (id 10)) is evaluated
+;; thunk [(id 10) @ global env] is created
+;; count becomes 1
+;; w becomes [(id 10) @ global env]
+
+;; L-Eval input:
+count
+;; L-Eval value:
+1
+
+;; L-Eval input:
+w
+;; L-Eval value:
+10
+
+;; w is forced and (id 10) is evaluated
+;; count becomes 2
+;; w becomes [10] due to memoization
+
+;; L-Eval input:
+count
+;; L-Eval value:
+2
+\end{lstlisting}
+
+\section{Exercise 4.28}
+
+Result of evaluating an \lstinline{eval} could be a thunk that returns a procedure object when forced. Here's an example:
+
+\begin{lstlisting}
+(define (self x) x)
+(define (partial-add a)
+  (lambda (b) (+ a b)))
+((self (partial-add 1)) 232)
+\end{lstlisting}
+
+Evaluating \lstinline{(self (partial-add 1))} returns a thunk whose expression is \lstinline{(partial-add 1)}. It shall be forced before being applied with arguments.
+
+\section{Exercise 4.29}
+
+One perfect example would be how we defined the stream \lstinline{integer} implicitly. As primitive procedures would force all arguments, we have to implement pairs on our own.
+
+Code:
+
+\begin{lstlisting}
+(define (cons-stream a b)
+  (lambda (i)
+    (if i a b)))
+(define (stream-car pair)
+  (pair true))
+(define (stream-cdr pair)
+  (pair false))
+
+(define (stream-add s1 s2)
+  (cons-stream (+ (stream-car s1)
+                  (stream-car s2))
+               (stream-add (stream-cdr s1)
+                           (stream-cdr s2))))
+(define (stream-to-list n stream)
+  (if (= n 0)
+      ()
+      (cons (stream-car stream)
+            (stream-to-list (- n 1)
+                            (stream-cdr stream)))))
+(define (get-nth n stream)
+  (if (= n 0)
+      (stream-car stream)
+      (get-nth (- n 1)
+               (stream-cdr stream))))
+
+(define ones (cons-stream 1 ones))
+(define (i-from n)
+  (cons-stream n (i-from (+ n 1))))
+
+(define integers-explicit (i-from 1))
+(define integers-implicit
+  (cons-stream 1
+               (stream-add ones integers-implicit)))
+\end{lstlisting}
+
+Evaluating \lstinline{(get-nth 233 integers-implicit)} takes a blink of an eye with memoization. Evaluating the same expression without memoization takes way longer, which is about 20 seconds.
+
+Back to the sequence in the text. When evaluator memoizes, \lstinline{(id 10)} is only evaluated once during the evaluation of \lstinline{(square (id 10))}, thus value of \lstinline{count} is 1 at the end. When there's no memoization, \lstinline{(id 10)} are evaluated twice, causing \lstinline{count} to be incremented twice.
 
 % \section*{Complete code of evaluator}
 
