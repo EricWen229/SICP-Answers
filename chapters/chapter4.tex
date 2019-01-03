@@ -1051,6 +1051,28 @@ Evaluating \lstinline{(get-nth 233 integers-implicit)} takes a blink of an eye w
 
 Back to the sequence in the text. When evaluator memoizes, \lstinline{(id 10)} is only evaluated once during the evaluation of \lstinline{(square (id 10))}, thus value of \lstinline{count} is 1 at the end. When there's no memoization, \lstinline{(id 10)} are evaluated twice, causing \lstinline{count} to be incremented twice.
 
+\section{Exercise 4.30}
+
+\subsection{a.}
+
+Ben is right because \lstinline{display} will force \lstinline{x}.
+
+\subsection{b.}
+
+In the original version, evaluating \lstinline{(p1 1)} returns \lstinline{(1 2)}, while evaluating \lstinline{(p2 1)} returns \lstinline{1}.
+
+In Cy's version, both expressions return \lstinline{(1 2)} as \lstinline{e} is forced now.
+
+\subsection{c.}
+
+Because the result of evaluating \lstinline{(proc (car items))} is discarded and forcing it doesn't make any difference.
+
+\subsection{d.}
+
+While browsing the discussions about this on the Internet, I found some really interesting ideas. Some say that the internal expressions should not be strictly forced because their values are merely discarded and the evaluator should only force a thunk as is needed. There's also a quite interestring claim that says all expressions in a sequence except for the last one are only there for the side effects they produce.
+
+Personally I prefer a combination of these two ideas. Indeed the evaluator should only force a thunk only if it's needed, as is indicated by the name call-by-need, but we need an expression not only for its value, but also for its side effects. In sequences, we've already chosen to discard values of internal expressions. They're only there because we need their side effects, including the side effects of evaluating the result. Therefore, these side effects shouldn't be left out, and I like Cy's approach more.
+
 % \section*{Complete code of evaluator}
 
 % Code:
