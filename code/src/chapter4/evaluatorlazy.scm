@@ -1,9 +1,6 @@
 (define system-eval eval)
 (define system-apply apply)
 
-;; TODO: modify analyzed version of evaluator
-;; so that it adapts to lazy evaluation
-
 ;; eval
 (define (eval exp env)
   (cond ((self-evaluating? exp) exp)

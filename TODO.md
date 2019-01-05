@@ -1,4 +1,4 @@
 # TODO
 
-* Implement evaluator with both lazy-evaluation and analysis
+* Implement upward-compatible evaluator with both lazy-evaluation and analysis
 

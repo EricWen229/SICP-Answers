@@ -4,6 +4,7 @@
 *.gz
 *.toc
 *.out
+*.rkt~
 
 .DS_Store
 
