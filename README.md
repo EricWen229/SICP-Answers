@@ -84,3 +84,25 @@ Streams do not have to be so obscure, actually. We can define this Fibonacci str
 ```
 
 Till I find a more intuitive way of understanding implicitly defined streams, I'll just stick to the explicit way for now.
+
+## Update: 2018-1-5
+
+Just finished implementing a new version of Scheme evaluator. This version utilizes the analysis technique introduced in section 4.1.7, and the backward compatible lazy evaluation is also implemented.
+
+At first the idea is quite confusing. We know that `analyze` takes an expression and returns a procedure which takes an environment and returns the result of evaluating the expression specified earlier in the given environment. After introducing lazy evaluation, specifically thunks, things start to get trickier, as it seems not so clear where these thunks could appear. Could `analyze`'s argument be a thunk? Could `analyze` possibly return a thunk?
+
+But after some careful thoughts, it turns out that I was mixing up the concept of expression and value.
+
+Specifically, expression is more of a "static" concept. Expressions' semantics are specified by the language specification (implementation can also be seen as some sort of specification), not the runtime behaviour, thus we don't need to actually run the program when we `analyze` the expressions and generate procedures according to their semantics.
+
+On the other hand, value is more of a "dynamic" concept. Except for some special cases like constants, there's no way we can deduce a variable's value by statically analyze the program without running it (some might say programmers can "analyze" a program and deduce the value of a certain variable at certain time but in such scenario the programmer actually acts as an evaluator), and it only exists at runtime.
+
+What may seem confusing is that in some cases expressions and values can "interleave", where an entity seems both an expression and a value. For example, in the evaluator we just implemented, user program can include a string as an expression, which string is also the internal represenation of a string value. The same also applies to numbers and `null`. But, keep in mind that this sharing of representation is just for convenience, and that string expression and string value are conceptually different in spite of this.
+
+Back to lazy evaluation. Thunk is a kind of value, which means it will never be created during analsis phase. It's created only when the program is evaluated, and can be passed around, bound to variables or used to compute other values at runtime. We can safely assume that `analyze` will neither need to handle thunks nor produce thunks as results.
+
+Speaking of how thunk can be used, it's noteworthy that thunks are only forced in several cases: when used by an `if` expression as the predicate or when as arguments of primitive procedure application. At first I was wondering whether I should force thunks in some other situations, but at last this proved to be totally unnecessary. Only when calling primitive procedures or using primitive constructs such as `if` do we CARE about the actual value of a value.
+
+This applies to not only thunks but also other types of values. Take integers for example. When not using them for basic operations like calculations and comparisons, all we use them for is just passing them around as arguments, results or assigning them to variables. And when we do so, all the program does is simply copying them from memory to registers, from registers to registers or from registers to memory. The actual values don't matter at all. Only when we, for example, add two integers, does the program actually use their value, where the adder in the CPU analyzes them bit by bit and computes theirs sum.
+
+And, seems like I just missed an important case, and that's when thunks are printed to the console. After all we, humans, also care about the value.
