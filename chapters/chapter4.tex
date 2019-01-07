@@ -1106,6 +1106,21 @@ Code:
     (lambda (env) lazified-content)))
 \end{lstlisting}
 
+\section{Exercise 4.34}
+
+Won't bother to implement this. I'll just describe the basic idea.
+
+If pairs are still implemented as compound procedures, there's no way the evaluator can tell the difference between a pair and another compound procedure that happens to have the exact same pattern. It would confuse the user when two procedures are printed out in different formats just because one of them happens to look like a pair. One feasible alternative would be representing lazy pairs with plain pairs:
+
+\begin{lstlisting}
+(define (cons (lazy-memo x) (lazy-memo y))
+  (system-cons x y))
+\end{lstlisting}
+
+Then the evaluator can just treat lazy pairs as plain ones when printing.
+
+As for lists, I don't feel like handling them:)
+
 \section*{Complete code of evaluator}
 
 Here I've implemented an evaluator with backward compatible lazy evaluation and with analysis technique introduced in section 4.1.7. Since this is a pretty much complete version, code of subsequent exercises will be based on this version.
