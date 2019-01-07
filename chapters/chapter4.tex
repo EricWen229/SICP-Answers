@@ -1079,6 +1079,10 @@ See later section.
 
 \section{Exercise 4.32}
 
+Well in some cases where originally explicit \lstinline{delay} is needed, the extra laziness brings some convenience. The \lstinline{car} could be temporarily unaccessible (see the intergral example) or computationally expensive.
+
+Another benefit of the extra laziness is that now we can regard \lstinline{car} and \lstinline{cdr} of a pair equally. If a higher order procedure tends to use either \lstinline{car} or \lstinline{cdr} of a pair (both of them are intended to be delayed), it can have an extra parameter that accepts either \lstinline{car} or \lstinline{cdr}.
+
 \section*{Complete code of evaluator}
 
 Here I've implemented an evaluator with backward compatible lazy evaluation and with analysis technique introduced in section 4.1.7. Since this is a pretty much complete version, code of subsequent exercises will be based on this version.
