@@ -257,7 +257,7 @@
   (cond [(primitive-procedure? procedure-value)
          (apply-primitive-procedure procedure-value
                                     (map (lambda (exp)
-                                           (actual-value exp env))
+                                           (actual-value (exp env)))
                                          analyzed-argument-exps))]
         [(compound-procedure? procedure-value)
          ((compound-procedure-body procedure-value)
@@ -278,7 +278,7 @@
     (lambda (env)
       (if (true? (actual-value (analyzed-exp env)))
           'undefined
-          (error "Assertion failed" (assert-exp exp))))))
+          (error "Assertion failed")))))
 
 ;; ===========
 ;; DERIVATIVES
