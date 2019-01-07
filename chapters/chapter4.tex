@@ -1073,14 +1073,22 @@ While browsing the discussions about this on the Internet, I found some really i
 
 Personally I prefer a combination of these two ideas. Indeed the evaluator should only force a thunk only if it's needed, as is indicated by the name call-by-need, but we need an expression not only for its value, but also for its side effects. In sequences, we've already chosen to discard values of internal expressions. They're only there because we need their side effects, including the side effects of evaluating the result. Therefore, these side effects shouldn't be left out, and I like Cy's approach more.
 
-% \section*{Complete code of evaluator}
+\section{Exercise 4.31}
 
-% Code:
+See later section.
 
-% \lstinputlisting[language=Lisp]{\codedir/src/chapter4/evaluator.scm}
+\section{Exercise 4.32}
 
-% Tests:
+\section*{Complete code of evaluator}
 
-% \lstinputlisting[language=Lisp]{\codedir/test/chapter4/evaluator.scm}
+Here I've implemented an evaluator with backward compatible lazy evaluation and with analysis technique introduced in section 4.1.7. Since this is a pretty much complete version, code of subsequent exercises will be based on this version.
+
+Code:
+
+\lstinputlisting[language=Lisp]{\codedir/src/chapter4/evaluator.rkt}
+
+Tests:
+
+\lstinputlisting[language=Lisp]{\codedir/test/chapter4/evaluator.scm}
 
 \end{document}
