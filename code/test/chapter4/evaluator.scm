@@ -1,3 +1,12 @@
+;; self-evaluating
+
+(assert (= 233 233))
+(assert (not (= 233 2333)))
+
+;; ===============
+;; list operations
+;; ===============
+
 (define (map op lst)
   (if (null? lst)
       ()
@@ -32,6 +41,25 @@
           (foldr init
                  op
                  (cdr lst)))))
+
+;; =================
+;; stream operations
+;; =================
+
+(define (cons-stream start (lazy-memo rest))
+  (lambda (f) (f start rest)))
+
+(define (stream-car s)
+  (s (lambda (start rest) start)))
+
+(define (stream-cdr s)
+  (s (lambda (start rest) rest)))
+
+(define ones (cons-stream 1 ones))
+
+;; ==========
+;; algorithms
+;; ==========
 
 (define (quicksort lst)
   (if (null? lst)
