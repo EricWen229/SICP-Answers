@@ -1,10 +1,10 @@
 #lang racket
 
-(require rnrs/mutable-pairs-6)
-(require compatibility/mlist)
+(require rnrs/mutable-pairs-6) ; mutable pair
+(require compatibility/mlist) ; mutable list
 
 ;; ============
-;; MAIN METHODS
+;; CORE METHODS
 ;; ============
 
 ;; eval
@@ -53,7 +53,7 @@
 ;; ===========
 
 ;; self-evaluating
-;; format: number, string or ()
+;; numbers, strings and ()s are self-evaluating
 (define (self-evaluating? exp)
   (or (number? exp)
       (string? exp)
@@ -62,14 +62,14 @@
   (lambda (env) exp))
 
 ;; variable
-;; format: symbol
+;; variables are represented with symbols
 (define (variable? exp)
   (symbol? exp))
 (define (analyze-variable exp)
   (lambda (env) (lookup-variable-value exp env)))
 
 ;; quote
-;; format: (quote exp)
+;; format: (quote #content)
 (define (quote? exp)
   (tagged-list? exp 'quote))
 (define (quote-content exp)
@@ -98,7 +98,7 @@
 
 ;; definition
 ;; format: (define #variable #value)
-;; format: (define (#variable #params) #body)
+;; format: (define (#variable #params) #body-exps)
 (define (definition? exp)
   (tagged-list? exp 'define))
 (define (definition-variable exp)
@@ -119,8 +119,8 @@
         env))))
 
 ;; condition
-;; format: (if predicate consequent alternative)
-;; format: (if predicate consequent)
+;; format: (if #predicate #consequent #alternative)
+;; format: (if #predicate #consequent)
 (define (if? exp)
   (tagged-list? exp 'if))
 (define (if-predicate exp)
@@ -183,7 +183,7 @@
                                env))))
 
 ;; sequence
-;; format: (begin exp0 exp1 ... expn)
+;; format: (begin #exp0 #exp1 #exp2 ...)
 (define (begin? exp)
   (tagged-list? exp 'begin))
 (define (begin-actions exp)
