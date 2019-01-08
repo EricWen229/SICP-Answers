@@ -1119,7 +1119,7 @@ If pairs are still implemented as compound procedures, there's no way the evalua
 
 Then the evaluator can just treat lazy pairs as plain ones when printing.
 
-As for lists, I don't feel like handling them:)
+As for lists, I just don't feel like handling them:)
 
 \section*{Complete code of evaluator}
 
@@ -1132,5 +1132,26 @@ Code:
 Tests:
 
 \lstinputlisting[language=Lisp]{\codedir/test/chapter4/evaluator.scm}
+
+\section{Exercise 4.35}
+
+Code:
+
+\begin{lstlisting}
+(define (an-integer-between a b)
+  (cond [(< a b)
+         (amb a (an-integer-between (+ a 1)
+                                    b))]
+        [(= a b) a]
+        [(> a b) (amb)]))
+\end{lstlisting}
+
+
+
+
+
+
+
+
 
 \end{document}
