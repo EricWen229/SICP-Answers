@@ -1146,6 +1146,66 @@ Code:
         [(> a b) (amb)]))
 \end{lstlisting}
 
+\section{Exercise 4.36}
+
+Because DFS will never exhaust all options of the any element of the triple.
+
+Unlike stream where we can interleave two streams, \lstinline{amb} never stops searching one branch until a failure is detected. Thus in order for the program to be able to generate arbitary Pythagorean triples, one need to make sure that the infinite sequence consists of an infinite number of finite branches, so that DFS can stop searching forward at some point and backtrack to other branches.
+
+The essense of this problem is to divide an infinite set into an infinite number of finite sets. One possible way of such division is to do so according to the range where largest element lies:
+
+\begin{lstlisting}
+(define (a-pythagorean-triple-with-largest-between low high)
+  (let* ([i (an-integer-between 1 high)]
+         [j (an-integer-between i high)]
+         [k (an-integer-between j high)])
+    (require (and (>= k low)
+                  (<= k high)
+                  (= (+ (* i i)
+                        (* j j))
+                     (* k k))))
+    (list i j k)))
+(define (a-pythagorean-triple-with-largest-from low)
+  (define step 5)
+  (amb (a-pythagorean-triple-with-largest-from (+ low step))
+       (a-pythagorean-triple-with-largest-between low
+                                                  (- (+ low step)
+                                                     1))))
+\end{lstlisting}
+
+\section{Exercise 4.37}
+
+In the original version, to generate all Pythagorean triples in range from $low$ to $high$, the number of possibilities that need to be explored is (let $t$ be $high-low+1$):
+
+\begin{align*}
+& \sum_{i=low}^{high} \sum_{j=i}^{high} \sum_{k=j}^{high} 1 \\
+&= \sum_{i=low}^{high} \frac{(high-i+2)(high-i+1)}{2} \\
+&= \frac{1}{2} \sum_{i=high-low}^{0} (i+1)(i+2) \\
+&= \frac{1}{2} \sum_{i=high-low+1}^{1} i(i+1) \\
+&= \frac{1}{2} \left( \sum_{i=1}^{high-low+1}i + \sum_{i=1}^{high-low+1}i^2 \right) \\
+&= \frac{1}{2} \left( \frac{t(t+1)}{2} + \frac{t(t+1)(2t+1)}{6}\right) \\
+&= \frac{1}{2} \cdot \frac{t(t+1)(2t+4)}{6} \\
+&= \frac{t(t+1)(t+2)}{6}
+\end{align*}
+
+In Ben's version, to generate all Pythagorean triples in range from $low$ to $high$, the number of possibilities that need to be explored is:
+
+\begin{align*}
+& \sum_{i=low}^{high} \sum_{j=i}^{high} 1 \\
+&= \sum_{i=low}^{high} (high - i + 1) \\
+&= \sum_{i=high-low}^{0} (i + 1) \\
+&= \sum_{i=high-low+1}^{1} i \\
+&= \sum_{i=1}^{high-low+1} i \\
+&= \frac{t(t+1)}{2}
+\end{align*}
+
+Well indeed Ben's version is more efficient. The original version needs to explore $O(N^3)$ possibilities while only $O(N^2)$ possibilities are needed by Ben's version ($N$ is the length of interval).
+
+
+
+
+
+
 
 
 
