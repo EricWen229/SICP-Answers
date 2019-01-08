@@ -1214,7 +1214,7 @@ Simply remove the following \lstinline{require} expression from the body of \lst
 
 The order doesn't affect the answer but absolutely affects the time. Specifically putting more strict restrictions closer to the head of the body makes the procedure faster.
 
-Consider the following fact. In all $5!=120$ possible cases, there are $\frac{1}{2}$ of them in which \lstinline{(> miller cooper)} is true, while there are $\frac{4}{5}$ of them in which \lstinline{(not (= baker 5))} is true. Obviously, \lstinline{(> miller cooper)} is a much rarer situation than \lstinline{(not (= baker 5))}. Thus if we put
+Consider the following fact. In all $5!=120$ possible cases (in which floor assignments are distict), there are $\frac{1}{2}$ of them in which \lstinline{(> miller cooper)} is true, while there are $\frac{4}{5}$ of them in which \lstinline{(not (= baker 5))} is true. Obviously, \lstinline{(> miller cooper)} is a much rarer situation than \lstinline{(not (= baker 5))}. Thus if we put
 
 \begin{lstlisting}
 (require (> miller cooper))
@@ -1230,11 +1230,30 @@ in the body of \lstinline{multiple-dwelling}, more choices can be failed earlier
 
 It's also worthwhile to consider an extreme situation, where there are two \lstinline{require} expressions and one of them applies no actual restrictions (like \lstinline{(require true)}), then there's definitely no benefit putting it before the other.
 
+\section{Exercise 4.40}
 
+Before the distinction restriction there are $5^5=3125$ sets of assignments, and after the restriction there are $5!=120$ sets of assignments.
 
+A more efficient version:
 
-
-
+\begin{lstlisting}
+(define (multiple-dwelling)
+  (let ([baker (amb 1 2 3 4)]
+        [cooper (amb 2 3 4 5)]
+        [fletcher (amb 2 3 4)])
+    (require (not (= (abs (- fletcher cooper)))))
+    (let ([miller (amb 3 4 5)])
+      (require (> miller cooper))
+      (let ([smith (amb 1 2 3 4 5)])
+        (require (not (= (abs (- smitch fletcher)))))
+        (require
+         (distinct? (list baker cooper fletcher miller smitch)))
+        (list (list 'baker baker)
+              (list 'cooper cooper)
+              (list 'fletcher fletcher)
+              (list 'miller miller)
+              (list 'smith smith))))))
+\end{lstlisting}
 
 
 
