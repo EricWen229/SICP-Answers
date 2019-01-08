@@ -1201,6 +1201,37 @@ In Ben's version, to generate all Pythagorean triples in range from $low$ to $hi
 
 Well indeed Ben's version is more efficient. The original version needs to explore $O(N^3)$ possibilities while only $O(N^2)$ possibilities are needed by Ben's version ($N$ is the length of interval).
 
+\section{Exercise 4.38}
+
+Simply remove the following \lstinline{require} expression from the body of \lstinline{multiple-dwelling} will do:
+
+\begin{lstlisting}
+;; expression to remove
+(require (not (= (abs (- smith fletcher)) 1)))
+\end{lstlisting}
+
+\section{Exercise 4.39}
+
+The order doesn't affect the answer but absolutely affects the time. Specifically putting more strict restrictions closer to the head of the body makes the procedure faster.
+
+Consider the following fact. In all $5!=120$ possible cases, there are $\frac{1}{2}$ of them in which \lstinline{(> miller cooper)} is true, while there are $\frac{4}{5}$ of them in which \lstinline{(not (= baker 5))} is true. Obviously, \lstinline{(> miller cooper)} is a much rarer situation than \lstinline{(not (= baker 5))}. Thus if we put
+
+\begin{lstlisting}
+(require (> miller cooper))
+\end{lstlisting}
+
+ahead of
+
+\begin{lstlisting}
+(require (not (= baker 5)))
+\end{lstlisting}
+
+in the body of \lstinline{multiple-dwelling}, more choices can be failed earlier, which would speed up the procedure.
+
+It's also worthwhile to consider an extreme situation, where there are two \lstinline{require} expressions and one of them applies no actual restrictions (like \lstinline{(require true)}), then there's definitely no benefit putting it before the other.
+
+
+
 
 
 
