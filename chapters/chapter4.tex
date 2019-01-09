@@ -1241,11 +1241,11 @@ A more efficient version:
   (let ([baker (amb 1 2 3 4)]
         [cooper (amb 2 3 4 5)]
         [fletcher (amb 2 3 4)])
-    (require (not (= (abs (- fletcher cooper)))))
+    (require (not (= (abs (- fletcher cooper)) 1)))
     (let ([miller (amb 3 4 5)])
       (require (> miller cooper))
       (let ([smith (amb 1 2 3 4 5)])
-        (require (not (= (abs (- smitch fletcher)))))
+        (require (not (= (abs (- smitch fletcher)) 1)))
         (require
          (distinct? (list baker cooper fletcher miller smitch)))
         (list (list 'baker baker)
