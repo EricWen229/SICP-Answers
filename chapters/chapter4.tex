@@ -1167,10 +1167,10 @@ The essense of this problem is to divide an infinite set into an infinite number
     (list i j k)))
 (define (a-pythagorean-triple-with-largest-from low)
   (define step 5)
-  (amb (a-pythagorean-triple-with-largest-from (+ low step))
-       (a-pythagorean-triple-with-largest-between low
+  (amb (a-pythagorean-triple-with-largest-between low
                                                   (- (+ low step)
-                                                     1))))
+                                                     1))
+       (a-pythagorean-triple-with-largest-from (+ low step))))
 \end{lstlisting}
 
 \section{Exercise 4.37}
