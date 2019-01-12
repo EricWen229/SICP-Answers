@@ -1339,8 +1339,55 @@ Code:
                  values))))
 \end{lstlisting}
 
+\section{Exercise 4.42}
 
+Code:
 
+\begin{lstlisting}
+(define (either predicate1 predicate2)
+  (lambda (foo)
+    (let ([result1 (predicate1 foo)]
+          [result2 (predicate2 foo)])
+      (or (and result1
+               (not result2))
+          (and (not result1)
+               result2)))))
+
+(define (real-exam-scores)
+  (define (score-betty scores)
+    (list-ref scores 0))
+  (define (score-ethel scores)
+    (list-ref scores 1))
+  (define (score-joan scores)
+    (list-ref scores 2))
+  (define (score-kitty scores)
+    (list-ref scores 3))
+  (define (score-mary scores)
+    (list-ref scores 4))
+  (define restriction
+    (combine-predicates
+     (list distinct?
+           (either (lambda (scores) (= (score-kitty scores) 2))
+                   (lambda (scores) (= (score-betty scores) 3)))
+           (either (lambda (scores) (= (score-ethel scores) 1))
+                   (lambda (scores) (= (score-joan scores) 2)))
+           (either (lambda (scores) (= (score-joan scores) 3))
+                   (lambda (scores) (= (score-ethel scores) 5)))
+           (either (lambda (scores) (= (score-kitty scores) 2))
+                   (lambda (scores) (= (score-mary scores) 4)))
+           (either (lambda (scores) (= (score-mary scores) 4))
+                   (lambda (scores) (= (score-betty scores) 1))))))
+  (define values '(1 2 3 4 5))
+  (filter restriction
+          (cartesian-product
+           (list values
+                 values
+                 values
+                 values
+                 values))))
+\end{lstlisting}
+
+It turns out that the five kids are respectively the third, fifth, second, first and fourth.
 
 
 
