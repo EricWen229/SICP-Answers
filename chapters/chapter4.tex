@@ -1289,14 +1289,14 @@ Code:
                               rest-product))
                        first-var)))]))
 
-(define (combine-predicates predicates)
+(define (combine-predicates-and predicates)
   (cond [(null? predicates)
          (error "No predicates provided")]
         [(null? (cdr predicates))
          (car predicates)]
         [else (lambda (foo)
                 (if ((car predicates) foo)
-                    ((combine-predicates (cdr predicates)) foo)
+                    ((combine-predicates-and (cdr predicates)) foo)
                     #f))]))
 
 (define (multiple-dwelling)
@@ -1311,7 +1311,7 @@ Code:
   (define (assign-smith assign)
     (list-ref assign 4))
   (define restriction
-    (combine-predicates
+    (combine-predicates-and
      (list distinct?
            (lambda (assign) (not (= (assign-baker assign)
                                     5)))
@@ -1353,7 +1353,7 @@ Code:
           (and (not result1)
                result2)))))
 
-(define (real-exam-scores)
+(define (liars-puzzle)
   (define (score-betty scores)
     (list-ref scores 0))
   (define (score-ethel scores)
@@ -1365,7 +1365,7 @@ Code:
   (define (score-mary scores)
     (list-ref scores 4))
   (define restriction
-    (combine-predicates
+    (combine-predicates-and
      (list distinct?
            (either (lambda (scores) (= (score-kitty scores) 2))
                    (lambda (scores) (= (score-betty scores) 3)))
@@ -1388,6 +1388,174 @@ Code:
 \end{lstlisting}
 
 It turns out that the five kids are respectively the third, fifth, second, first and fourth.
+
+\section{Exercise 4.43}
+
+A Scheme solution:
+
+\begin{lstlisting}
+(define (generate-circular-pairs-from-list items)
+  (define (helper-iter items first-item)
+    (if (null? (cdr items))
+        (list (cons (car items)
+                    first-item))
+        (cons (cons (car items)
+                    (cadr items))
+              (helper-iter (cdr items) first-item))))
+  (helper-iter items (car items)))
+
+(define (create-predicate-with-precondition precondition
+                                            predicate
+                                            default)
+  (lambda (foo)
+    (if (precondition foo)
+        (predicate foo)
+        default)))
+
+(define (combine-predicates-and predicates)
+  (cond [(null? predicates)
+         (error "No predicates provided")]
+        [(null? (cdr predicates))
+         (car predicates)]
+        [else (lambda (foo)
+                (if ((car predicates) foo)
+                    ((combine-predicates-and (cdr predicates)) foo)
+                    #f))]))
+
+(define (apply-predicate-to-all predicate)
+  (define (apply-helper items)
+    (cond [(null? items) #t]
+          [(predicate (car items))
+           (apply-helper (cdr items))]
+          [else #f]))
+  apply-helper)
+
+(define (member-of? equal-op item items)
+  (cond [(null? items) #f]
+        [(equal-op item
+                   (car items)) #t]
+        [else (member-of? equal-op
+                          item
+                          (cdr items))]))
+
+(define (distinct? equal-op items)
+  (cond [(null? items) #t]
+        [(null? (cdr items)) #t]
+        [(member-of? equal-op
+                     (car items)
+                     (cdr items)) #f]
+        [else (distinct? equal-op
+                         (cdr items))]))
+
+(define (cartesian-product variables)
+  (cond [(null? variables)
+         (error "No variables provided")]
+        [(null? (cdr variables))
+         (map (lambda (value)
+                (list value))
+              (car variables))]
+        [else
+         (let* ([first-var (car variables)]
+                [rest-product (cartesian-product (cdr variables))])
+           (foldr append
+                  '()
+                  (map (lambda (value)
+                         (map (lambda (comb)
+                                (cons value comb))
+                              rest-product))
+                       first-var)))]))
+
+(define (list-of-n-items item n)
+  (if (= n 0)
+      '()
+      (cons item (list-of-n-items item
+                                  (- n 1)))))
+
+(define (generate-all-arrangements items)
+  (filter (lambda (sequence)
+            (distinct? equal? sequence))
+          (cartesian-product
+           (list-of-n-items items
+                            (length items)))))
+
+(define (yacht-puzzle)
+  (define father-names
+    (list "moore" "downing" "hall" "barnacle" "parker"))
+  (define daughter-names
+    (list "mary" "gabrielle" "lorna" "rosalind" "melissa"))
+  (define father-name-arrangements
+    (generate-all-arrangements father-names))
+  (define daughter-name-arrangements
+    (generate-all-arrangements daughter-names))
+  (define name-combinations
+    (map (lambda (father-and-daughter-names)
+           (map cons
+                (car father-and-daughter-names)
+                (cadr father-and-daughter-names)))
+         (cartesian-product (list father-name-arrangements
+                                  daughter-name-arrangements))))
+  (define from-father caar)
+  (define from-daughter cdar)
+  (define to-father cadr)
+  (define to-daughter cddr)
+  (define links-restriction
+    (apply-predicate-to-all
+     (combine-predicates-and
+      (list (create-predicate-with-precondition
+             (lambda (link)
+               (equal? (from-father link)
+                       "moore"))
+             (lambda (link)
+               (and (equal? (from-daughter link)
+                            "mary")
+                    (equal? (to-daughter link)
+                            "lorna")))
+             #t)
+            (create-predicate-with-precondition
+             (lambda (link)
+               (equal? (from-father link)
+                       "barnacle"))
+             (lambda (link)
+               (and (equal? (from-daughter link)
+                            "melissa")
+                    (equal? (to-daughter link)
+                            "gabrielle")))
+             #t)
+            (create-predicate-with-precondition
+             (lambda (link)
+               (equal? (from-father link)
+                       "hall"))
+             (lambda (link)
+               (equal? (to-daughter link)
+                       "rosalind"))
+             #t)
+            (create-predicate-with-precondition
+             (lambda (link)
+               (equal? (from-father link)
+                       "downing"))
+             (lambda (link)
+               (equal? (to-father link)
+                       "barnacle"))
+             #t)
+            (create-predicate-with-precondition
+             (lambda (link)
+               (equal? (from-daughter link)
+                       "gabrielle"))
+             (lambda (link)
+               (equal? (to-father link)
+                       "parker"))
+             #t)))))
+                            
+  (filter
+   (lambda (combination)
+     (let ([links (generate-circular-pairs-from-list combination)])
+       (links-restriction links)))
+   name-combinations))
+\end{lstlisting}
+
+
+
+
 
 
 
