@@ -1255,7 +1255,89 @@ A more efficient version:
               (list 'smith smith))))))
 \end{lstlisting}
 
+\section{Exercise 4.41}
 
+Code:
+
+\begin{lstlisting}
+(define (member-of? item items)
+  (cond [(null? items) #f]
+        [(= item (car items)) #t]
+        [else (member-of? item (cdr items))]))
+
+(define (distinct? items)
+  (cond [(null? items) #t]
+        [(null? (cdr items)) #t]
+        [(member-of? (car items) (cdr items)) #f]
+        [else (distinct? (cdr items))]))
+
+(define (cartesian-product variables)
+  (cond [(null? variables)
+         (error "No variables provided")]
+        [(null? (cdr variables))
+         (map (lambda (value)
+                (list value))
+              (car variables))]
+        [else
+         (let* ([first-var (car variables)]
+                [rest-product (cartesian-product (cdr variables))])
+           (foldr append
+                  '()
+                  (map (lambda (value)
+                         (map (lambda (comb)
+                                (cons value comb))
+                              rest-product))
+                       first-var)))]))
+
+(define (combine-predicates predicates)
+  (cond [(null? predicates)
+         (error "No predicates provided")]
+        [(null? (cdr predicates))
+         (car predicates)]
+        [else (lambda (foo)
+                (if ((car predicates) foo)
+                    ((combine-predicates (cdr predicates)) foo)
+                    #f))]))
+
+(define (multiple-dwelling)
+  (define (assign-baker assign)
+    (list-ref assign 0))
+  (define (assign-cooper assign)
+    (list-ref assign 1))
+  (define (assign-fletcher assign)
+    (list-ref assign 2))
+  (define (assign-miller assign)
+    (list-ref assign 3))
+  (define (assign-smith assign)
+    (list-ref assign 4))
+  (define restriction
+    (combine-predicates
+     (list distinct?
+           (lambda (assign) (not (= (assign-baker assign)
+                                    5)))
+           (lambda (assign) (not (= (assign-cooper assign)
+                                    5)))
+           (lambda (assign) (not (= (assign-fletcher assign)
+                                    5)))
+           (lambda (assign) (not (= (assign-fletcher assign)
+                                    1)))
+           (lambda (assign) (> (assign-miller assign)
+                               (assign-cooper assign)))
+           (lambda (assign) (not (= (abs (- (assign-smith assign)
+                                            (assign-fletcher assign)))
+                                    1)))
+           (lambda (assign) (not (= (abs (- (assign-fletcher assign)
+                                            (assign-cooper assign)))
+                                    1))))))
+  (define values '(1 2 3 4 5))
+  (filter restriction
+          (cartesian-product
+           (list values
+                 values
+                 values
+                 values
+                 values))))
+\end{lstlisting}
 
 
 
