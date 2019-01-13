@@ -1119,7 +1119,7 @@ If pairs are still implemented as compound procedures, there's no way the evalua
 
 Then the evaluator can just treat lazy pairs as plain ones when printing.
 
-As for lists, I just don't feel like handling them:)
+As for lists, I just don't feel like handling them :)
 
 \section*{Complete code of evaluator}
 
@@ -1391,7 +1391,7 @@ It turns out that the five kids are respectively the third, fifth, second, first
 
 \section{Exercise 4.43}
 
-A Scheme solution:
+My first Scheme solution:
 
 \begin{lstlisting}
 (define (generate-circular-pairs-from-list items)
@@ -1553,12 +1553,242 @@ A Scheme solution:
    name-combinations))
 \end{lstlisting}
 
+This version is long, inefficient and defective. It assumes that the yachts' names form a single circle, while the names can actually form more than one circles. Also, it considers a lot of redundant cases, where one can be derived from other using cyclic shifts. Such redundancy results in both inefficiency and redundant answers.
 
+Now let's improve the solution. Firstly the representation of relations can be greatly simplified as follows:
 
+\begin{lstlisting}
+(define (barnacle-daughter yachts)
+  (car (list-ref yachts 0)))
+(define (barnacle-yacht yachts)
+  (cdr (list-ref yachts 0)))
+(define (moore-daughter yachts)
+  (car (list-ref yachts 1)))
+(define (moore-yacht yachts)
+  (cdr (list-ref yachts 1)))
+(define (hall-daughter yachts)
+  (car (list-ref yachts 2)))
+(define (hall-yacht yachts)
+  (cdr (list-ref yachts 2)))
+(define (downing-daughter yachts)
+  (car (list-ref yachts 3)))
+(define (downing-yacht yachts)
+  (cdr (list-ref yachts 3)))
+(define (parker-daughter yachts)
+  (car (list-ref yachts 4)))
+(define (parker-yacht yachts)
+  (cdr (list-ref yachts 4)))
+\end{lstlisting}
 
+Also, the algorithm of generating all permutations can also be improved as follows:
 
+\begin{lstlisting}
+(define (permutations lst)
+  (if (null? lst)
+      (list lst)
+      (mapinsert (car lst)
+                 (permutations (cdr lst)))))
+(define (mapinsert elem ps)
+  (if (null? ps)
+      '()
+      (insert elem
+              (car ps)
+              (car ps)
+              (mapinsert elem
+                         (cdr ps)))))
+(define (insert elem p1 p2 ps)
+  (if (null? p2)
+      (cons (put elem
+                 p1
+                 p2)
+            ps)
+      (cons (put elem
+                 p1
+                 p2)
+            (insert elem
+                    p1
+                    (cdr p2)
+                    ps))))
+(define (put elem p1 p2)
+  ; result: [element in p1 not in p2]::[elem]::[p2]
+  (if (eq? p1 p2)
+      (cons elem p2)
+      (cons (car p1)
+            (put elem
+                 (cdr p1)
+                 p2))))
+\end{lstlisting}
 
+Now we can generate all cases:
 
+\begin{lstlisting}
+(define all-cases
+  (let ([names '(gabrielle lorna rosalind melissa mary)])
+    (map (lambda (perm)
+           (map cons
+                perm
+                names))
+         (permutations names))))
+\end{lstlisting}
 
+Then let's take a look at restrictions:
+
+\begin{lstlisting}
+(define restriction
+  (lambda (yachts)
+    (and (eq? (barnacle-daughter yachts)
+              'melissa)
+         (eq? (moore-daughter yachts)
+              'mary)
+         (not (eq? (hall-daughter yachts)
+                   'rosalind))
+         (eq? (daughter-with-yacht-name-as (parker-daughter yachts)
+                                           yachts)
+              'gabrielle))))
+\end{lstlisting}
+
+Altogether:
+
+\begin{lstlisting}
+(define (barnacle-daughter yachts)
+  (car (list-ref yachts 0)))
+(define (barnacle-yacht yachts)
+  (cadr (list-ref yachts 0)))
+(define (moore-daughter yachts)
+  (car (list-ref yachts 1)))
+(define (moore-yacht yachts)
+  (cadr (list-ref yachts 1)))
+(define (hall-daughter yachts)
+  (car (list-ref yachts 2)))
+(define (hall-yacht yachts)
+  (cadr (list-ref yachts 2)))
+(define (downing-daughter yachts)
+  (car (list-ref yachts 3)))
+(define (downing-yacht yachts)
+  (cadr (list-ref yachts 3)))
+(define (parker-daughter yachts)
+  (car (list-ref yachts 4)))
+(define (parker-yacht yachts)
+  (cadr (list-ref yachts 4)))
+(define (daughter-with-yacht-name-as name yachts)
+  (car (assoc name yachts)))
+
+(define (permutations lst)
+  (define (mapinsert elem ps)
+    (if (null? ps)
+        '()
+        (insert elem
+                (car ps)
+                (car ps)
+                (mapinsert elem
+                           (cdr ps)))))
+  (define (insert elem p1 p2 ps)
+    (if (null? p2)
+        (cons (put elem
+                   p1
+                   p2)
+              ps)
+        (cons (put elem
+                   p1
+                   p2)
+              (insert elem
+                      p1
+                      (cdr p2)
+                      ps))))
+  (define (put elem p1 p2)
+    ; result: [element in p1 not in p2]::[elem]::[p2]
+    (if (eq? p1 p2)
+        (cons elem p2)
+        (cons (car p1)
+              (put elem
+                   (cdr p1)
+                   p2))))
+  (if (null? lst)
+      (list lst)
+      (mapinsert (car lst)
+                 (permutations (cdr lst)))))
+
+(define (yachts-puzzle)
+  (define all-cases
+    (let ([names '(gabrielle lorna rosalind melissa mary)])
+      (map (lambda (perm)
+             (map list
+                  perm
+                  names))
+           (permutations names))))
+  (define restriction
+    (lambda (yachts)
+      (and (eq? (barnacle-daughter yachts)
+                'melissa)
+           (eq? (moore-daughter yachts)
+                'mary)
+           (not (eq? (hall-daughter yachts)
+                     'rosalind))
+           (eq? (daughter-with-yacht-name-as (parker-daughter yachts)
+                                             yachts)
+                'gabrielle))))
+  (filter restriction
+          all-cases))
+\end{lstlisting}
+
+Much better :)
+
+Here's an solution using \lstinline{amb} from \url{http://community.schemewiki.org/?sicp-ex-4.43}:
+
+\begin{lstlisting}
+(define (yacht) 
+  (define gab 'gabrielle) 
+  (define lor 'lorna) 
+  (define ros 'rosalind) 
+  (define mel 'melissa) 
+  (define mar 'mary-ann) 
+  (let ((barnacle (amb gab lor ros mel mar))) 
+    (require (eq? barnacle mel)) 
+    (let ((moore (amb gab lor ros mel mar))) 
+      (require (eq? moore mar))     
+      (let ((hall (amb gab lor ros mel mar))) 
+        (require (not (memq hall (list barnacle moore ros))))  
+        (let ((downing (amb gab lor ros mel mar))) 
+          (require (not (memq downing (list barnacle moore hall mel)))) 
+          (let ((parker (amb gab lor ros mel mar))) 
+            (require (not (memq parker 
+                                (list barnacle moore hall downing mar)))) 
+            (let ((yacht-names 
+                   (list (list barnacle gab) 
+                         (list moore lor) 
+                         (list hall ros) 
+                         (list downing mel) 
+                         (list parker mar)))) 
+              (require (eq? parker (cadr (assq gab yacht-names)))) 
+              (list (list 'barnacle barnacle) 
+                    (list 'moore moore) 
+                    (list 'hall hall) 
+                    (list 'downing downing) 
+                    (list 'parker parker)))))))))
+\end{lstlisting}
+
+If not given the restriction that Mary's last name is Moore, the restrictions would be like:
+
+\begin{lstlisting}
+(define restriction
+  (lambda (yachts)
+    (and (eq? (barnacle-daughter yachts)
+              'melissa)
+         (not (eq? (moore-daughter yachts)
+                   'lorna))
+         (not (eq? (hall-daughter yachts)
+                   'rosalind))
+         (eq? (daughter-with-yacht-name-as (parker-daughter yachts)
+                                           yachts)
+              'gabrielle))))
+\end{lstlisting}
+
+Result:
+
+\begin{lstlisting}
+(((melissa gabrielle) (rosalind lorna) (lorna rosalind) (mary melissa) (gabrielle mary))
+ ((melissa gabrielle) (rosalind lorna) (mary rosalind) (lorna melissa) (gabrielle mary))
+ ((melissa gabrielle) (mary lorna) (lorna rosalind) (rosalind melissa) (gabrielle mary)))
+\end{lstlisting}
 
 \end{document}
