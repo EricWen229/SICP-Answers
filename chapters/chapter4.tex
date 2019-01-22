@@ -1803,4 +1803,105 @@ Result:
   (gabrielle mary)))
 \end{lstlisting}
 
+\section{Exercise 4.44}
+
+A Racket solution:
+
+\begin{lstlisting}
+#lang racket
+
+(require racket/set)
+
+(define (permutations lst)
+  (define (mapinsert elem ps)
+    (if (null? ps)
+        '()
+        (insert elem
+                (car ps)
+                (car ps)
+                (mapinsert elem
+                           (cdr ps)))))
+  (define (insert elem p1 p2 ps)
+    (if (null? p2)
+        (cons (put elem
+                   p1
+                   p2)
+              ps)
+        (cons (put elem
+                   p1
+                   p2)
+              (insert elem
+                      p1
+                      (cdr p2)
+                      ps))))
+  (define (put elem p1 p2)
+    ; result: [element in p1 not in p2]::[elem]::[p2]
+    (if (eq? p1 p2)
+        (cons elem p2)
+        (cons (car p1)
+              (put elem
+                   (cdr p1)
+                   p2))))
+  (if (null? lst)
+      (list lst)
+      (mapinsert (car lst)
+                 (permutations (cdr lst)))))
+
+(define (range low high)
+  (if (> low high)
+      '()
+      (cons low
+            (range (+ low 1)
+                   high))))
+
+(define (distinct? elems)
+  (= (length elems)
+     (set-count (list->set elems))))
+
+(define (enumerate elems)
+  (define (helper elems i)
+    (if (null? elems)
+        '()
+        (cons (cons i
+                    (car elems))
+              (helper (cdr elems)
+                      (+ i 1)))))
+  (helper elems 0))
+
+(define (queens n)
+  (define (row-plus-col cols)
+    (map (lambda (row-and-col)
+           (+ (car row-and-col)
+              (cdr row-and-col)))
+         (enumerate cols)))
+  (define (row-minus-col cols)
+    (map (lambda (row-and-col)
+           (- (car row-and-col)
+              (cdr row-and-col)))
+         (enumerate cols)))
+  (define candidates
+    (permutations (range 0
+                         (- n 1))))
+  (filter (lambda (candidate)
+            (and (distinct? (row-plus-col candidate))
+                 (distinct? (row-minus-col candidate))))
+          candidates))
+\end{lstlisting}
+
+A nondeterministic solution:
+
+\begin{lstlisting}
+(define (queens)
+  (define (make-queens n)
+    (if (= n 0)
+        '()
+        (cons (amb 0 1 2 3 4 5 6 7)
+              (make-queens (- n 1)))))
+  (let ((queens (make-queens 8)))
+    (require (distinct? queens))
+    (require (distinct? (row-plus-col queens)))
+    (require (distinct? (row-minus-col queens)))
+    queens))
+\end{lstlisting}
+
 \end{document}
