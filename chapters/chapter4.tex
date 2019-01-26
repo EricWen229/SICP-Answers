@@ -1904,4 +1904,76 @@ A nondeterministic solution:
     queens))
 \end{lstlisting}
 
+\section{Exercise 4.45}
+
+\subsection{a.}
+
+The professor lectures to the student.
+The professor lectures in the class.
+The professor lectures with the cat.
+
+\begin{lstlisting}
+- professor
+  - lectures
+    - to student
+    - in class
+    - with cat
+\end{lstlisting}
+
+\subsection{b.}
+
+The professor lectures to the student.
+The professor lectures in the class.
+The cat's in the class.
+
+\begin{lstlisting}
+- professor
+  - lectures
+    - to student
+    - in class
+         - with cat
+\end{lstlisting}
+
+\subsection{c.}
+
+The professor lectures to the student.
+The student's in the class.
+The professor lectures with the cat.
+
+\begin{lstlisting}
+- professor
+  - lectures
+    - to student
+         - in class
+    - with cat
+\end{lstlisting}
+
+\subsection{d.}
+
+The professor lectures to the student.
+The student's in the class.
+The student's with the cat.
+
+\begin{lstlisting}
+- professor
+  - lectures
+    - to student
+         - in class
+         - with cat
+\end{lstlisting}
+
+\subsection{e.}
+
+The professor lectures to the student.
+The student's in the class.
+The cat's in the class.
+
+\begin{lstlisting}
+- professor
+  - lectures
+    - to student
+         - in class
+              - with cat
+\end{lstlisting}
+
 \end{document}
