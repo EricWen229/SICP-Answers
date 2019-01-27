@@ -2016,4 +2016,29 @@ Which happens to be exactly what the original version is doing:
 
 If we interchange the order of expressions in the \lstinline{amb}, infinite recursive calls of \lstinline{parse-verb-phrase} occur immediately.
 
+\section{Exercise 4.48}
+
+The grammar with adjectives:
+
+\begin{lstlisting}
+NounPhrase :=
+  SimpleNounPhrase OptPreps
+SimpleNounPhrase :=
+  Article Adjective Noun
+| Article Noun
+\end{lstlisting}
+
+The parsing procedure:
+
+\begin{lstlisting}
+(define (parse-simple-noun-phrase)
+  (amb (list 'simple-noun-phrase-with-adj
+             (parse-word articles)
+             (parse-word adjectives)
+             (parse-word nouns))
+       (list 'simple-noun-phrase
+             (parse-word articles)
+             (parse-word nouns))))
+\end{lstlisting}
+
 \end{document}
