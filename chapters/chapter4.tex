@@ -1978,6 +1978,42 @@ The cat's in the class.
 
 \section{Exercise 4.46}
 
-Operands being evaluated in other order will make \lstinline{maybe-extend} recursively call itself infinitely.
+Because \lstinline{parse*} procedures have side effects. In \lstinline{parse-sentence} we rely on the left-to-right evaluation order so that a noun phrase get parsed (as the input get consumed) before a verb phrase does. And of course, we can use nested \lstinline{let}s to explicitly specify such order.
+
+\section{Exercise 4.47}
+
+It won't work, because the corresponding grammar is left recursive:
+
+\begin{lstlisting}
+VerbPhrase :=
+  VerbPhrase PrepPhrase
+| Verb
+\end{lstlisting}
+
+The result of this is that the recursive calls can go infinitely deep by always expanding a term to itself and never proceeding a bit on input.
+
+To eliminate left recursion, we can modify the grammar as follows:
+
+\begin{lstlisting}
+VerbPhrase :=
+  Verb OptPreps
+OptPreps :=
+  PrepPhrase OptPreps
+| Empty
+\end{lstlisting}
+
+Which happens to be exactly what the original version is doing:
+
+\begin{lstlisting}
+(define (parse-verb-phrase)
+  (define (maybe-extend verb-phrase)
+    (amb verb-phrase
+         (maybe-extend (list ’verb-phrase
+                             verb-phrase
+                             (parse-prepositional-phrase)))))
+  (maybe-extend (parse-word verbs)))
+\end{lstlisting}
+
+If we interchange the order of expressions in the \lstinline{amb}, infinite recursive calls of \lstinline{parse-verb-phrase} occur immediately.
 
 \end{document}
