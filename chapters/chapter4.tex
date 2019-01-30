@@ -2043,4 +2043,21 @@ The parsing procedure:
 
 It's quite amazing that the structure of the grammar and that of the parsing procedure are very much alike. A slight modification to the grammar corresponds intuitively to a slight modification to the parsing procedure. It's reminiscent of the idea in the book \textit{Hackers and Painters} that the program itself should reflect only the problem it aims to solve, and that any additional form where the programmer acts as an compiler is a signal of inadequency of abstraction.
 
+\section{Exercise 4.49}
+
+Code:
+
+\begin{lstlisting}
+(define (an-element-of elements)
+  (if (null? elements)
+      (amb)
+      (amb (car elements)
+           (an-element-of (cdr elements)))))
+(define (parse-word vocabulary)
+  (require (not (null? *unparsed*)))
+  (let ((found-word (an-element-of vocabulary)))
+    (set! *unparsed* (cdr *unparsed*))
+    (list (car word-list) found-word)))
+\end{lstlisting}
+
 \end{document}
