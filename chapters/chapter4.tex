@@ -2060,4 +2060,36 @@ Code:
     (list (car word-list) found-word)))
 \end{lstlisting}
 
+\section{Exercise 4.50}
+
+One approach is to shuffle choices when analyzing:
+
+\begin{lstlisting}
+...
+(let ((cprocs (map analyze (shuffle (amb-choices exp)))))
+...
+\end{lstlisting}
+
+So that alternatives are randomized at compile time and rest of the analyzing procedure remains the same.
+
+\section{Exercise 4.51}
+
+Code:
+
+\begin{lstlisting}
+(define (analyze-permanent-assignment exp)
+  (let ((var (assignment-variable exp))
+        (analyzed-value-exp (analyze (assignment-value exp))))
+    (lambda (env succeed fail)
+      (analyzed-value-exp env
+                          (lambda (val fail2)
+                            (succeed (set-variable-value! var
+                                                          val
+                                                          env)
+                                     fail2))
+                          fail))))
+\end{lstlisting}
+
+If we had used \lstinline{set!} instead of \lstinline{permanent-set!}, every number followed by combinations of \lstinline{x} and \lstinline{y} would be 1.
+
 \end{document}
