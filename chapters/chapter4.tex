@@ -2111,6 +2111,26 @@ Code:
                         fail))))))
 \end{lstlisting}
 
+\section{Exercise 4.53}
+
+The result would be a list of all pairs whose sum is prime number.
+
+\section{Exercise 4.54}
+
+Code:
+
+\begin{lstlisting}
+(define (analyze-require exp)
+  (let ((pproc (analyze (require-predicate exp))))
+    (lambda (env succeed fail)
+      (pproc env
+             (lambda (pred-value fail2)
+               (if pred-value
+                   (fail2)
+                   (succeed 'ok fail2)))
+             fail))))
+\end{lstlisting}
+
 
 
 
