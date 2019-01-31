@@ -2197,6 +2197,18 @@ Code:
      (list-value > ?replaced-salary ?replacer-salary))
 \end{lstlisting}
 
+\section{Exercise 4.58}
+
+Code:
+
+\begin{lstlisting}
+(rule (big-shot ?person)
+      (and (job ?person (?division . ?job))
+           (not (and (job ?supervisor
+                          (?division . ?supervisor-job))
+                     (supervisor ?person ?supervisor)))))
+\end{lstlisting}
+
 
 
 
