@@ -2092,4 +2092,35 @@ Code:
 
 If we had used \lstinline{set!} instead of \lstinline{permanent-set!}, every number followed by combinations of \lstinline{x} and \lstinline{y} would be 1.
 
+\section{Exercise 4.52}
+
+Code:
+
+\begin{lstlisting}
+(define (analyze-if-fail exp)
+  (let ((default (analyze (if-fail-default exp)))
+        (alter (analyze (if-fail-alter exp))))
+    (lambda (env succeed fail)
+      (default env
+               (lambda (default-value fail2)
+                 (succeed default-value fail2))
+               (lambda ()
+                 (alter env
+                        (lambda (alter-value fail3)
+                          (succeed alter-value fail3))
+                        fail))))))
+\end{lstlisting}
+
+
+
+
+
+
+
+
+
+
+
+
+
 \end{document}
