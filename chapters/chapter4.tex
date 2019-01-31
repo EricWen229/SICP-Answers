@@ -2145,7 +2145,6 @@ Code:
 
 \lstinline{(address ?name (Slumerville . ?address))}
 
-
 \section{Exercise 4.56}
 
 \subsection{a.}
@@ -2169,6 +2168,36 @@ Code:
 (and (supervisor ?name ?supervisor-name)
      (not (job ?supervisor-name (computer . ?supervisor-job))))
 \end{lstlisting}
+
+\section{Exercise 4.57}
+
+Code:
+
+\begin{lstlisting}
+(rule (can-replace ?replacer ?replaced)
+      (and (not (same ?replacer ?replaced))
+           (job ?replacer ?replacer-job)
+           (job ?replaced ?replaced-job)
+           (or (same ?replacer-job ?replaced-job)
+               (can-do-job ?replacer-job ?replaced-job))))
+\end{lstlisting}
+
+\subsection{a.}
+
+\begin{lstlisting}
+(can-replace ?replacer (Fect Cy D))
+\end{lstlisting}
+
+\subsection{b.}
+
+\begin{lstlisting}
+(and (can-replace ?replacer ?replaced)
+     (salary ?replacer ?replacer-salary)
+     (salary ?replaced ?replaced-salary)
+     (list-value > ?replaced-salary ?replacer-salary))
+\end{lstlisting}
+
+
 
 
 
