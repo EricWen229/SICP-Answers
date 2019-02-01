@@ -2209,6 +2209,30 @@ Code:
                      (supervisor ?person ?supervisor)))))
 \end{lstlisting}
 
+\section{Exercise 4.59}
+
+\subsection{a.}
+
+\begin{lstlisting}
+(meeting ?division (Friday ?time))
+\end{lstlisting}
+
+\subsection{b.}
+
+\begin{lstlisting}
+(rule (meeting-time ?person ?day-and-time)
+      (or (and (job ?person (?department . ?job))
+               (meeting ?department ?day-and-time))
+          (meeting whole-company ?day-and-time)))
+\end{lstlisting}
+
+\subsection{c.}
+
+\begin{lstlisting}
+(meeting-time (Hacker Alyssa P) (Wednesday ?time))
+\end{lstlisting}
+
+
 
 
 
