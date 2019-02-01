@@ -2280,8 +2280,43 @@ Response to \lstinline{(?x next-to 1 in (2 1 3 1))}:
 (3 next-to 1 in (2 1 3 1))
 \end{lstlisting}
 
+\section{Exercise 4.62}
 
+Code:
 
+\begin{lstlisting}
+(rule (last-pair (?last . ()) (?last)))
+(rule (last-pair (?first . ?rest) ?last)
+      (last-pair ?rest ?last))
+\end{lstlisting}
+
+Tests:
+\begin{lstlisting}
+;;; Query input:
+(last-pair (3) ?x)
+
+;;; Query results:
+(last-pair (3) (3))
+
+;;; Query input:
+(last-pair (1 2 3) ?x)
+
+;;; Query results:
+(last-pair (1 2 3) (3))
+
+;;; Query input:
+(last-pair (2 ?x) (3))
+
+;;; Query results:
+(last-pair (2 3) (3))
+
+;;; Query input:
+(last-pair ?x (3))
+
+;;; Query results:
+\end{lstlisting}
+
+The last query doesn't terminate until program reaches maximum recursion depth (out of stack space).
 
 
 
