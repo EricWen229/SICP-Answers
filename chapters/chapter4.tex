@@ -2318,6 +2318,22 @@ Tests:
 
 The last query doesn't terminate until program reaches maximum recursion depth (out of stack space).
 
+\section{Exercise 4.63}
+
+Code:
+
+\begin{lstlisting}
+(rule (grandson ?old ?kid)
+      (has-son ?old ?young)
+      (has-son ?young ?kid))
+(rule (has-son ?old ?young)
+      (or (son ?old ?young)
+          (and (wife ?old ?old-wife)
+               (son ?old-wife ?young))))
+\end{lstlisting}
+
+
+
 
 
 
