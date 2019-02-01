@@ -2232,6 +2232,37 @@ Code:
 (meeting-time (Hacker Alyssa P) (Wednesday ?time))
 \end{lstlisting}
 
+\section{Exercise 4.60}
+
+The reason is that both sets of assignment
+
+\begin{lstlisting}
+?person-1: (Hacker Alyssa P),
+?person-2: (Fect Cy D)
+
+?person-1: (Fect Cy D),
+?person-2: (Hacker Alyssa P)
+\end{lstlisting}
+
+satisfy the assertion specified by the rule \lstinline{lives-near}. According to the semantics of queries defined eariler, the system lists both instantiations of the query pattern.
+
+To prevent this, one can specify an strict partial order on names, so that value assigned to \lstinline{?person-1} has to be "greater" (or "smaller") than that assigned to \lstinline{?person-2}. Alphabetic order would be a choice, which would prevent \lstinline{(lives-near (Hacker Alyssa P) (Fect Cy D))} by modifying the rule \lstinline{lives-near} as follows:
+
+\begin{lstlisting}
+(define (alphabetic-less name1 name2)
+  (if (null? name1)
+      (not (null? name2))
+      (let ((head1 (car name1))
+            (head2 (car name2)))
+        (cond ((symbol<? head1 head2) #t)
+              ((symbol>? head1 head2) #f)
+              (else (alphabetic-less (cdr name1)
+                                     (cdr name2)))))))
+(rule (lives-near ?person-1 ?person-2)
+      (and (address ?person-1 (?town . ?rest-1))
+           (address ?person-2 (?town . ?rest-2))
+           (lisp-value alphabetic-less ?person-1 ?person-2)))
+\end{lstlisting}
 
 
 
