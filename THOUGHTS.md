@@ -100,3 +100,12 @@ Back to lazy evaluation. Thunk is a kind of value, which means it will never be 
 Speaking of how thunk can be used, it's noteworthy that thunks are only forced either when used by primitives or printed out. At first I was wondering whether I should force thunks in some other situations, but at last this proved to be totally unnecessary. Only when calling primitive procedures or using primitive constructs such as `if` do we CARE about the actual value of a value.
 
 This applies to not only thunks but also other types of values. Take integers for example. When not using them for basic operations like calculations and comparisons, all we use them for is just passing them around as arguments, results or assigning them to variables. And when we do so, all the program does is simply copying them from memory to registers, from registers to registers or from registers to memory. The actual values don't matter at all. Only when we, for example, add two integers, does the program actually use their value, where the adder in the CPU analyzes them bit by bit and computes theirs sum.
+
+## Update: 2019-2-1
+
+After implementing an extremely simple version of `amb` evaluator from scratch, the intuition behind the continuation procedures becomes clearer.
+
+When an analyzed expression is being evaluated, i.e. the procedure produced by `analyze` is being invoked, it receives a success continuation and a failure continuation. The failure continuation is kind of like the expression's "daddy" who goes like "leave it to me if there's anything you cannot handle".
+When evaluation of the current expression fails, the expression turns to its "daddy" by invoking the failure continuation.
+
+One thing noteworthy is the subtle relation between the failure continuation received by an expression and the failure continuation an expression passes to subexpressions. They are not necessarily the same. The `amb` expression is able to handle failures on its own by trying other branches, thus it'll first try other branches before turning to "daddy" for help. The assignment expression wraps the failure continuation with its own logic so that it can undo assignment before asking "daddy" for help.
