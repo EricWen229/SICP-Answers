@@ -105,7 +105,4 @@ This applies to not only thunks but also other types of values. Take integers fo
 
 After implementing an extremely simple version of `amb` evaluator from scratch, the intuition behind the continuation procedures becomes clearer.
 
-When an analyzed expression is being evaluated, i.e. the procedure produced by `analyze` is being invoked, it receives a success continuation and a failure continuation. The failure continuation is kind of like the expression's "daddy" who goes like "leave it to me if there's anything you cannot handle".
-When evaluation of the current expression fails, the expression turns to its "daddy" by invoking the failure continuation.
-
-One thing noteworthy is the subtle relation between the failure continuation received by an expression and the failure continuation an expression passes to subexpressions. They are not necessarily the same. The `amb` expression is able to handle failures on its own by trying other branches, thus it'll first try other branches before turning to "daddy" for help. The assignment expression wraps the failure continuation with its own logic so that it can undo assignment before asking "daddy" for help.
+When an analyzed expression is being evaluated, i.e. the procedure produced by `analyze` is being invoked, it receives a success continuation and a failure continuation. The failure continuation is kind of like the expression's "daddy" who goes like "leave it to me if there's anything you cannot handle". When evaluation of the current expression fails, the expression turns to its "daddy" by invoking the failure continuation.
