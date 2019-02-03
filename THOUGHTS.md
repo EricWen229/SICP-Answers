@@ -103,6 +103,10 @@ This applies to not only thunks but also other types of values. Take integers fo
 
 ## Update: 2019-2-1
 
-After implementing an extremely simple version of `amb` evaluator from scratch, the intuition behind the continuation procedures becomes clearer.
+After implementing an extremely simple version of `amb` evaluator from scratch, the intuition behind becomes clearer.
 
-When an analyzed expression is being evaluated, i.e. the procedure produced by `analyze` is being invoked, it receives a success continuation and a failure continuation. The failure continuation is kind of like the expression's "daddy" who goes like "leave it to me if there's anything you cannot handle". When evaluation of the current expression fails, the expression turns to its "daddy" by invoking the failure continuation.
+An expression can be seen as a tree, where the root represents the expression itself, and the subtrees represents its subexpressions. When evaluating a expression, we are actually traversing the corresponding tree (not every node in tree is necessarily visited in that process though due to special semantics such as conditions), The stack maintains a path from current node being visited to the root, along with all state variables required.
+
+Things become problematic when we try to adapt this model to nondeterministic computing. In nondeterministic computing, evaluation of the expression (traversal of the tree) might fail at any point and need to trace back to a random stage of traversal, which requires us to keep track of the complete traversal history.
+
+That's basically what the `amb` evaluator does, actually. Every procedure invoked during evaluation has a tail call, and the stack keeps track of the entire history. The whole process never use return values of procedures at all, and what's even more curious is that not a single procedure ever returns actually!
