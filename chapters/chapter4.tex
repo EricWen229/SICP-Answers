@@ -2366,11 +2366,79 @@ Processing the query requires processing itself, where \lstinline{?middle-manage
 
 This is kind of reminiscent of left recursion in theory compilers, where the first recursive call makes no substantial progress and causes infinite recursion.
 
+\section{Exercise 4.65}
 
+Definition of rule \lstinline{wheel}:
 
+\begin{lstlisting}
+(rule (wheel ?person)
+      (and (supervisor ?middle-manager ?person)
+           (supervisor ?x ?middle-manager)))
+\end{lstlisting}
 
+Consider the following database:
 
+\begin{lstlisting}
+(supervisor Foo Bar)
+(supervisor FFoo BBar)
+(supervisor Bar Boss)
+(supervisor BBar Boss)
+\end{lstlisting}
 
+The first \lstinline{supervisor} query yields the following frames:
+
+\begin{lstlisting}
+[
+	{
+		?middle-manager: Foo,
+		?person: Bar
+	},
+	{
+		?middle-manager: FFoo,
+		?person: BBar
+	},
+	{
+		?middle-manager: Bar,
+		?person: Boss
+	},
+	{
+		?middle-manager: BBar,
+		?person: Boss
+	}
+]
+\end{lstlisting}
+
+The second \lstinline{supervisor} query yields the following frames:
+
+\begin{lstlisting}
+[
+	{
+		?middle-manager: Bar,
+		?person: Boss,
+		?x: Foo
+	},
+	{
+		?middle-manager: BBar,
+		?person: Boss,
+		?x: FFoo
+	}
+]
+\end{lstlisting}
+
+These two frames are consequently used to instantiate the initial pattern which yields:
+
+\begin{lstlisting}
+(wheel Boss)
+(wheel Boss)
+\end{lstlisting}
+
+Though two of the results are the same, the frames behind these two results are different.
+
+Is it possible that both duplication occurs in both results and frames? Sure, as long as the merge operation doesn't  remove duplicates.
+
+As instantiations with different frames can possibly produce the same results, it's necessary to remove duplicates after the final instantiation step in order to get rid of duplications. Whether or not duplicate frames are removed during evaluation doesn't affect the correctness of the process, but may affect the effectiveness, since duplications of frames can spread and cause serious redundancy issue.
+
+In some cases, however, such redundancy can be useful. One can use such redundancy as a means of counting, for example.
 
 
 
