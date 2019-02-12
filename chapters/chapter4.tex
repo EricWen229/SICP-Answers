@@ -2330,7 +2330,41 @@ Code:
                (son ?old-wife ?young))))
 \end{lstlisting}
 
+\section{Exercise 4.64}
 
+Original version of \lstinline{outranked-by}:
+
+\begin{lstlisting}
+(rule (outranked-by ?staff-person ?boss)
+      (or (supervisor ?staff-person ?boss)
+          (and (supervisor ?staff-person
+                           ?middle-manager)
+               (outranked-by ?middle-manager
+                             ?boss))))
+\end{lstlisting}
+
+Problematic version of \lstinline{outranked-by}:
+
+\begin{lstlisting}
+(rule (outranked-by ?staff-person ?boss)
+      (or (supervisor ?staff-person ?boss)
+          (and (outranked-by ?middle-manager
+                             ?boss)
+               (supervisor ?staff-person
+                           ?middle-manager))))
+\end{lstlisting}
+
+The order of the clauses of the \lstinline{and} differs in two versions, and that's where the problem is. In the problematic version, when clause \lstinline{(outranked-by ?middle-manager ?boss)} is being processed, both \lstinline{?middle-manager} and \lstinline{?boss} are unbound. In fact, these two variables remain unbound in every further "recursive call" to \lstinline{outranked-by}, which produces infinite recursion.
+
+In fact, infinite recursion still occurs even if \lstinline{?boss} is bound. Consider the following query:
+
+\begin{lstlisting}
+(outranked-by ?staff (Bitdiddle Ben))
+\end{lstlisting}
+
+Processing the query requires processing itself, where \lstinline{?middle-manager} is unbound and \lstinline{?boss} is bound to \lstinline{(Bitdiddle Ben)}.
+
+This is kind of reminiscent of left recursion in theory compilers, where the first recursive call makes no substantial progress and causes infinite recursion.
 
 
 
