@@ -2364,7 +2364,7 @@ In fact, infinite recursion still occurs even if \lstinline{?boss} is bound. Con
 
 Processing the query requires processing itself, where \lstinline{?middle-manager} is unbound and \lstinline{?boss} is bound to \lstinline{(Bitdiddle Ben)}.
 
-This is kind of reminiscent of left recursion in theory compilers, where the first recursive call makes no substantial progress and causes infinite recursion.
+This is kind of reminiscent of left recursion in the compilers theory, where the first recursive call makes no substantial progress and causes infinite recursion.
 
 \section{Exercise 4.65}
 
@@ -2477,8 +2477,12 @@ The result would be:
 (voted C)
 \end{lstlisting}
 
-By counting the number of times for which each candidate appears in the result, we can obtain knowledge about the popularities of the candidates. Notice that here we \textbf{utilizes} the redundancy. The effectiveness of the counting functionality \textbf{depends on} the redundancy.
+By counting the number of times for which each candidate appears in the result, we can obtain knowledge about the popularities of the candidates. Notice that here we \textbf{utilizes the redundancy}. The effectiveness of the counting functionality \textbf{depends on the redundancy}.
 
-Sometimes, however, the functionalities we desire \text{depends on} uniqueness of every entry in the result, and redundancy would \text{break} their effectiveness. Consider the case where we're computing the average salary of all employees. If someone whose salary is higher than the actual average salary appears for multiple times in the result, the result would be higher than the actual average salary. In such circumstances, duplicate removal becomes necessary.
+Sometimes, however, the functionalities we desire \textbf{depends on the uniqueness} of every entry in the result, and redundancy would \textbf{break their effectiveness}. Consider the case where we're computing the average salary of all employees. If someone whose salary is higher than the actual average salary appears for multiple times in the result, the result would be higher than the actual average salary. In such circumstances, duplicate removal becomes necessary.
+
+\section{Exercise 4.67}
+
+One feasible way is to maintain a stack. When the query system is about to evaluate a query relative to a frame, instantiate that query pattern with that frame, and check if that instantiated pattern is already in the stack. If so, a loop is detected. Otherwise, push that instantiated pattern onto the stack, evaluate that query, then pop the pattern from the stack.
 
 \end{document}
