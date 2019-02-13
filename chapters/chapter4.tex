@@ -2438,8 +2438,47 @@ Is it possible that both duplication occurs in both results and frames? Sure, as
 
 As instantiations with different frames can possibly produce the same results, it's necessary to remove duplicates after the final instantiation step in order to get rid of duplications. Whether or not duplicate frames are removed during evaluation doesn't affect the correctness of the process, but may affect the effectiveness, since duplications of frames can spread and cause serious redundancy issue.
 
-In some cases, however, such redundancy can be useful. One can use such redundancy as a means of counting, for example.
+In some cases, however, such redundancy can be useful. One can utilize it as a means of counting, for example.
 
+\section{Exercise 4.66}
 
+In the last section we mentioned that such redundancy can be useful as a means of counting for example. Consider a database where voting result is stored:
+
+\begin{lstlisting}
+(vote a A)
+(vote b A)
+(vote c A)
+(vote d B)
+(vote e B)
+(vote f C)
+\end{lstlisting}
+
+And let's define a rule to check if someone is voted by another:
+
+\begin{lstlisting}
+(rule (voted ?person)
+      (vote ?another ?person))
+\end{lstlisting}
+
+Now, when we submit the query:
+
+\begin{lstlisting}
+(voted ?who)
+\end{lstlisting}
+
+The result would be:
+
+\begin{lstlisting}
+(voted A)
+(voted A)
+(voted A)
+(voted B)
+(voted B)
+(voted C)
+\end{lstlisting}
+
+By counting the number of times for which each candidate appears in the result, we can obtain knowledge about the popularities of the candidates. Notice that here we \textbf{utilizes} the redundancy. The effectiveness of the counting functionality \textbf{depends on} the redundancy.
+
+Sometimes, however, the functionalities we desire \text{depends on} uniqueness of every entry in the result, and redundancy would \text{break} their effectiveness. Consider the case where we're computing the average salary of all employees. If someone whose salary is higher than the actual average salary appears for multiple times in the result, the result would be higher than the actual average salary. In such circumstances, duplicate removal becomes necessary.
 
 \end{document}
