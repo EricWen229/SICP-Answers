@@ -2610,4 +2610,53 @@ never terminates due to the infinite recursion:
 -> ...
 \end{lstlisting}
 
+\section{Exercise 4.71}
+
+When using \lstinline{not} filter, we don't actually use the actual result of a query, since we only care about whether the result's empty or not. By evaluating the result in a lazy manner, we may avoid unnecessary computations and even infinite loops.
+
+Consider the following example:
+
+\begin{lstlisting}
+(rule (son ?x ?y)
+      (son ?x ?y))
+\end{lstlisting}
+
+We accidentally define a rule \lstinline{son} that shares the same name with the assertions. The query \lstinline{(son ?x ?y)} is supposed to find all the assertions before get stuck in an infinite loop. But the query \lstinline{(not (son ?x ?y))} stands a chance of avoiding the infinite loop.
+
+In a query system without lazy evaluation in \lstinline{simple-query}:
+
+\begin{lstlisting}
+;;; Query input:
+(not (son ?x ?y))
+
+;;; Query results:
+\end{lstlisting}
+
+The query system get stuck in an infinite loop.
+
+In a query system with lazy evaluation in \lstinline{simple-query}:
+
+\begin{lstlisting}
+;;; Query input:
+(not (son ?x ?y))
+
+;;; Query results:
+
+;;; Query input:
+\end{lstlisting}
+
+Infinite loop is avoided thanks to it.
+
+The example above illustrates a very extreme situation, where a query takes an infinite amount of time. Even if queries do terminate, lazy evaluation can still save a lot of computation. Consider the following example:
+
+\begin{lstlisting}
+(not (or <subquery#0>
+         <subquery#1>
+         <subquery#2>
+         ...
+         <subquery#n>))
+\end{lstlisting}
+
+Any subquery with non-empty result can save the effort of processing rest of the subqueries.
+
 \end{document}
