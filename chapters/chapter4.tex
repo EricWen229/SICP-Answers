@@ -2536,4 +2536,78 @@ The rules work for \lstinline{(reverse (1 2 3) ?x)}, but not \lstinline{(reverse
 
 which is not easy to implement with existing list operations.
 
+\section{Exercise 4.69}
+
+Code:
+
+\begin{lstlisting}
+(rule (grandson ?old ?kid)
+      (and (has-son ?old ?young)
+           (has-son ?young ?kid)))
+(rule (has-son ?old ?young)
+      (or (son ?old ?young)
+          (and (wife ?old ?old-wife)
+               (son ?old-wife ?young))))
+
+(rule (list-end-in-grandson (grandson)))
+(rule (list-end-in-grandson (?first . ?rest))
+      (list-end-in-grandson ?rest))
+(rule ((grandson) ?old ?young)
+      (grandson ?old ?young))
+(rule ((great . ?rel) ?a ?b)
+      (and (has-son ?c ?b)
+           (?rel ?a ?c)
+           (list-end-in-grandson ?rel)))
+\end{lstlisting}
+
+One tricky thing here is that evaluation of \lstinline{(list-end-in-grandson ?rel)} doen't terminate if \lstinline{?rel} is unbound. Like \lstinline{not}, it also serves as a filter.
+
+The rules works well with the following queries:
+
+\begin{lstlisting}
+;;; Query input:
+((great grandson) ?g ?ggs)
+
+;;; Query results:
+((great grandson) mehujael jubal)
+((great grandson) mehujael jabal)
+((great grandson) irad lamech)
+((great grandson) enoch methushael)
+((great grandson) cain mehujael)
+((great grandson) adam irad)
+
+;;; Query input:
+((great great grandson) ?g ?gggs)
+
+;;; Query results:
+((great great grandson) irad jubal)
+((great great grandson) irad jabal)
+((great great grandson) enoch lamech)
+((great great grandson) cain methushael)
+((great great grandson) adam mehujael)
+
+;;; Query input:
+(?relationship Adam Irad)
+
+;;; Query results:
+((great grandson) adam irad)
+\end{lstlisting}
+
+There're still some limitations to the rules. For example, the following query
+
+\begin{lstlisting}
+((great . ?rel) ?x ?y)
+\end{lstlisting}
+
+never terminates due to the infinite recursion:
+
+\begin{lstlisting}
+   ((great . ?) ? ?)
+-> (? ? ?)
+-> ((great . ?) ? ?)
+-> (? ? ?)
+-> ((great . ?) ? ?)
+-> ...
+\end{lstlisting}
+
 \end{document}
