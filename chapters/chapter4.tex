@@ -2507,4 +2507,33 @@ Sometimes, however, the functionalities we desire \textbf{depends on the uniquen
 
 One feasible way is to maintain a stack. When the query system is about to evaluate a query relative to a frame, instantiate that query pattern with that frame, and check if that instantiated pattern is already in the stack. If so, a loop is detected. Otherwise, push that instantiated pattern onto the stack, evaluate that query, then pop the pattern from the stack.
 
+\section{Exercise 4.68}
+
+Code:
+
+\begin{lstlisting}
+(rule (append-to-form ()
+                      ?last
+                      (?last)))
+(rule (append-to-form (?first . ?rest)
+                      ?last
+                      (?first . ?another-rest))
+      (append-to-form ?rest ?last ?another-rest))
+
+(rule (reverse () ()))
+(rule (reverse (?first . ?rest) ?another)
+      (and (reverse ?rest ?rest-reversed)
+           (append-to-form ?rest-reversed ?first ?another)))
+\end{lstlisting}
+
+The rules work for \lstinline{(reverse (1 2 3) ?x)}, but not \lstinline{(reverse ?x (1 2 3))}. It's because only when a data is matched against \lstinline{(?first . ?rest)} does the query system "make actual progress". In order for both ways to work, \lstinline{reverse} should be implemented in a symmetric structure, as the pseudocode illustrates:
+
+\begin{lstlisting}
+(rule (reverse () ()))
+(rule (reverse (?first . ?rest) (?rest-reversed . ?first))
+      (reverse ?rest ?rest-reversed))
+\end{lstlisting}
+
+which is not easy to implement with existing list operations.
+
 \end{document}
