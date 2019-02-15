@@ -2632,7 +2632,7 @@ In a query system without lazy evaluation in \lstinline{simple-query}:
 ;;; Query results:
 \end{lstlisting}
 
-The query system get stuck in an infinite loop.
+The query system gets stuck in an infinite loop.
 
 In a query system with lazy evaluation in \lstinline{simple-query}:
 
@@ -2662,5 +2662,27 @@ Any subquery with non-empty result can save the effort of processing rest of the
 \section{Exercise 4.72}
 
 Interleaving can prevent starvation caused by infinite streams. This doesn't appear quite helpful here, as we're only dealing with a finite number of assertions, and the order of the result really doesn't matter. However, the underlying database actually can be implemented to support infinite assertions by generating assertions on the fly. That's where interleaving becomes truly crucial.
+
+\section{Exercise 4.73}
+
+As we've already known, \lstinline{flatten-stream} defined this way cannot handle infinite streams. The program would get stuck in infinite recursion.
+
+Also, consider the stream
+
+\begin{lstlisting}
+(s#0 s#1 s#2 ... s#n)
+\end{lstlisting}
+
+where every element is itself a stream. Calling \lstinline{flatten-stream} with it produces:
+
+\begin{lstlisting}
+(interleave s#0
+            (interleave s#1
+                        (interleave s#2
+                                    ...
+                                    s#n)))
+\end{lstlisting}
+
+Notice that the streams from \lstinline{s#1} to \lstinline{s#2} are originally delayed thanks to \lstinline{stream}. They're all forced after calling \lstinline{flatten-stream}, though we're not using them at this point, which violates the principle of streams that to evaluate an element only when it is being used. Also, this could bring inefficiency issue we've mentioned in 4.71.
 
 \end{document}
