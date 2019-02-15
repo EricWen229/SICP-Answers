@@ -2685,4 +2685,24 @@ where every element is itself a stream. Calling \lstinline{flatten-stream} with 
 
 Notice that the streams from \lstinline{s#1} to \lstinline{s#2} are originally delayed thanks to \lstinline{stream}. They're all forced after calling \lstinline{flatten-stream}, though we're not using them at this point, which violates the principle of streams that to evaluate an element only when it is being used. Also, this could bring inefficiency issue we've mentioned in 4.71.
 
+\section{Exercise 4.74}
+
+\subsection{a.}
+
+Code:
+
+\begin{lstlisting}
+(define (simple-stream-flatmap proc s)
+  (simple-flatten (stream-map proc s)))
+(define (simple-flatten stream)
+  (stream-map stream-car
+              (stream-filter (lambda (s)
+                               (not (stream-null? s)))
+                             stream)))
+\end{lstlisting}
+
+\subsection{b.}
+
+The behavior, both the result and lazy manner, doesn't change.
+
 \end{document}
