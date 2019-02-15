@@ -2705,4 +2705,31 @@ Code:
 
 The behavior, both the result and lazy manner, doesn't change.
 
+\section{Exercise 4.75}
+
+Code:
+
+\begin{lstlisting}
+(define (uniquely-asserted query-container frame-stream)
+  (let ((query (car query-container)))
+    (simple-flatten
+      (stream-filter (lambda (s)
+                      (and (not (stream-null? s))
+                            (stream-null? (stream-cdr s))))
+                    (stream-map (lambda (frame)
+                                  (qeval query
+                                          (singleton-stream frame)))
+                                frame-stream)))))
+\end{lstlisting}
+
+Rule:
+
+\begin{lstlisting}
+(rule (supervise-only-one ?person)
+      (and (job ?person ?job)
+           (unique (supervisor ?x ?person))))
+\end{lstlisting}
+
+Notice that \lstinline{unique} also acts as a filter and requires existing bindings. Here \lstinline{?person} is bound to an actual datum. If neither \lstinline{?x} nor \lstinline{?person} is bound, \lstinline{(supervisor ?x ?person)} simply returns all \lstinline{supervisor} assertions and fails at \lstinline{unique}. 
+
 \end{document}

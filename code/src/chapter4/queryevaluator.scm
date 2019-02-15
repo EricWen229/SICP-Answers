@@ -131,6 +131,17 @@
 
 ;;(put 'always-true 'qeval always-true)
 
+(define (uniquely-asserted query-container frame-stream)
+  (let ((query (car query-container)))
+    (simple-flatten
+      (stream-filter (lambda (s)
+                      (and (not (stream-null? s))
+                            (stream-null? (stream-cdr s))))
+                    (stream-map (lambda (frame)
+                                  (qeval query
+                                          (singleton-stream frame)))
+                                frame-stream)))))
+
 ;;;SECTION 4.4.4.3
 ;;;Finding Assertions by Pattern Matching
 
@@ -508,6 +519,14 @@
       (cons-stream (stream-car s1)
                    (interleave s2 (stream-cdr s1)))))
 
+(define (simple-stream-flatmap proc s)
+  (simple-flatten (stream-map proc s)))
+(define (simple-flatten stream)
+  (stream-map stream-car
+              (stream-filter (lambda (s)
+                               (not (stream-null? s)))
+                             stream)))
+
 ;;;;Table support from Chapter 3, Section 3.3.3 (local tables)
 
 (define (make-table)
@@ -572,6 +591,7 @@
   (put 'not 'qeval negate)
   (put 'lisp-value 'qeval lisp-value)
   (put 'always-true 'qeval always-true)
+  (put 'unique 'qeval uniquely-asserted)
   (deal-out rules-and-assertions '() '()))
 
 ;; Do following to reinit the data base from microshaft-data-base
@@ -660,6 +680,10 @@
       (or (supervisor ?staff-person ?boss)
           (and (supervisor ?staff-person ?middle-manager)
                (outranked-by ?middle-manager ?boss))))
+
+(rule (supervise-only-one ?person)
+      (and (job ?person ?job)
+           (unique (supervisor ?x ?person))))
 
 (rule (last-pair (?first . ?rest) ?last)
       (last-pair ?rest ?last))
