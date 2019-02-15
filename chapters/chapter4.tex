@@ -2732,4 +2732,22 @@ Rule:
 
 Notice that \lstinline{unique} also acts as a filter and requires existing bindings. Here \lstinline{?person} is bound to an actual datum. If neither \lstinline{?x} nor \lstinline{?person} is bound, \lstinline{(supervisor ?x ?person)} simply returns all \lstinline{supervisor} assertions and fails at \lstinline{unique}. 
 
+\section{Exercise 4.76}
+
+One way to do this is to start with one of the frames, and keep adding bindings from another into this frame. Whenever we add a binding, we first check if it causes conflict. The two frames are not compatible if any conflict occurs.
+
+Code:
+
+\begin{lstlisting}
+(define (merge-frames frame-1 frame-2)
+  (if (or (eq? frame-1 'failed)
+          (null? frame-2))
+      frame-1
+      (merge-frames
+        (extend-if-possible (binding-variable (car frame-2))
+                            (binding-value (car frame-2))
+                            frame-1)
+        (cdr frame-2))))
+\end{lstlisting}
+
 \end{document}

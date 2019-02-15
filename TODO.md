@@ -1,4 +1,4 @@
 # TODO
 
-* implement loop detection in query system
+* add solution to 4.70
 
