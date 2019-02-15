@@ -2659,4 +2659,8 @@ The example above illustrates a very extreme situation, where a query takes an i
 
 Any subquery with non-empty result can save the effort of processing rest of the subqueries.
 
+\section{Exercise 4.72}
+
+Interleaving can prevent starvation caused by infinite streams. This doesn't appear quite helpful here, as we're only dealing with a finite number of assertions, and the order of the result really doesn't matter. However, the underlying database actually can be implemented to support infinite assertions by generating assertions on the fly. That's where interleaving becomes truly crucial.
+
 \end{document}
