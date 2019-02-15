@@ -2610,6 +2610,10 @@ never terminates due to the infinite recursion:
 -> ...
 \end{lstlisting}
 
+\section{Exercise 4.70}
+
+Because we want the \lstinline{cdr} of the new stream to be the old stream of assertions. If implemented that way, the \lstinline{cdr} of the new stream would be the new stream itself, which is an infinite stream repeating the \lstinline{car} of the new stream.
+
 \section{Exercise 4.71}
 
 When using \lstinline{not} filter, we don't actually use the actual result of a query, since we only care about whether the result's empty or not. By evaluating the result in a lazy manner, we may avoid unnecessary computations and even infinite loops.
