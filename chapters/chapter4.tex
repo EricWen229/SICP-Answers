@@ -2750,4 +2750,31 @@ Code:
         (cdr frame-2))))
 \end{lstlisting}
 
+\section{Exercise 4.77}
+
+Let's take a look at \lstinline{not}. When every variable in the query is unbound, \lstinline{not} goes out of order. Thus given the query and a frame, there are three cases we need to consider:
+
+\begin{enumerate}
+\item Every variable in the query is unbound.
+\item Some variable is bound, and evaluating the query returns an empty stream.
+\item Some variable is bound, and evaluating the query returns a non-empty stream.
+\end{enumerate}
+
+The pseudocode is as follows:
+
+\begin{lstlisting}
+(define (negate operands frame-stream)
+  (stream-flatmap
+    (lambda (frame)
+      (let* ((query (negated-query operands))
+             (variables (extract-variables query)))
+        (if (all-variables-bound variables frame)
+            (if (stream-null? (qeval query frame))
+                (singleton-stream frame)
+                the-empty-stream)
+            (attach-negate-query query frame))))))
+\end{lstlisting}
+
+Every time a frame is about to be used for evaluation, the system should execute negate queries attached to it if available. Notice that this step shouldn't be done right upon completion of processing a query, since the stream might be delayed and checking every frame for negate queries can break such the lazy behaviour.
+
 \end{document}
